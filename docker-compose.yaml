@@ -1,0 +1,15 @@
+services:
+  user-service:
+    build:
+      context: .
+
+    container_name: user-service
+
+    ports:
+      - "3001:3001"
+
+    environment:
+      INFISICAL_TOKEN: ${INFISICAL_TOKEN}
+
+volumes:
+  redis-data:
