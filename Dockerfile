@@ -69,7 +69,7 @@ RUN chown -R node:node /app
 # Switch to the non-root user
 USER node
 
-EXPOSE 3001
+EXPOSE 3000
 
 HEALTHCHECK \
   --interval=30s \

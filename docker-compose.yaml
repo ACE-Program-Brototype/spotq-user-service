@@ -6,7 +6,7 @@ services:
     container_name: user-service
 
     ports:
-      - "3001:3001"
+      - "3000:3000"
 
     environment:
       INFISICAL_TOKEN: ${INFISICAL_TOKEN}

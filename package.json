@@ -5,10 +5,12 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "jest",
+		"test:infisical": "infisical run -- jest",
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage",
 		"build": "tsc && tsc-alias",
-		"dev": "infisical run -- tsx watch src/server.ts",
+		"dev": "tsx watch src/server.ts",
+		"dev:infisical": "infisical run -- tsx watch src/server.ts",
 		"start": "node dist/src/server.js",
 		"commit": "git-cz",
 		"lint-staged": "biome check --staged --no-errors-on-unmatched",
@@ -17,7 +19,7 @@
 		"format": "biome format --write .",
 		"prisma:generate": "prisma generate",
 		"prisma:migrate": "prisma migrate dev",
-		"prisma:studio": "prisma studio",
+		"prisma:studio": "infisical run -- prisma studio",
 		"perf:test": "k6 run ./test/load-test.js"
 	},
 	"config": {
@@ -48,6 +50,7 @@
 		"@types/express": "^5.0.6",
 		"@types/jest": "^30.0.0",
 		"@types/node": "^26.1.2",
+		"@types/pg": "^8.20.4",
 		"@types/supertest": "^7.2.1",
 		"commitizen": "^4.3.2",
 		"husky": "^9.1.7",
@@ -68,6 +71,7 @@
 		"express": "^5.2.1",
 		"helmet": "^8.3.0",
 		"ioredis": "^6.0.0",
+		"pg": "^8.22.0",
 		"pino": "^10.3.1",
 		"pino-http": "^11.0.0",
 		"prom-client": "^15.1.3",

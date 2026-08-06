@@ -10,7 +10,11 @@ const envSchema = z.object({
 	LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]),
 
 	DATABASE_URL: z.url(),
-	DIRECT_DATABASE_URL: z.url(),
+	DATABASE_SSL_ENABLED: z
+		.string()
+		.transform((val) => val === "true")
+		.default(false),
+	DATABASE_CA_CERT: z.string().optional(),
 
 	REDIS_URL: z.url(),
 });

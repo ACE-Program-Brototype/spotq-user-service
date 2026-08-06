@@ -53,7 +53,6 @@ jobs:
           SERVICE_NAME: spotq-user-service
           LOG_LEVEL: info
           DATABASE_URL: postgres://localhost:5432/test
-          DIRECT_DATABASE_URL: postgres://localhost:5432/test
           REDIS_URL: redis://localhost:6379
 
       - name: Build Docker Image

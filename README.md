@@ -361,17 +361,49 @@ on every push and pull request to:
 
 # Environment Variables
 
-Example:
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `NODE_ENV` | ✅ | — | `development` \| `testing` \| `production` |
+| `PORT` | ✅ | — | HTTP port the service listens on |
+| `SERVICE_NAME` | ✅ | — | Name used in logs and metrics |
+| `LOG_LEVEL` | ✅ | — | `trace` \| `debug` \| `info` \| `warn` \| `error` \| `fatal` |
+| `DATABASE_URL` | ✅ | — | PostgreSQL connection string (e.g. `postgres://user:pass@host:5432/db?sslmode=require`) |
+| `DATABASE_SSL_ENABLED` | ❌ | `false` | Enable strict SSL certificate verification for the database connection |
+| `DATABASE_CA_CERT` | ❌ | — | Path to a custom CA certificate file (e.g. `.certs/ca.pem`). Only used when `DATABASE_SSL_ENABLED=true`. Falls back to `.certs/ca.pem` if not set |
+| `REDIS_URL` | ✅ | — | Redis connection URL |
+| `INFISICAL_TOKEN` | ❌ | — | Infisical service token for secret injection |
+
+## Database SSL Modes
+
+The `DATABASE_SSL_ENABLED` flag controls how the service connects to PostgreSQL:
+
+### `DATABASE_SSL_ENABLED=true` — Production (strict, with CA cert)
+
+Enforces full TLS certificate chain verification. A valid CA certificate **must** be available.
 
 ```env
-PORT=3001
+DATABASE_SSL_ENABLED=true
 
-DATABASE_URL=
+# Option 1: point to the cert file path
+DATABASE_CA_CERT=.certs/ca.pem
 
-REDIS_URL=
-
-INFISICAL_TOKEN=
+# Option 2: omit DATABASE_CA_CERT — it will auto-load .certs/ca.pem if it exists
 ```
+
+> For Aiven, download the CA cert from the Aiven Console → your service → **Overview** → **CA Certificate** and save it to `.certs/ca.pem`.
+
+### `DATABASE_SSL_ENABLED=false` — Development / testing (SSL, no cert check)
+
+Connects over SSL but skips certificate chain verification (`rejectUnauthorized: false`). Useful when connecting to cloud databases without a local CA cert.
+
+```env
+DATABASE_SSL_ENABLED=false
+# DATABASE_CA_CERT not needed
+```
+
+> **Note:** Even with `DATABASE_SSL_ENABLED=false`, the connection is still encrypted. Only cert verification is skipped — do **not** use this in production.
+
+> **Aiven / cloud DB users:** Aiven's connection strings include `?sslmode=require`. The service automatically strips this from the URL passed to `pg` to prevent `pg-connection-string` from overriding the SSL config above.
 
 ---
 
