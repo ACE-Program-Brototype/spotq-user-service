@@ -10,32 +10,78 @@ const PORT = config.server.port;
 async function bootstrap() {
 	await PrismaService.connect();
 	await RedisService.connect();
+	await BullMQService.connect();
 
-	try {
-		await BullMQService.connect();
-	} catch (error) {
-		logger.error(
-			{ err: error },
-			"Failed to initialize BullMQ infrastructure. Shutting down...",
-		);
-		process.exit(1);
-	}
+	const server = app.listen(PORT, () => {
+		logger.info(`${config.service.name} running on port ${PORT}`);
+	});
 
-	const server = app.listen(PORT, () =>
-		logger.info(`User service running on port: ${PORT}`),
-	);
+	let isShuttingDown = false;
 
-	const shutdown = async () => {
-		logger.info("Gracefully shutting down...");
+	const shutdown = async (signal: string) => {
+		if (isShuttingDown) {
+			logger.warn(`Received ${signal} but shutdown is already in progress...`);
+			return;
+		}
+		isShuttingDown = true;
+		logger.info(`Received ${signal}. Gracefully shutting down...`);
 
-		await PrismaService.disconnect();
-		await RedisService.disconnect();
-		await BullMQService.disconnect();
+		// Set a safety timeout of 10 seconds to force-exit if connections hang
+		const forceExitTimeout = setTimeout(async () => {
+			logger.error("Graceful shutdown timed out. Forcing shutdown...");
+			try {
+				await PrismaService.disconnect();
+				await BullMQService.disconnect();
+				await RedisService.disconnect();
+			} catch (err) {
+				logger.error(
+					err,
+					"Error disconnecting external services on forced shutdown",
+				);
+			}
+			process.exit(1);
+		}, 10000);
 
-		server.close(() => {
+		// Stop accepting new connections
+		server.close(async (err) => {
+			if (err) {
+				logger.error(err, "Error during HTTP server close");
+			} else {
+				logger.info("HTTP server closed successfully");
+			}
+
+			// Disconnect from database and cache *after* HTTP server finishes processing current requests
+			try {
+				logger.info("Disconnecting database client...");
+				await PrismaService.disconnect();
+				logger.info("Database client disconnected");
+			} catch (dbErr) {
+				logger.error(dbErr, "Error disconnecting database client");
+			}
+
+			try {
+				logger.info("Disconnecting Bullmq client...");
+				await BullMQService.disconnect();
+				logger.info("Bullmq client disconnected");
+			} catch (bullmqErr) {
+				logger.error(bullmqErr, "Error disconnecting Bullmq client");
+			}
+
+			try {
+				logger.info("Disconnecting Redis client...");
+				await RedisService.disconnect();
+				logger.info("Redis client disconnected");
+			} catch (redisErr) {
+				logger.error(redisErr, "Error disconnecting Redis client");
+			}
+
+			clearTimeout(forceExitTimeout);
 			logger.info("Graceful shutdown completed");
 			process.exit(0);
 		});
+
+		// Drop idle Keep-Alive connections so the server can shut down immediately without hanging on inactive clients
+		server.closeIdleConnections();
 	};
 
 	process.on("SIGINT", shutdown);
