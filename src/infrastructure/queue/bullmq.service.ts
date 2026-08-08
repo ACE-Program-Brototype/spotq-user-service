@@ -1,4 +1,6 @@
 import { config } from "@config/env.js";
+import { BullMQEvent } from "@shared/constants/bullmq-events.constants.js";
+import { HealthStatus } from "@shared/constants/health-status.constants.js";
 import { Redis, type RedisOptions } from "ioredis";
 import { logger } from "../logger/index.js";
 import { bullmqConnection } from "./bullmq.client.js";
@@ -19,7 +21,7 @@ export class BullMQService {
 				bullmqConnection as RedisOptions,
 			);
 
-			BullMQService.client.on("error", (err) => {
+			BullMQService.client.on(BullMQEvent.ERROR, (err) => {
 				logger.error({ err }, "BullMQ Redis Connection Error");
 			});
 
@@ -53,7 +55,7 @@ export class BullMQService {
 
 		try {
 			const status = await BullMQService.client.ping();
-			return status === "PONG";
+			return status === HealthStatus.PONG;
 		} catch {
 			return false;
 		}

@@ -1,12 +1,9 @@
 import { BullMQService } from "@infrastructure/queue/bullmq.service.js";
 import type { PrismaClient } from "@prisma/client";
+import { HealthStatus } from "@shared/constants/health-status.constants.js";
 import type { RedisClientType } from "redis";
 
-export enum HealthStatus {
-	UP = "UP",
-	DOWN = "DOWN",
-	PONG = "PONG",
-}
+export { HealthStatus };
 
 export interface HealthCheckResult {
 	status: HealthStatus.UP | HealthStatus.DOWN;

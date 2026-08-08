@@ -1,3 +1,4 @@
+import { HealthStatus } from "@shared/constants/health-status.constants.js";
 import request from "supertest";
 import app from "../src/app.js";
 import { PrismaService } from "../src/infrastructure/database/prisma/database.service.js";
@@ -28,7 +29,7 @@ describe("User Service Integration & Unit Tests", () => {
 	describe("GET /health", () => {
 		it("should return 200 and status UP when both DB and Redis are healthy", async () => {
 			dbSpy.mockResolvedValue([{ 1: 1 }]);
-			redisSpy.mockResolvedValue("PONG");
+			redisSpy.mockResolvedValue(HealthStatus.PONG);
 			bullmqSpy.mockResolvedValue(true);
 
 			const res = await request(app).get("/health");
@@ -36,12 +37,12 @@ describe("User Service Integration & Unit Tests", () => {
 			expect(res.status).toBe(200);
 			expect(res.body).toEqual(
 				expect.objectContaining({
-					status: "UP",
+					status: HealthStatus.UP,
 					checks: expect.objectContaining({
-						application: "UP",
-						database: "UP",
-						redis: "UP",
-						bullmq: "UP",
+						application: HealthStatus.UP,
+						database: HealthStatus.UP,
+						redis: HealthStatus.UP,
+						bullmq: HealthStatus.UP,
 					}),
 				}),
 			);
@@ -52,7 +53,7 @@ describe("User Service Integration & Unit Tests", () => {
 
 		it("should return 503 and status DOWN when database is unhealthy", async () => {
 			dbSpy.mockRejectedValue(new Error("Database connection failed"));
-			redisSpy.mockResolvedValue("PONG");
+			redisSpy.mockResolvedValue(HealthStatus.PONG);
 			bullmqSpy.mockResolvedValue(true);
 
 			const res = await request(app).get("/health");
@@ -60,12 +61,12 @@ describe("User Service Integration & Unit Tests", () => {
 			expect(res.status).toBe(503);
 			expect(res.body).toEqual(
 				expect.objectContaining({
-					status: "DOWN",
+					status: HealthStatus.DOWN,
 					checks: expect.objectContaining({
-						application: "UP",
-						database: "DOWN",
-						redis: "UP",
-						bullmq: "UP",
+						application: HealthStatus.UP,
+						database: HealthStatus.DOWN,
+						redis: HealthStatus.UP,
+						bullmq: HealthStatus.UP,
 					}),
 				}),
 			);
@@ -81,12 +82,12 @@ describe("User Service Integration & Unit Tests", () => {
 			expect(res.status).toBe(503);
 			expect(res.body).toEqual(
 				expect.objectContaining({
-					status: "DOWN",
+					status: HealthStatus.DOWN,
 					checks: expect.objectContaining({
-						application: "UP",
-						database: "UP",
-						redis: "DOWN",
-						bullmq: "UP",
+						application: HealthStatus.UP,
+						database: HealthStatus.UP,
+						redis: HealthStatus.DOWN,
+						bullmq: HealthStatus.UP,
 					}),
 				}),
 			);
@@ -121,7 +122,7 @@ describe("User Service Integration & Unit Tests", () => {
 		});
 
 		it("RedisService.health should return true when healthy", async () => {
-			redisSpy.mockResolvedValue("PONG");
+			redisSpy.mockResolvedValue(HealthStatus.PONG);
 			const healthy = await RedisService.health();
 			expect(healthy).toBe(true);
 		});

@@ -1,6 +1,7 @@
+import { HealthStatus } from "@shared/constants/health-status.constants.js";
 import { HttpStatus } from "@shared/constants/http.constants.js";
 import type { Request, Response } from "express";
-import { type HealthService, HealthStatus } from "./health.service.js";
+import type { HealthService } from "./health.service.js";
 
 export class HealthController {
 	private readonly healthService: HealthService;
