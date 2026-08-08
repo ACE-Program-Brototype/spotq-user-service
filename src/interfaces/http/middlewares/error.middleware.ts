@@ -1,4 +1,7 @@
+import { config } from "@config/env.js";
 import { logger } from "@infrastructure/logger/index.js";
+import { HttpStatus } from "@shared/constants/http.constants.js";
+import { ResponseMessage } from "@shared/constants/response-messages.constants.js";
 import type { NextFunction, Request, Response } from "express";
 
 export function errorMiddleware(
@@ -13,13 +16,16 @@ export function errorMiddleware(
 	);
 
 	const statusCode =
-		res.statusCode === 200 || res.statusCode === 304 ? 500 : res.statusCode;
+		res.statusCode === HttpStatus.OK ||
+		res.statusCode === HttpStatus.NOT_MODIFIED
+			? HttpStatus.INTERNAL_SERVER_ERROR
+			: res.statusCode;
 
 	res.status(statusCode).json({
-		error: "Internal Server Error",
+		error: ResponseMessage.INTERNAL_SERVER_ERROR,
 		message:
-			process.env.NODE_ENV === "production"
-				? "An unexpected error occurred"
+			config.server.nodeEnv === "production"
+				? ResponseMessage.UNEXPECTED_ERROR
 				: err.message,
 	});
 }

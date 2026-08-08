@@ -12,7 +12,8 @@
 			"@interfaces/*": ["./src/interfaces/*"],
 			"@config/*": ["./src/config/*"],
 			"@di/*": ["./src/config/di/*"],
-			"@modules/*": ["./src/modules/*"]
+			"@modules/*": ["./src/modules/*"],
+			"@shared/*": ["./src/shared/*"]
 		},
 		"module": "nodenext",
 		"moduleResolution": "nodenext",

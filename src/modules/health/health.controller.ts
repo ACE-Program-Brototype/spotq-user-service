@@ -1,5 +1,6 @@
+import { HttpStatus } from "@shared/constants/http.constants.js";
 import type { Request, Response } from "express";
-import type { HealthService } from "./health.service.js";
+import { type HealthService, HealthStatus } from "./health.service.js";
 
 export class HealthController {
 	private readonly healthService: HealthService;
@@ -10,7 +11,10 @@ export class HealthController {
 
 	check = async (_req: Request, res: Response): Promise<void> => {
 		const result = await this.healthService.check();
-		const statusCode = result.status === "UP" ? 200 : 503;
+		const statusCode =
+			result.status === HealthStatus.UP
+				? HttpStatus.OK
+				: HttpStatus.SERVICE_UNAVAILABLE;
 		res.status(statusCode).json(result);
 	};
 }

@@ -2,19 +2,24 @@ import { randomUUID } from "node:crypto";
 import { logger, loggerLocalStorage } from "@infrastructure/logger/index.js";
 import type { NextFunction, Request, Response } from "express";
 
+export enum RequestHeader {
+	CORRELATION_ID = "x-correlation-id",
+	REQUEST_ID = "x-request-id",
+	USER_AGENT = "user-agent",
+}
+
 export function loggerMiddleware(
 	req: Request,
 	res: Response,
 	next: NextFunction,
 ): void {
 	const correlationId =
-		(req.headers["x-correlation-id"] as string) ||
-		(req.headers["x-request-id"] as string) ||
-		randomUUID();
-	const requestId = randomUUID();
+		(req.headers[RequestHeader.CORRELATION_ID] as string) || randomUUID();
+	const requestId =
+		(req.headers[RequestHeader.REQUEST_ID] as string) || randomUUID();
 
-	res.setHeader("x-correlation-id", correlationId);
-	res.setHeader("x-request-id", requestId);
+	res.setHeader(RequestHeader.CORRELATION_ID, correlationId);
+	res.setHeader(RequestHeader.REQUEST_ID, requestId);
 
 	const store = { requestId, correlationId };
 
@@ -26,7 +31,7 @@ export function loggerMiddleware(
 			ip: req.ip,
 			headers: {
 				host: req.headers.host,
-				userAgent: req.headers["user-agent"],
+				userAgent: req.headers[RequestHeader.USER_AGENT],
 			},
 		});
 
