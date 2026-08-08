@@ -1,4 +1,5 @@
 import { config } from "@config/env.js";
+import { logger } from "@infrastructure/logger/logger.js";
 import { createClient } from "redis";
 
 const isTls = config.redis.url.startsWith("rediss://");
@@ -18,17 +19,17 @@ export const redisClient = createClient({
 });
 
 redisClient.on("connect", () => {
-	console.log("Connecting to Redis...");
+	logger.info("Connecting to Redis...");
 });
 
 redisClient.on("ready", () => {
-	console.log("Redis connected");
+	logger.info("Redis connected");
 });
 
 redisClient.on("reconnecting", () => {
-	console.log("Redis reconnecting...");
+	logger.info("Redis reconnecting...");
 });
 
 redisClient.on("error", (error) => {
-	console.error("Redis Error:", error);
+	logger.error("Redis Error:", error);
 });
