@@ -1,5 +1,5 @@
 # ---------- Builder ----------
-FROM node:22-alpine AS base
+FROM node:22-alpine AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -7,20 +7,12 @@ ENV CI=true
 
 RUN corepack enable
 
-RUN apk add --no-cache libc6-compat openssl
-
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# ---------- Dependencies ----------
-FROM base AS deps
-
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
-
-# ---------- Builder ----------
-FROM deps AS builder
 
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
@@ -32,8 +24,6 @@ RUN pnpm build
 
 # ---------- Production ----------
 FROM node:22-alpine
-
-RUN apk add --no-cache libc6-compat openssl
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -76,6 +66,6 @@ HEALTHCHECK \
   --timeout=3s \
   --start-period=10s \
   --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
 CMD ["infisical", "run", "--", "node", "dist/src/server.js"]
