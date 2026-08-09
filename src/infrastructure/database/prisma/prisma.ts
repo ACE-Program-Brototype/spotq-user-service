@@ -30,6 +30,7 @@ if (config.database.sslEnabled) {
 					{ err: error },
 					`Failed to read database CA certificate from env path: ${envCaCert}`,
 				);
+				throw error;
 			}
 		}
 	} else {
