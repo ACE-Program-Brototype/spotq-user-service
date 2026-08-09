@@ -18,13 +18,19 @@ if (config.database.sslEnabled) {
 	const envCaCert = config.database.caCert;
 
 	if (envCaCert) {
-		try {
-			caContent = fs.readFileSync(envCaCert, "utf8");
-		} catch (error) {
-			logger.fatal(
-				{ err: error },
-				`Failed to read database CA certificate from env path: ${envCaCert}`,
-			);
+		if (envCaCert.includes("BEGIN CERTIFICATE")) {
+			// Direct PEM certificate content passed via environment variable / Infisical
+			caContent = envCaCert.replace(/\\n/g, "\n");
+		} else {
+			// File path to certificate
+			try {
+				caContent = fs.readFileSync(envCaCert, "utf8");
+			} catch (error) {
+				logger.fatal(
+					{ err: error },
+					`Failed to read database CA certificate from env path: ${envCaCert}`,
+				);
+			}
 		}
 	} else {
 		// Fallback to .certs/ca.pem
