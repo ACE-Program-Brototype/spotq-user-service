@@ -32,7 +32,10 @@ export class BullMQService implements IHealthCheckable {
 			logger.info("BullMQ Connected");
 		} catch (error) {
 			logger.error({ err: error }, "BullMQ Connection Failed");
-			this.client = null;
+			if (this.client) {
+				this.client.disconnect();
+				this.client = null;
+			}
 			throw error;
 		}
 	}
