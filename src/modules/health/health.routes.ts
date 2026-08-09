@@ -1,20 +1,23 @@
-import { prisma } from "@infrastructure/database/prisma/prisma.js";
-import { redisClient } from "@infrastructure/redis/redis.client.js";
+import { InjectHealthController } from "@config/di/decorators.js";
 import { Router } from "express";
-import { HealthController } from "./health.controller.js";
-import { HealthService } from "./health.service.js";
+import { injectable } from "inversify";
+import type { HealthController } from "./health.controller.js";
 
-const healthService = new HealthService(prisma, redisClient);
-const healthController = new HealthController(healthService);
-
+@injectable()
 export class HealthRouter {
 	public router: Router;
-	constructor() {
+	private readonly healthController: HealthController;
+
+	constructor(
+		@InjectHealthController()
+		healthController: HealthController,
+	) {
 		this.router = Router();
+		this.healthController = healthController;
 		this.init();
 	}
 
 	private init() {
-		this.router.get("/health", healthController.check);
+		this.router.get("/health", this.healthController.check);
 	}
 }

@@ -1,16 +1,16 @@
+import "reflect-metadata";
 import { config } from "@config/index.js";
-import { PrismaService } from "@infrastructure/database/prisma/database.service.js";
+import {
+	initInfrastructure,
+	shutdownInfrastructure,
+} from "@infrastructure/index.js";
 import { logger } from "@infrastructure/logger/logger.js";
-import { BullMQService } from "@infrastructure/queue/bullmq.service.js";
-import { RedisService } from "@infrastructure/redis/redis.service.js";
 import app from "./app.js";
 
 const PORT = config.server.port;
 
 async function bootstrap() {
-	await PrismaService.connect();
-	await RedisService.connect();
-	await BullMQService.connect();
+	await initInfrastructure();
 
 	const server = app.listen(PORT, () => {
 		logger.info(`${config.service.name} running on port ${PORT}`);
@@ -30,9 +30,7 @@ async function bootstrap() {
 		const forceExitTimeout = setTimeout(async () => {
 			logger.error("Graceful shutdown timed out. Forcing shutdown...");
 			try {
-				await PrismaService.disconnect();
-				await BullMQService.disconnect();
-				await RedisService.disconnect();
+				await shutdownInfrastructure();
 			} catch (err) {
 				logger.error(
 					err,
@@ -50,30 +48,8 @@ async function bootstrap() {
 				logger.info("HTTP server closed successfully");
 			}
 
-			// Disconnect from database and cache *after* HTTP server finishes processing current requests
-			try {
-				logger.info("Disconnecting database client...");
-				await PrismaService.disconnect();
-				logger.info("Database client disconnected");
-			} catch (dbErr) {
-				logger.error(dbErr, "Error disconnecting database client");
-			}
-
-			try {
-				logger.info("Disconnecting Bullmq client...");
-				await BullMQService.disconnect();
-				logger.info("Bullmq client disconnected");
-			} catch (bullmqErr) {
-				logger.error(bullmqErr, "Error disconnecting Bullmq client");
-			}
-
-			try {
-				logger.info("Disconnecting Redis client...");
-				await RedisService.disconnect();
-				logger.info("Redis client disconnected");
-			} catch (redisErr) {
-				logger.error(redisErr, "Error disconnecting Redis client");
-			}
+			// Disconnect external services after HTTP server finishes processing current requests
+			await shutdownInfrastructure();
 
 			clearTimeout(forceExitTimeout);
 			logger.info("Graceful shutdown completed");

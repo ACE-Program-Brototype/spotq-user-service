@@ -1,8 +1,10 @@
+import type { IHealthCheckable } from "@infrastructure/health/health.interface.js";
+import { injectable } from "inversify";
 import { redisClient } from "./redis.client.js";
 
-// biome-ignore lint/complexity/noStaticOnlyClass: service structure uses static class methods
-export class RedisService {
-	static async connect(): Promise<void> {
+@injectable()
+export class RedisService implements IHealthCheckable {
+	async connect(): Promise<void> {
 		if (!redisClient.isOpen) {
 			await redisClient.connect();
 		}
@@ -10,13 +12,13 @@ export class RedisService {
 		await redisClient.ping();
 	}
 
-	static async disconnect(): Promise<void> {
+	async disconnect(): Promise<void> {
 		if (redisClient.isOpen) {
 			await redisClient.quit();
 		}
 	}
 
-	static async health(): Promise<boolean> {
+	async isHealthy(): Promise<boolean> {
 		try {
 			await redisClient.ping();
 			return true;

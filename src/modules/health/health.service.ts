@@ -1,35 +1,35 @@
-import { BullMQService } from "@infrastructure/queue/bullmq.service.js";
-import type { PrismaClient } from "@prisma/client";
+import {
+	InjectBullMQHealth,
+	InjectDatabaseHealth,
+	InjectRedisHealth,
+} from "@config/di/decorators.js";
+import type {
+	HealthCheckResult,
+	IHealthCheckable,
+	IHealthService,
+} from "@infrastructure/health/health.interface.js";
 import { HealthStatus } from "@shared/constants/health-status.constants.js";
-import type { RedisClientType } from "redis";
+import { injectable } from "inversify";
 
-export { HealthStatus };
-
-export interface HealthCheckResult {
-	status: HealthStatus.UP | HealthStatus.DOWN;
-	timestamp: string;
-	checks: {
-		application: HealthStatus.UP;
-		database: HealthStatus.UP | HealthStatus.DOWN;
-		redis: HealthStatus.UP | HealthStatus.DOWN;
-		bullmq: HealthStatus.UP | HealthStatus.DOWN;
-	};
-}
-
-export class HealthService {
+@injectable()
+export class HealthService implements IHealthService {
 	constructor(
-		private readonly prisma: PrismaClient,
-		private readonly redisClient: RedisClientType,
+		@InjectDatabaseHealth()
+		private readonly databaseHealth: IHealthCheckable,
+		@InjectRedisHealth()
+		private readonly redisHealth: IHealthCheckable,
+		@InjectBullMQHealth()
+		private readonly bullmqHealth: IHealthCheckable,
 	) {}
 
 	async check(): Promise<HealthCheckResult> {
 		const [dbHealthy, redisHealthy, bullmqHealthy] = await Promise.all([
-			this.checkDatabase(),
-			this.checkRedis(),
-			BullMQService.isHealthy(),
+			this.databaseHealth.isHealthy(),
+			this.redisHealth.isHealthy(),
+			this.bullmqHealth.isHealthy(),
 		]);
 
-		const isHealthy = dbHealthy && redisHealthy && bullmqHealthy;
+		const isHealthy = Boolean(dbHealthy && redisHealthy && bullmqHealthy);
 		const status: HealthStatus = isHealthy
 			? HealthStatus.UP
 			: HealthStatus.DOWN;
@@ -44,23 +44,5 @@ export class HealthService {
 				bullmq: bullmqHealthy ? HealthStatus.UP : HealthStatus.DOWN,
 			},
 		};
-	}
-
-	private async checkDatabase(): Promise<boolean> {
-		try {
-			await this.prisma.$queryRaw`SELECT 1`;
-			return true;
-		} catch {
-			return false;
-		}
-	}
-
-	private async checkRedis(): Promise<boolean> {
-		try {
-			const response = await this.redisClient.ping();
-			return response === HealthStatus.PONG;
-		} catch {
-			return false;
-		}
 	}
 }

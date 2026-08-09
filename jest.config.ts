@@ -17,8 +17,26 @@ const config: Config = {
 		"^@shared/(.*)\\.(ts|js)$": "<rootDir>/src/shared/$1",
 		"^(\\.{1,2}/.*)\\.js$": "$1",
 	},
+	transformIgnorePatterns: [
+		"/node_modules/(?!(\\.pnpm|inversify|@inversifyjs)).*",
+	],
 	transform: {
-		"^.+\\.(t|j)sx?$": "@swc/jest",
+		"^.+\\.(t|j)sx?$": [
+			"@swc/jest",
+			{
+				jsc: {
+					parser: {
+						syntax: "typescript",
+						decorators: true,
+						dynamicImport: true,
+					},
+					transform: {
+						legacyDecorator: true,
+						decoratorMetadata: true,
+					},
+				},
+			},
+		],
 	},
 };
 
