@@ -27,16 +27,14 @@ async function bootstrap() {
 		logger.info(`Received ${signal}. Gracefully shutting down...`);
 
 		// Set a safety timeout of 10 seconds to force-exit if connections hang
-		const forceExitTimeout = setTimeout(async () => {
+		const forceExitTimeout = setTimeout(() => {
 			logger.error("Graceful shutdown timed out. Forcing shutdown...");
-			try {
-				await shutdownInfrastructure();
-			} catch (err) {
+			shutdownInfrastructure().catch((err) => {
 				logger.error(
 					err,
 					"Error disconnecting external services on forced shutdown",
 				);
-			}
+			});
 			process.exit(1);
 		}, 10000);
 
