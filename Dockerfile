@@ -46,12 +46,12 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 COPY --from=builder /app/dist ./dist
 COPY .infisical.json .
 
-RUN apk add --no-cache bash sudo wget
+RUN apk add --no-cache bash wget
 
 # Install Infisical
-RUN wget -qO- 'https://artifacts-cli.infisical.com/setup.apk.sh' | sudo sh
+RUN wget -qO- 'https://artifacts-cli.infisical.com/setup.apk.sh' | sh
 
-RUN apk update && sudo apk add infisical
+RUN apk update && apk add --no-cache infisical
 
 # Give ownership of the app directory
 RUN chown -R node:node /app
