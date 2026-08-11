@@ -101,7 +101,9 @@ describe("User Service Integration & Unit Tests", () => {
 			expect(res.status).toBe(404);
 			expect(res.body).toEqual(
 				expect.objectContaining({
-					error: "Resource not found",
+					success: false,
+					statusCode: 404,
+					error: "Requested route not found",
 					message: "Cannot GET /invalid-route-xyz",
 				}),
 			);
