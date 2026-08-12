@@ -1,6 +1,6 @@
-import type { IHealthCheckable } from "@infrastructure/health/health.interface.js";
+import type { IHealthCheckable } from "@infrastructure/health/health.interface.ts";
 import { injectable } from "inversify";
-import { prisma } from "./prisma.js";
+import { prisma } from "./prisma.ts";
 
 @injectable()
 export class PrismaService implements IHealthCheckable {

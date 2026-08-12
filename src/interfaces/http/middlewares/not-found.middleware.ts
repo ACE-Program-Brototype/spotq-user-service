@@ -1,5 +1,5 @@
-import { HttpStatus, ResponseMessage } from "@shared/constants/index.js";
-import { ApiResponse } from "@shared/response/index.js";
+import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
+import { ApiResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 
 export function notFoundMiddleware(

@@ -1,7 +1,7 @@
-import { container, TYPES } from "@config/di/index.js";
-import type { HealthRouter } from "@modules/health/health.routes.js";
+import { container, TYPES } from "@config/di/index.ts";
+import type { HealthRouter } from "@modules/health/health.routes.ts";
 import { Router } from "express";
-import { metricsRouter } from "./metrics.routes.js";
+import { metricsRouter } from "./metrics.routes.ts";
 
 export const router = Router();
 

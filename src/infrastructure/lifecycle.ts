@@ -1,8 +1,8 @@
-import { container, TYPES } from "@config/di/index.js";
-import { logger } from "@infrastructure/logger/logger.js";
-import type { PrismaService } from "./database/prisma/database.service.js";
-import type { BullMQService } from "./queue/bullmq.service.js";
-import type { RedisService } from "./redis/redis.service.js";
+import { container, TYPES } from "@config/di/index.ts";
+import { logger } from "@infrastructure/logger/logger.ts";
+import type { PrismaService } from "./database/prisma/database.service.ts";
+import type { BullMQService } from "./queue/bullmq.service.ts";
+import type { RedisService } from "./redis/redis.service.ts";
 
 export async function initInfrastructure(): Promise<void> {
 	const prismaService = container.get<PrismaService>(TYPES.PrismaService);

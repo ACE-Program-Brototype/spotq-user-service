@@ -1,6 +1,6 @@
-import type { IHealthCheckable } from "@infrastructure/health/health.interface.js";
+import type { IHealthCheckable } from "@infrastructure/health/health.interface.ts";
 import { injectable } from "inversify";
-import { redisClient } from "./redis.client.js";
+import { redisClient } from "./redis.client.ts";
 
 @injectable()
 export class RedisService implements IHealthCheckable {

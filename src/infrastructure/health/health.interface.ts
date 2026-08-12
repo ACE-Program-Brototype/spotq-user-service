@@ -1,4 +1,4 @@
-import type { HealthStatus } from "@shared/constants/index.js";
+import type { HealthStatus } from "@shared/constants/index.ts";
 
 export interface IHealthCheckable {
 	isHealthy(): Promise<boolean> | boolean;

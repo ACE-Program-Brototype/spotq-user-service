@@ -10,6 +10,3 @@ services:
 
     environment:
       INFISICAL_TOKEN: ${INFISICAL_TOKEN}
-
-volumes:
-  redis-data:

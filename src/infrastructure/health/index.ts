@@ -1,1 +1,1 @@
-export * from "./health.interface.js";
+export * from "./health.interface.ts";

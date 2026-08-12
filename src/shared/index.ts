@@ -1,2 +1,2 @@
-export * from "./constants/index.js";
-export * from "./response/index.js";
+export * from "./constants/index.ts";
+export * from "./response/index.ts";

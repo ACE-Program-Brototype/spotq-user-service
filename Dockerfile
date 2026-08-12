@@ -20,7 +20,7 @@ RUN pnpm exec prisma generate
 
 COPY . .
 
-RUN pnpm build
+RUN rm -rf dist && pnpm build
 
 # ---------- Production ----------
 FROM node:22-alpine
@@ -68,4 +68,4 @@ HEALTHCHECK \
   --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-CMD ["infisical", "run", "--", "node", "dist/src/server.js"]
+CMD ["infisical", "run", "--", "node", "dist/server.js"]

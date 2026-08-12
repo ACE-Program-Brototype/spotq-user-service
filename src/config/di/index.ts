@@ -1,3 +1,3 @@
-export * from "./container.js";
-export * from "./decorators.js";
-export * from "./types.js";
+export * from "./container.ts";
+export * from "./decorators.ts";
+export * from "./types.ts";

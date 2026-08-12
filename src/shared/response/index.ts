@@ -1,1 +1,1 @@
-export { ApiResponse } from "./api-response.model.js";
+export { ApiResponse } from "./api-response.model.ts";

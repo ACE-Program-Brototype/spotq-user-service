@@ -1,11 +1,11 @@
 import "reflect-metadata";
-import { config } from "@config/index.js";
+import { config } from "@config/index.ts";
 import {
 	initInfrastructure,
 	shutdownInfrastructure,
-} from "@infrastructure/index.js";
-import { logger } from "@infrastructure/logger/logger.js";
-import app from "./app.js";
+} from "@infrastructure/index.ts";
+import { logger } from "@infrastructure/logger/logger.ts";
+import app from "./app.ts";
 
 const PORT = config.server.port;
 

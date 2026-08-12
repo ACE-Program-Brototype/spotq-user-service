@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { logger, loggerLocalStorage } from "@infrastructure/logger/index.js";
+import { logger, loggerLocalStorage } from "@infrastructure/logger/index.ts";
 import type { NextFunction, Request, Response } from "express";
 
 export enum RequestHeader {

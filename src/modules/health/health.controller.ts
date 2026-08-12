@@ -1,6 +1,6 @@
-import { InjectHealthService } from "@config/di/decorators.js";
-import type { IHealthService } from "@infrastructure/health/health.interface.js";
-import { HealthStatus, HttpStatus } from "@shared/constants/index.js";
+import { InjectHealthService } from "@config/di/decorators.ts";
+import type { IHealthService } from "@infrastructure/health/health.interface.ts";
+import { HealthStatus, HttpStatus } from "@shared/constants/index.ts";
 import type { Request, Response } from "express";
 import { injectable } from "inversify";
 

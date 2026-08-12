@@ -1,5 +1,5 @@
 import { inject } from "inversify";
-import { TYPES } from "./types.js";
+import { TYPES } from "./types.ts";
 
 export const InjectDatabaseHealth = () => inject(TYPES.DatabaseHealthCheckable);
 export const InjectRedisHealth = () => inject(TYPES.RedisHealthCheckable);

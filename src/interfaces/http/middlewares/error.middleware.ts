@@ -1,7 +1,7 @@
-import { config } from "@config/env.js";
-import { logger } from "@infrastructure/logger/index.js";
-import { HttpStatus, ResponseMessage } from "@shared/constants/index.js";
-import { ApiResponse } from "@shared/response/index.js";
+import { config } from "@config/env.ts";
+import { logger } from "@infrastructure/logger/index.ts";
+import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
+import { ApiResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 
 export function errorMiddleware(

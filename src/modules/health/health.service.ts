@@ -2,13 +2,13 @@ import {
 	InjectBullMQHealth,
 	InjectDatabaseHealth,
 	InjectRedisHealth,
-} from "@config/di/decorators.js";
+} from "@config/di/decorators.ts";
 import type {
 	HealthCheckResult,
 	IHealthCheckable,
 	IHealthService,
-} from "@infrastructure/health/health.interface.js";
-import { HealthStatus } from "@shared/constants/health-status.constants.js";
+} from "@infrastructure/health/health.interface.ts";
+import { HealthStatus } from "@shared/constants/health-status.constants.ts";
 import { injectable } from "inversify";
 
 @injectable()

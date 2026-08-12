@@ -1,11 +1,11 @@
-import { config } from "@config/env.js";
-import type { IHealthCheckable } from "@infrastructure/health/health.interface.js";
-import { BullMQEvent } from "@shared/constants/bullmq-events.constants.js";
-import { HealthStatus } from "@shared/constants/health-status.constants.js";
+import { config } from "@config/env.ts";
+import type { IHealthCheckable } from "@infrastructure/health/health.interface.ts";
+import { BullMQEvent } from "@shared/constants/bullmq-events.constants.ts";
+import { HealthStatus } from "@shared/constants/health-status.constants.ts";
 import { injectable } from "inversify";
 import { Redis, type RedisOptions } from "ioredis";
-import { logger } from "../logger/index.js";
-import { bullmqConnection } from "./bullmq.client.js";
+import { logger } from "../logger/index.ts";
+import { bullmqConnection } from "./bullmq.client.ts";
 
 @injectable()
 export class BullMQService implements IHealthCheckable {

@@ -4,8 +4,8 @@ import {
 	loggerMiddleware,
 	metricsMiddleware,
 	notFoundMiddleware,
-} from "@interfaces/http/middlewares/index.js";
-import { router } from "@interfaces/http/routes/index.routes.js";
+} from "@interfaces/http/middlewares/index.ts";
+import { router } from "@interfaces/http/routes/index.routes.ts";
 import express from "express";
 
 const app = express();

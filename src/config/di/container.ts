@@ -1,16 +1,16 @@
 import "reflect-metadata";
-import { PrismaService } from "@infrastructure/database/prisma/database.service.js";
+import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
 import type {
 	IHealthCheckable,
 	IHealthService,
-} from "@infrastructure/health/health.interface.js";
-import { BullMQService } from "@infrastructure/queue/bullmq.service.js";
-import { RedisService } from "@infrastructure/redis/redis.service.js";
-import { HealthController } from "@modules/health/health.controller.js";
-import { HealthRouter } from "@modules/health/health.routes.js";
-import { HealthService } from "@modules/health/health.service.js";
+} from "@infrastructure/health/health.interface.ts";
+import { BullMQService } from "@infrastructure/queue/bullmq.service.ts";
+import { RedisService } from "@infrastructure/redis/redis.service.ts";
+import { HealthController } from "@modules/health/health.controller.ts";
+import { HealthRouter } from "@modules/health/health.routes.ts";
+import { HealthService } from "@modules/health/health.service.ts";
 import { Container } from "inversify";
-import { TYPES } from "./types.js";
+import { TYPES } from "./types.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 

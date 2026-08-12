@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { config } from "@config/env.js";
-import { logger } from "@infrastructure/logger/logger.js";
+import { config } from "@config/env.ts";
+import { logger } from "@infrastructure/logger/logger.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import pg from "pg";

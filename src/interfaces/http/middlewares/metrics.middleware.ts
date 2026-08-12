@@ -1,7 +1,7 @@
 import {
 	httpRequestCounter,
 	httpRequestDuration,
-} from "@infrastructure/metrics/index.js";
+} from "@infrastructure/metrics/index.ts";
 import type { NextFunction, Request, Response } from "express";
 
 export function metricsMiddleware(

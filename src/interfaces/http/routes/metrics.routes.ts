@@ -1,5 +1,5 @@
-import { HttpStatus } from "@shared/constants/http.constants.js";
-import { Routes } from "@shared/constants/index.js";
+import { HttpStatus } from "@shared/constants/http.constants.ts";
+import { Routes } from "@shared/constants/index.ts";
 import { Router } from "express";
 import client from "prom-client";
 

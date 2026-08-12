@@ -1,6 +1,6 @@
-import { config } from "@config/env.js";
-import { logger } from "@infrastructure/logger/logger.js";
-import { RedisEvent } from "@shared/constants/redis-events.constants.js";
+import { config } from "@config/env.ts";
+import { logger } from "@infrastructure/logger/logger.ts";
+import { RedisEvent } from "@shared/constants/redis-events.constants.ts";
 import { createClient } from "redis";
 
 const isTls = config.redis.url.startsWith("rediss://");
