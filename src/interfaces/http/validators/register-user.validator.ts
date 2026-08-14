@@ -12,7 +12,7 @@ function hasNoControlChars(str: string): boolean {
 
 export const registerUserSchema = z.object({
 	fullName: z
-		.string({ required_error: "Full name is required." })
+		.string({ message: "Full name is required." })
 		.trim()
 		.min(2, "Full name must be at least 2 characters.")
 		.max(100, "Full name must not exceed 100 characters.")
@@ -25,13 +25,13 @@ export const registerUserSchema = z.object({
 		}),
 
 	email: z
-		.string({ required_error: "Email is required." })
+		.string({ message: "Email is required." })
 		.trim()
 		.email("Invalid email address format.")
 		.max(254, "Email must not exceed 254 characters."),
 
 	phoneNumber: z
-		.string({ required_error: "Phone number is required." })
+		.string({ message: "Phone number is required." })
 		.trim()
 		.refine((val) => val.startsWith("+91"), {
 			message: "Phone number must start with +91 (Indian numbers only).",
@@ -42,7 +42,7 @@ export const registerUserSchema = z.object({
 		}),
 
 	password: z
-		.string({ required_error: "Password is required." })
+		.string({ message: "Password is required." })
 		.min(8, "Password must be at least 8 characters.")
 		.max(128, "Password must not exceed 128 characters.")
 		.refine((val) => val === val.trim(), {

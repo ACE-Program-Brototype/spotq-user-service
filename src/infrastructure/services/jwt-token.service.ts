@@ -62,11 +62,11 @@ export class JwtTokenService implements ITokenService {
 		}
 	}
 
-	private calculateExpiry(durationStr: string): Date {
-		const match = /^(\d+)([smhd])$/.exec(durationStr);
+	private calculateExpiry(durationStr?: string): Date {
+		const match = /^(\d+)([smhd])$/.exec(durationStr ?? "7d");
 		let ms = 7 * 24 * 60 * 60 * 1000; // default 7 days
 
-		if (match) {
+		if (match?.[1] && match[2]) {
 			const value = Number.parseInt(match[1], 10);
 			const unit = match[2];
 			switch (unit) {

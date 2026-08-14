@@ -34,7 +34,7 @@ export function authMiddleware(
 		return;
 	}
 
-	const token = authHeader.split(" ")[1];
+	const token = authHeader.split(" ")[1] ?? "";
 
 	try {
 		const tokenService = container.get<ITokenService>(TYPES.TokenService);
@@ -42,7 +42,7 @@ export function authMiddleware(
 
 		req.user = {
 			userId: payload.sub,
-			email: payload.email,
+			email: payload.email ?? "",
 		};
 
 		next();
