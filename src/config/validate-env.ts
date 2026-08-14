@@ -17,6 +17,9 @@ const envSchema = z.object({
 	DATABASE_CA_CERT: z.string().optional(),
 
 	REDIS_URL: z.url(),
+	ADMIN_NAME: z.string().min(1),
+	ADMIN_EMAIL: z.string().email(),
+	ADMIN_PASSWORD: z.string().min(8),
 });
 
 export const validateEnv = () => {

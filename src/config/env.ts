@@ -24,4 +24,10 @@ export const config = {
 	redis: {
 		url: env.REDIS_URL,
 	},
+
+	admin: {
+		name: env.ADMIN_NAME,
+		email: env.ADMIN_EMAIL,
+		password: env.ADMIN_PASSWORD,
+	},
 } as const;
