@@ -1,0 +1,60 @@
+import type {
+	IEmailQueueProducer,
+	IOtpService,
+} from "@application/ports/services/index.ts";
+import { TYPES } from "@config/di/types.ts";
+import { UserNotFoundError } from "@domain/errors/domain.error.ts";
+import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
+import { Email } from "@domain/value-objects/email.vo.ts";
+import { logger } from "@infrastructure/logger/logger.ts";
+import { inject, injectable } from "inversify";
+import type {
+	ResendEmailOtpDto,
+	ResendEmailOtpResultDto,
+} from "../dtos/resend-email-otp.dto.ts";
+
+@injectable()
+export class ResendEmailOtpUseCase {
+	constructor(
+		@inject(TYPES.UserRepository)
+		private readonly userRepository: IUserRepository,
+		@inject(TYPES.OtpService)
+		private readonly otpService: IOtpService,
+		@inject(TYPES.EmailQueueProducer)
+		private readonly emailQueueProducer: IEmailQueueProducer,
+	) {}
+
+	public async execute(
+		dto: ResendEmailOtpDto,
+	): Promise<ResendEmailOtpResultDto> {
+		const email = Email.create(dto.email);
+
+		const user = await this.userRepository.findByEmail(email);
+		if (!user) {
+			throw new UserNotFoundError("No account found with this email address.");
+		}
+
+		// Generate new OTP (this resets attempt count and invalidates previous OTP)
+		const otp = await this.otpService.generateAndStoreOtp(email.getValue());
+
+		// Queue email delivery job in BullMQ
+		await this.emailQueueProducer.queueVerificationEmail({
+			email: email.getValue(),
+			otp,
+		});
+
+		logger.info(
+			{
+				email: email.getValue(),
+				userId: user.id,
+				event: "EMAIL_OTP_RESENT",
+			},
+			"Verification OTP resent successfully",
+		);
+
+		return {
+			success: true,
+			message: "Verification OTP resent successfully.",
+		};
+	}
+}
