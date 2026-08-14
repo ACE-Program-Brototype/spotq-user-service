@@ -13,6 +13,12 @@ export class RedisOtpService implements IOtpService {
 	private static readonly OTP_TTL_SECONDS = 300; // 5 minutes
 	private static readonly MAX_ATTEMPTS = 5;
 
+	private async ensureConnected(): Promise<void> {
+		if (!redisClient.isOpen) {
+			await redisClient.connect();
+		}
+	}
+
 	private getKey(email: string): string {
 		return `otp:email:${email.trim().toLowerCase()}`;
 	}
@@ -22,6 +28,7 @@ export class RedisOtpService implements IOtpService {
 	}
 
 	public async generateAndStoreOtp(email: string): Promise<string> {
+		await this.ensureConnected();
 		const key = this.getKey(email);
 
 		// Generate cryptographically secure 6-digit numeric OTP (100000 - 999999)
@@ -39,6 +46,7 @@ export class RedisOtpService implements IOtpService {
 	}
 
 	public async verifyOtp(email: string, otp: string): Promise<boolean> {
+		await this.ensureConnected();
 		const key = this.getKey(email);
 		const data = await redisClient.hGetAll(key);
 
@@ -81,6 +89,7 @@ export class RedisOtpService implements IOtpService {
 	}
 
 	public async invalidateOtp(email: string): Promise<void> {
+		await this.ensureConnected();
 		const key = this.getKey(email);
 		await redisClient.del(key);
 	}
