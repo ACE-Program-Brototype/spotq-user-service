@@ -5,3 +5,62 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserStatus {
+  ACTIVE
+}
+
+enum Platform {
+  ANDROID
+  IOS
+  WEB
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  fullname     String        @map("fullname")
+  phone        String        @unique @map("phone")
+  email        String        @unique @map("email")
+  passwordHash String        @map("password_hash")
+  googleId     String?       @map("google_id")
+  status       UserStatus    @default(ACTIVE) @map("status")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  refreshTokens RefreshToken[]
+  devices       Device[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  deviceId   String?   @map("device_id") @db.Uuid
+  tokenHash  String    @map("token_hash")
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  revokedAt  DateTime? @map("revoked_at")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([tokenHash])
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Device {
+  id          String         @id @default(uuid()) @db.Uuid
+  userId      String         @map("user_id") @db.Uuid
+  fcmToken    String?        @map("fcm_token")
+  deviceName  String?        @map("device_name")
+  platform    Platform       @map("platform")
+  lastLogin   DateTime       @default(now()) @map("last_login")
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@index([userId])
+  @@map("devices")
+}
