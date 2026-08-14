@@ -24,4 +24,21 @@ export const config = {
 	redis: {
 		url: env.REDIS_URL,
 	},
+
+	auth: {
+		bcryptSaltRounds: env.BCRYPT_SALT_ROUNDS,
+	},
+
+	jwt: {
+		accessSecret: env.JWT_ACCESS_SECRET,
+		refreshSecret: env.JWT_REFRESH_SECRET,
+		accessExpiresIn: env.JWT_ACCESS_EXPIRES_IN,
+		refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
+	},
+
+	brevo: {
+		apiKey: env.BREVO_API_KEY,
+		senderEmail: env.BREVO_SENDER_EMAIL,
+		senderName: env.BREVO_SENDER_NAME,
+	},
 } as const;
