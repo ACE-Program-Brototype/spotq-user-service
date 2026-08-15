@@ -32,7 +32,7 @@ export function renderVerificationOtpTemplate(
           <tr>
             <td style="padding: 32px 40px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
               <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: #0f172a;">Spot<span style="color: #6366f1;">Q</span></h1>
-              <p style="margin: 4px 0 0; font-size: 13px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Queue Management & Dining</p>
+              <p style="margin: 4px 0 0; font-size: 13px; font-weight: 500; color: #64748b; letter-spacing: 0.5px;">Experience the new way of dining!</p>
             </td>
           </tr>
 
