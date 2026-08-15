@@ -7,7 +7,7 @@
 			"@ports/*": ["./src/application/ports/*"],
 			"@use-cases/*": ["./src/application/use-cases/*"],
 			"@infrastructure/*": ["./src/infrastructure/*"],
-			"@interfaces/*": ["./src/interfaces/*"],
+			"@presentation/*": ["./src/presentation/*"],
 			"@config/*": ["./src/config/*"],
 			"@di/*": ["./src/config/di/*"],
 			"@modules/*": ["./src/modules/*"],

@@ -1,12 +1,12 @@
 import "reflect-metadata";
+import express from "express";
 import {
 	errorMiddleware,
 	loggerMiddleware,
 	metricsMiddleware,
 	notFoundMiddleware,
-} from "@interfaces/http/middlewares/index.ts";
-import { router } from "@interfaces/http/routes/index.routes.ts";
-import express from "express";
+} from "./presentation/http/middlewares";
+import { router } from "./presentation/http/routes/index.routes";
 
 const app = express();
 
