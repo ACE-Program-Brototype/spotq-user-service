@@ -61,6 +61,11 @@ export class DeviceEntity {
 		return this.props.lastLogin;
 	}
 
+	public updateFcmToken(fcmToken: string | null): void {
+		this.props.fcmToken = fcmToken;
+		this.props.lastLogin = new Date();
+	}
+
 	public updateLastLogin(date = new Date()): void {
 		this.props.lastLogin = date;
 	}
