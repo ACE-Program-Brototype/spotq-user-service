@@ -8,4 +8,9 @@ export const TYPES = {
 	HealthService: Symbol.for("HealthService"),
 	HealthController: Symbol.for("HealthController"),
 	HealthRouter: Symbol.for("HealthRouter"),
+
+	// AUTH
+	AdminAuthRepository: Symbol.for("AdminAuthRepository"),
+	AdminLoginUseCase: Symbol.for("AdminLoginUseCase"),
+	AdminAuthController: Symbol.for("AdminAuthController"),
 } as const;

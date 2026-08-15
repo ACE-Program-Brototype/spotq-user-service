@@ -1,5 +1,7 @@
 import "reflect-metadata";
+import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
 import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
+import { AdminAuthRepository } from "@infrastructure/database/repositories/admin/admin.auth.repo.ts";
 import type {
 	IHealthCheckable,
 	IHealthService,
@@ -9,6 +11,7 @@ import { RedisService } from "@infrastructure/redis/redis.service.ts";
 import { HealthController } from "@modules/health/health.controller.ts";
 import { HealthRouter } from "@modules/health/health.routes.ts";
 import { HealthService } from "@modules/health/health.service.ts";
+import { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller.ts";
 import { Container } from "inversify";
 import { TYPES } from "./types.ts";
 
@@ -36,5 +39,15 @@ container.bind<IHealthService>(TYPES.HealthService).to(HealthService);
 // HTTP Controllers & Routers
 container.bind<HealthController>(TYPES.HealthController).to(HealthController);
 container.bind<HealthRouter>(TYPES.HealthRouter).to(HealthRouter);
+
+container
+	.bind<AdminAuthRepository>(TYPES.AdminAuthRepository)
+	.to(AdminAuthRepository);
+container
+	.bind<AdminLoginUseCase>(TYPES.AdminLoginUseCase)
+	.to(AdminLoginUseCase);
+container
+	.bind<AdminAuthController>(TYPES.AdminAuthController)
+	.to(AdminAuthController);
 
 export { container };

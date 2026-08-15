@@ -1,4 +1,8 @@
 export const loginConstants = {
 	INVALID_EMAIL: "Invalid email address",
-	INVALID_PASSWORD: "Password must be at least 6 characters long",
+	PASSWORD_TOO_SHORT: "Password must be at least 6 characters long",
+	INVALID_PASSWORD: "Invalid credentials",
+	USER_NOT_FOUND: "User not found",
+	INCORRECT_PASSWORD: "Incorrect password",
+	ADMIN_LOGIN_SUCCESS: "Admin login successful",
 };

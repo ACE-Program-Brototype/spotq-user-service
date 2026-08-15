@@ -1,3 +1,5 @@
+import { HttpStatus } from "@shared/constants";
+
 export class ApiResponse<T = undefined> {
 	readonly success: boolean;
 	readonly statusCode: number;
@@ -26,7 +28,11 @@ export class ApiResponse<T = undefined> {
 	 * @param message  - Human-readable success message (defaults to "OK").
 	 * @param statusCode - HTTP status code (defaults to 200).
 	 */
-	static ok<T>(data: T, message = "OK", statusCode = 200): ApiResponse<T> {
+	static ok<T>(
+		data: T,
+		message = "OK",
+		statusCode = HttpStatus.OK,
+	): ApiResponse<T> {
 		return new ApiResponse<T>({ success: true, statusCode, message, data });
 	}
 
