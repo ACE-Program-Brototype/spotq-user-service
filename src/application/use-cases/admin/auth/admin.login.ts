@@ -3,7 +3,7 @@ import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmi
 import { AdminLoginMapper } from "@application/mappers/admin/auth/admin.login.mapper";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
-import type { IAdminAuthRepository } from "@infrastructure/database/interface/admin/IAdmin.auth.repo";
+import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo";
 import { verifyPassword } from "@infrastructure/services/password";
 import {
 	generateAccessToken,

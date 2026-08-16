@@ -13,4 +13,6 @@ export const TYPES = {
 	AdminAuthRepository: Symbol.for("AdminAuthRepository"),
 	AdminLoginUseCase: Symbol.for("AdminLoginUseCase"),
 	AdminAuthController: Symbol.for("AdminAuthController"),
+	RefreshTokenRepository: Symbol.for("RefreshTokenRepository"),
+	AdminLogoutUseCase: Symbol.for("AdminLogoutUseCase"),
 } as const;

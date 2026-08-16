@@ -7,8 +7,11 @@ import {
 	notFoundMiddleware,
 } from "./presentation/http/middlewares";
 import { router } from "./presentation/http/routes/index.routes";
+import cookieParser from "cookie-parser";
 
 const app = express();
+
+app.use(cookieParser());
 
 app.use(loggerMiddleware);
 app.use(metricsMiddleware);
