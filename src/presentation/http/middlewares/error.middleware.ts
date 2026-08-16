@@ -6,81 +6,74 @@ import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
 export function errorMiddleware(
-    err: Error,
-    req: Request,
-    res: Response,
-    _next: NextFunction,
+	err: Error,
+	req: Request,
+	res: Response,
+	_next: NextFunction,
 ): void {
-    logger.error(
-        {
-            err,
-            method: req.method,
-            url: req.url,
-        },
-        "Unhandled error occurred",
-    );
+	logger.error(
+		{
+			err,
+			method: req.method,
+			url: req.url,
+		},
+		"Unhandled error occurred",
+	);
 
-    const isProduction =
-        config.server.nodeEnv === "production";
+	const isProduction = config.server.nodeEnv === "production";
 
-    // -----------------------------
-    // Zod validation error
-    // -----------------------------
+	// -----------------------------
+	// Zod validation error
+	// -----------------------------
 
-    if (err instanceof ZodError) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-            success: false,
-            message: "Validation failed",
-            errors: err.issues,
-        });
+	if (err instanceof ZodError) {
+		res.status(HttpStatus.BAD_REQUEST).json({
+			success: false,
+			message: "Validation failed",
+			errors: err.issues,
+		});
 
-        return;
-    }
+		return;
+	}
 
-    // -----------------------------
-    // Application error
-    // -----------------------------
+	// -----------------------------
+	// Application error
+	// -----------------------------
 
-    if (err instanceof AppError) {
-        const statusCode =
-            err.statusCode ||
-            HttpStatus.INTERNAL_SERVER_ERROR;
+	if (err instanceof AppError) {
+		const statusCode = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
 
-        const message = isProduction
-            ? ResponseMessage.UNEXPECTED_ERROR
-            : err.message;
+		const message = isProduction
+			? ResponseMessage.UNEXPECTED_ERROR
+			: err.message;
 
-        const errorLabel =
-            statusCode >= 500
-                ? ResponseMessage.INTERNAL_SERVER_ERROR
-                : undefined;
+		const errorLabel =
+			statusCode >= 500 ? ResponseMessage.INTERNAL_SERVER_ERROR : undefined;
 
-        res.status(statusCode).json({
-            success: false,
-            message,
-            error: errorLabel,
-        });
+		res.status(statusCode).json({
+			success: false,
+			message,
+			error: errorLabel,
+		});
 
-        return;
-    }
+		return;
+	}
 
-    // -----------------------------
-    // Unknown error
-    // -----------------------------
+	// -----------------------------
+	// Unknown error
+	// -----------------------------
 
-    const statusCode =
-        res.statusCode === HttpStatus.OK ||
-        res.statusCode === HttpStatus.NOT_MODIFIED
-            ? HttpStatus.INTERNAL_SERVER_ERROR
-            : res.statusCode;
+	const statusCode =
+		res.statusCode === HttpStatus.OK ||
+		res.statusCode === HttpStatus.NOT_MODIFIED
+			? HttpStatus.INTERNAL_SERVER_ERROR
+			: res.statusCode;
 
-    const message = isProduction
-        ? ResponseMessage.UNEXPECTED_ERROR
-        : err.message;
+	const message = isProduction ? ResponseMessage.UNEXPECTED_ERROR : err.message;
 
-    res.status(statusCode).json({
-        success: false,
-        message,
-        error: ResponseMessage.INTERNAL_SERVER_ERROR,
-    });
+	res.status(statusCode).json({
+		success: false,
+		message,
+		error: ResponseMessage.INTERNAL_SERVER_ERROR,
+	});
 }

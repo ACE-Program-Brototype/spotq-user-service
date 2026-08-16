@@ -34,7 +34,10 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
 		if (!isPasswordValid) {
-			throw new AppError(loginConstants.INVALID_PASSWORD, HttpStatus.BAD_REQUEST);
+			throw new AppError(
+				loginConstants.INVALID_PASSWORD,
+				HttpStatus.BAD_REQUEST,
+			);
 		}
 
 		const role = "admin";

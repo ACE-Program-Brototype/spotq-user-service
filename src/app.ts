@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import cookieParser from "cookie-parser";
 import express from "express";
 import {
 	errorMiddleware,
@@ -7,7 +8,6 @@ import {
 	notFoundMiddleware,
 } from "./presentation/http/middlewares";
 import { router } from "./presentation/http/routes/index.routes";
-import cookieParser from "cookie-parser";
 
 const app = express();
 

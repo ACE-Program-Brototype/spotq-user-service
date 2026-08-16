@@ -1,21 +1,21 @@
 import "reflect-metadata";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
+import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
 import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
-import { AdminAuthRepository } from "@infrastructure/repositories/admin/admin.auth.repo.ts";
 import type {
 	IHealthCheckable,
 	IHealthService,
 } from "@infrastructure/health/health.interface.ts";
 import { BullMQService } from "@infrastructure/queue/bullmq.service.ts";
 import { RedisService } from "@infrastructure/redis/redis.service.ts";
+import { AdminAuthRepository } from "@infrastructure/repositories/admin/admin.auth.repo.ts";
+import { RefreshTokenRepository } from "@infrastructure/repositories/shared/token.repo.ts";
 import { HealthController } from "@modules/health/health.controller.ts";
 import { HealthRouter } from "@modules/health/health.routes.ts";
 import { HealthService } from "@modules/health/health.service.ts";
 import { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller.ts";
 import { Container } from "inversify";
 import { TYPES } from "./types.ts";
-import { RefreshTokenRepository } from "@infrastructure/repositories/shared/token.repo.ts";
-import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 
@@ -52,7 +52,9 @@ container
 	.bind<AdminAuthController>(TYPES.AdminAuthController)
 	.to(AdminAuthController);
 
-container.bind<RefreshTokenRepository>(TYPES.RefreshTokenRepository).to(RefreshTokenRepository);
+container
+	.bind<RefreshTokenRepository>(TYPES.RefreshTokenRepository)
+	.to(RefreshTokenRepository);
 
 container
 	.bind<AdminLogoutUseCase>(TYPES.AdminLogoutUseCase)

@@ -1,8 +1,8 @@
+import { TYPES } from "@config/di/index.ts";
 import { Routes } from "@shared/constants/index.ts";
 import { Router } from "express";
 import { inject, injectable } from "inversify";
 import type { HealthController } from "./health.controller.ts";
-import { TYPES } from "@config/di/index.ts";
 
 @injectable()
 export class HealthRouter {

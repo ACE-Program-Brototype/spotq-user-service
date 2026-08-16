@@ -31,7 +31,7 @@ const envSchema = z.object({
 	COOKIE_SECURE: z
 		.string()
 		.transform((val) => val === "true")
-		.default(true),	
+		.default(true),
 	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
 });
 
