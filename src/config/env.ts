@@ -41,4 +41,9 @@ export const config = {
 			expiresIn: env.JWT_REFRESH_EXPIRES_IN,
 		},
 	},
+	cookie: {
+		httpOnly: env.COOKIE_HTTPONLY,
+		secure: env.COOKIE_SECURE,
+		sameSite: env.COOKIE_SAME_SITE,
+	},
 } as const;

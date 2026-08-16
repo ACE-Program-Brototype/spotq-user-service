@@ -7,7 +7,7 @@ import { successResponse } from "@shared/response/api-response.model";
 import type { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { inject, injectable } from "inversify";
-
+import { config } from "@config/env.ts";
 @injectable()
 export class AdminAuthController {
 	constructor(
@@ -26,9 +26,9 @@ export class AdminAuthController {
 				)) as AdminLoginDTO;
 
 			res.cookie("token", refresh_token, {
-				httpOnly: true,
-				secure: true,
-				sameSite: "strict",
+				httpOnly: config.cookie.httpOnly,
+				secure: config.cookie.secure,
+				sameSite: config.cookie.sameSite,
 			})
 
 			successResponse(res, { access_token, user }, loginConstants.ADMIN_LOGIN_SUCCESS, HttpStatus.OK);
@@ -39,11 +39,11 @@ export class AdminAuthController {
 	logout = expressAsyncHandler(
 		async (_req: Request, res: Response): Promise<void> => {
 			res.clearCookie("token", {
-				httpOnly: true,
-				secure: true,
-				sameSite: "strict",
+				httpOnly: config.cookie.httpOnly,
+				secure: config.cookie.secure,
+				sameSite: config.cookie.sameSite,
 			})
-			
+
 			successResponse(res, {}, loginConstants.ADMIN_LOGOUT_SUCCESS, HttpStatus.OK);
 		},
 	);

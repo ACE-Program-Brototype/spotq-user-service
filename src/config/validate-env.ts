@@ -24,6 +24,15 @@ const envSchema = z.object({
 	JWT_ACCESS_EXPIRES_IN: z.string().min(1),
 	JWT_REFRESH_SECRET: z.string().min(1),
 	JWT_REFRESH_EXPIRES_IN: z.string().min(1),
+	COOKIE_HTTPONLY: z
+		.string()
+		.transform((val) => val === "true")
+		.default(true),
+	COOKIE_SECURE: z
+		.string()
+		.transform((val) => val === "true")
+		.default(true),	
+	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
 });
 
 export const validateEnv = () => {
