@@ -1,7 +1,7 @@
 import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
 import { AdminLoginMapper } from "@application/mappers/admin/auth/admin.login.mapper";
-import { InjectAdminAuthRepository } from "@config/di";
+import { TYPES } from "@config/di";
 import { Admin } from "@domain/entities/admin";
 import type { IAdminAuthRepository } from "@infrastructure/database/interface/admin/IAdmin.auth.repo";
 import { verifyPassword } from "@infrastructure/services/password";
@@ -12,12 +12,12 @@ import {
 import { loginConstants } from "@shared/constants/auth.constants";
 import { HttpStatus } from "@shared/constants/http.constants";
 import { AppError } from "@shared/util/app.error";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 @injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
 	constructor(
-		@InjectAdminAuthRepository()
+		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminRepository: IAdminAuthRepository,
 	) {}
 

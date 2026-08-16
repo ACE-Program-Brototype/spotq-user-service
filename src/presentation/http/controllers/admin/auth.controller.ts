@@ -1,16 +1,16 @@
 import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
-import { InjectAdminLoginUseCase } from "@config/di/decorators";
+import { TYPES } from "@config/di/types";
 import { HttpStatus } from "@shared/constants";
 import { loginConstants } from "@shared/constants/auth.constants";
 import type { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 @injectable()
 export class AdminAuthController {
 	constructor(
-		@InjectAdminLoginUseCase()
+		@inject(TYPES.AdminLoginUseCase)
 		private readonly _adminLoginUseCase: IAdminLoginUseCase,
 	) {}
 

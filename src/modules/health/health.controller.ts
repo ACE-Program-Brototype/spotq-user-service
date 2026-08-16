@@ -1,14 +1,14 @@
-import { InjectHealthService } from "@config/di/decorators.ts";
+import { TYPES } from "@config/di/types";
 import type { IHealthService } from "@infrastructure/health/health.interface.ts";
 import { HealthStatus, HttpStatus } from "@shared/constants/index.ts";
 import type { Request, Response } from "express";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 @injectable()
 export class HealthController {
 	private readonly healthService: IHealthService;
 
-	constructor(@InjectHealthService() healthService: IHealthService) {
+	constructor(@inject(TYPES.HealthService) healthService: IHealthService) {
 		this.healthService = healthService;
 	}
 

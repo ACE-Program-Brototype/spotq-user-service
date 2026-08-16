@@ -1,8 +1,8 @@
-import { InjectHealthController } from "@config/di/decorators.ts";
 import { Routes } from "@shared/constants/index.ts";
 import { Router } from "express";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import type { HealthController } from "./health.controller.ts";
+import { TYPES } from "@config/di/index.ts";
 
 @injectable()
 export class HealthRouter {
@@ -10,7 +10,7 @@ export class HealthRouter {
 	private readonly healthController: HealthController;
 
 	constructor(
-		@InjectHealthController()
+		@inject(TYPES.HealthController)
 		healthController: HealthController,
 	) {
 		this.router = Router();
