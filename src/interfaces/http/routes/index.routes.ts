@@ -11,4 +11,4 @@ const userRouter = container.get<UserRouter>(TYPES.UserRouter);
 
 router.use("/", healthRouter.router);
 router.use("/", metricsRouter);
-router.use("/api/v1/users", userRouter.router);
+router.use("/", userRouter.router);
