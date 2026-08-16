@@ -5,4 +5,5 @@ export const loginConstants = {
 	USER_NOT_FOUND: "User not found",
 	INCORRECT_PASSWORD: "Incorrect password",
 	ADMIN_LOGIN_SUCCESS: "Admin login successful",
+	ADMIN_LOGOUT_SUCCESS: "Admin logout successful",
 };

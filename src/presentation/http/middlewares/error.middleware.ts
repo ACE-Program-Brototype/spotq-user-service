@@ -1,76 +1,86 @@
 import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/index.ts";
 import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
-import { ApiResponse } from "@shared/response/index.ts";
 import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
 export function errorMiddleware(
-	err: Error,
-	req: Request,
-	res: Response,
-	_next: NextFunction,
+    err: Error,
+    req: Request,
+    res: Response,
+    _next: NextFunction,
 ): void {
-	logger.error(
-		{
-			err,
-			method: req.method,
-			url: req.url,
-		},
-		"Unhandled error occurred",
-	);
+    logger.error(
+        {
+            err,
+            method: req.method,
+            url: req.url,
+        },
+        "Unhandled error occurred",
+    );
 
-	const isProduction = config.server.nodeEnv === "production";
+    const isProduction =
+        config.server.nodeEnv === "production";
 
-	// -----------------------------
-	// Zod validation error
-	// -----------------------------
+    // -----------------------------
+    // Zod validation error
+    // -----------------------------
 
-	if (err instanceof ZodError) {
-		const message = err.issues.map((issue) => issue.message).join(", ");
+    if (err instanceof ZodError) {
+        res.status(HttpStatus.BAD_REQUEST).json({
+            success: false,
+            message: "Validation failed",
+            errors: err.issues,
+        });
 
-		const response = ApiResponse.fail(
-			message,
-			HttpStatus.BAD_REQUEST,
-			"Validation Error",
-		);
+        return;
+    }
 
-		res.status(response.statusCode).json(response);
+    // -----------------------------
+    // Application error
+    // -----------------------------
 
-		return;
-	}
+    if (err instanceof AppError) {
+        const statusCode =
+            err.statusCode ||
+            HttpStatus.INTERNAL_SERVER_ERROR;
 
-	// -----------------------------
-	// Application error
-	// -----------------------------
+        const message = isProduction
+            ? ResponseMessage.UNEXPECTED_ERROR
+            : err.message;
 
-	if (err instanceof AppError) {
-		const response = ApiResponse.fail(err.message, err.statusCode, err.error);
+        const errorLabel =
+            statusCode >= 500
+                ? ResponseMessage.INTERNAL_SERVER_ERROR
+                : undefined;
 
-		res.status(response.statusCode).json(response);
+        res.status(statusCode).json({
+            success: false,
+            message,
+            error: errorLabel,
+        });
 
-		return;
-	}
+        return;
+    }
 
-	// -----------------------------
-	// Unknown error
-	// -----------------------------
+    // -----------------------------
+    // Unknown error
+    // -----------------------------
 
-	const statusCode =
-		res.statusCode === HttpStatus.OK ||
-		res.statusCode === HttpStatus.NOT_MODIFIED
-			? HttpStatus.INTERNAL_SERVER_ERROR
-			: res.statusCode;
+    const statusCode =
+        res.statusCode === HttpStatus.OK ||
+        res.statusCode === HttpStatus.NOT_MODIFIED
+            ? HttpStatus.INTERNAL_SERVER_ERROR
+            : res.statusCode;
 
-	const message = isProduction ? ResponseMessage.UNEXPECTED_ERROR : err.message;
+    const message = isProduction
+        ? ResponseMessage.UNEXPECTED_ERROR
+        : err.message;
 
-	const errorLabel =
-		isProduction && statusCode >= 500
-			? undefined
-			: ResponseMessage.INTERNAL_SERVER_ERROR;
-
-	const response = ApiResponse.fail(message, statusCode, errorLabel);
-
-	res.status(response.statusCode).json(response);
+    res.status(statusCode).json({
+        success: false,
+        message,
+        error: ResponseMessage.INTERNAL_SERVER_ERROR,
+    });
 }

@@ -1,7 +1,7 @@
 import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
 import { AdminLoginMapper } from "@application/mappers/admin/auth/admin.login.mapper";
-import { TYPES } from "@config/di";
+import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
 import type { IAdminAuthRepository } from "@infrastructure/database/interface/admin/IAdmin.auth.repo";
 import { verifyPassword } from "@infrastructure/services/password";
@@ -34,10 +34,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
 		if (!isPasswordValid) {
-			throw new AppError(
-				loginConstants.INVALID_PASSWORD,
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new AppError(loginConstants.INVALID_PASSWORD, HttpStatus.BAD_REQUEST);
 		}
 
 		const role = "admin";
