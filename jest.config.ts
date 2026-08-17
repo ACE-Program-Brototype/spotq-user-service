@@ -16,6 +16,7 @@ const config: Config = {
 		"^@config/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/config/$1",
 		"^@di/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/config/di/$1",
 		"^@modules/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/modules/$1",
+		"^@presentation/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/presentation/$1",
 		"^@shared/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/shared/$1",
 		"^(\\.{1,2}/.*)\\.js$": "$1",
 	},

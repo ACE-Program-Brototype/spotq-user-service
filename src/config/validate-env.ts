@@ -36,7 +36,13 @@ const envSchema = z.object({
 });
 
 export const validateEnv = () => {
-	const result = envSchema.safeParse(process.env);
+	const normalizedEnv = {
+		...process.env,
+		NODE_ENV:
+			process.env.NODE_ENV === "test" ? "testing" : process.env.NODE_ENV,
+	};
+
+	const result = envSchema.safeParse(normalizedEnv);
 
 	if (!result.success) {
 		console.error("Invalid environment configuration\n");

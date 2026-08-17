@@ -8,6 +8,7 @@ export function notFoundMiddleware(
 ): void {
 	res.status(HttpStatus.NOT_FOUND).json({
 		success: false,
+		statusCode: HttpStatus.NOT_FOUND,
 		message: `Cannot ${req.method} ${req.path}`,
 		error: ResponseMessage.REQ_ROUTE_NOT_FOUND,
 	});
