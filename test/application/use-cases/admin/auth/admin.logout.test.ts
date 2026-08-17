@@ -7,13 +7,11 @@ jest.mock("@infrastructure/services/token", () => ({
 
 const mockRefreshTokenRepository = {
 	revoke: jest.fn(),
-    isRevoked : jest.fn()
+	isRevoked: jest.fn(),
 };
 
 describe("AdminLogoutUseCase", () => {
-	const useCase = new AdminLogoutUseCase(
-		mockRefreshTokenRepository,
-	);
+	const useCase = new AdminLogoutUseCase(mockRefreshTokenRepository);
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -24,13 +22,9 @@ describe("AdminLogoutUseCase", () => {
 
 		await useCase.execute("valid-refresh-token");
 
-		expect(getTokenTTL).toHaveBeenCalledWith(
-			"valid-refresh-token",
-		);
+		expect(getTokenTTL).toHaveBeenCalledWith("valid-refresh-token");
 
-		expect(
-			mockRefreshTokenRepository.revoke,
-		).toHaveBeenCalledWith(
+		expect(mockRefreshTokenRepository.revoke).toHaveBeenCalledWith(
 			"valid-refresh-token",
 			3600,
 		);
@@ -41,9 +35,7 @@ describe("AdminLogoutUseCase", () => {
 
 		await useCase.execute("expired-refresh-token");
 
-		expect(
-			mockRefreshTokenRepository.revoke,
-		).not.toHaveBeenCalled();
+		expect(mockRefreshTokenRepository.revoke).not.toHaveBeenCalled();
 	});
 
 	it("should propagate repository errors", async () => {
@@ -51,17 +43,13 @@ describe("AdminLogoutUseCase", () => {
 
 		(getTokenTTL as jest.Mock).mockReturnValue(3600);
 
-		mockRefreshTokenRepository.revoke.mockRejectedValue(
-			error,
+		mockRefreshTokenRepository.revoke.mockRejectedValue(error);
+
+		await expect(useCase.execute("valid-refresh-token")).rejects.toThrow(
+			"Redis unavailable",
 		);
 
-		await expect(
-			useCase.execute("valid-refresh-token"),
-		).rejects.toThrow("Redis unavailable");
-
-		expect(
-			mockRefreshTokenRepository.revoke,
-		).toHaveBeenCalledWith(
+		expect(mockRefreshTokenRepository.revoke).toHaveBeenCalledWith(
 			"valid-refresh-token",
 			3600,
 		);

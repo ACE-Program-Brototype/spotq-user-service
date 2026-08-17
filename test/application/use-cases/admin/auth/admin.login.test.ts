@@ -45,10 +45,7 @@ describe("AdminLoginUseCase", () => {
 
 		(generateRefreshToken as jest.Mock).mockReturnValue("refresh-token");
 
-		const result = await useCase.execute(
-			"admin@example.com",
-			"password123",
-		);
+		const result = await useCase.execute("admin@example.com", "password123");
 
 		expect(result).toEqual({
 			user: {
@@ -85,10 +82,7 @@ describe("AdminLoginUseCase", () => {
 		mockRepository.findByEmail.mockResolvedValue(null);
 
 		await expect(
-			useCase.execute(
-				"unknown@example.com",
-				"password123",
-			),
+			useCase.execute("unknown@example.com", "password123"),
 		).rejects.toThrow("User not found");
 
 		expect(mockRepository.findByEmail).toHaveBeenCalledWith(
@@ -115,10 +109,7 @@ describe("AdminLoginUseCase", () => {
 		(verifyPassword as jest.Mock).mockResolvedValue(false);
 
 		await expect(
-			useCase.execute(
-				"admin@example.com",
-				"wrong-password",
-			),
+			useCase.execute("admin@example.com", "wrong-password"),
 		).rejects.toThrow("Invalid credentials");
 
 		expect(mockRepository.findByEmail).toHaveBeenCalledWith(
@@ -141,10 +132,7 @@ describe("AdminLoginUseCase", () => {
 		mockRepository.findByEmail.mockRejectedValue(databaseError);
 
 		await expect(
-			useCase.execute(
-				"admin@example.com",
-				"password123",
-			),
+			useCase.execute("admin@example.com", "password123"),
 		).rejects.toThrow("Database unavailable");
 
 		expect(mockRepository.findByEmail).toHaveBeenCalledWith(
