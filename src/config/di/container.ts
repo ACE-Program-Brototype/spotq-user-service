@@ -16,6 +16,9 @@ import { HealthService } from "@modules/health/health.service.ts";
 import { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller.ts";
 import { Container } from "inversify";
 import { TYPES } from "./types.ts";
+import { RedisOtpService } from "@infrastructure/services/redis.otp.ts";
+import { EmailQueueProducer } from "@infrastructure/queue/email.queue.producer.ts";
+import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 
@@ -59,5 +62,8 @@ container
 container
 	.bind<AdminLogoutUseCase>(TYPES.AdminLogoutUseCase)
 	.to(AdminLogoutUseCase);
+container.bind<RedisOtpService>(TYPES.OtpService).to(RedisOtpService)
+container.bind<EmailQueueProducer>(TYPES.EmailQueueProducer).to(EmailQueueProducer)
+container.bind<AdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase).to(AdminForgotPasswordUseCase)
 
 export { container };

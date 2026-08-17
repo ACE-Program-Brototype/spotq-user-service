@@ -207,6 +207,9 @@ importers:
 
   .:
     dependencies:
+      '@getbrevo/brevo':
+        specifier: ^6.0.3
+        version: 6.0.3
       '@prisma/adapter-pg':
         specifier: ^7.9.1
         version: 7.9.1
@@ -986,6 +989,10 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@getbrevo/brevo@6.0.3':
+    resolution: {integrity: sha512-yWBLKoHC8P5HLZ8z6iRuqDYLpCRKPTUETnZOLZzNDWGFYL78y4SHOTxQVrKH5ROX7f4q+SQ19LD3GWtJlIuNXA==}
+    engines: {node: '>=18.0.0'}
 
   '@inquirer/ansi@1.0.2':
     resolution: {integrity: sha512-S8qNSZiYzFd0wAcyG5AXCvUHC5Sr7xpZ9wZ2py9XR88jUz8wooStVx5M6dRzczbBWjic9NP7+rY0Xi7qqK/aMQ==}
@@ -4976,6 +4983,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.1':
     optional: true
+
+  '@getbrevo/brevo@6.0.3': {}
 
   '@inquirer/ansi@1.0.2': {}
 

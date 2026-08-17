@@ -17,6 +17,13 @@ export function generateRefreshToken(payload: object): string {
 	return token;
 }
 
+export function generateTempToken(payload: object) : string {
+	const token = jwt.sign(payload, config.jwt.temp.secret, {
+		expiresIn: config.jwt.temp.expiresIn as jwt.SignOptions["expiresIn"]
+	})
+	return token;
+}
+
 export function getTokenTTL(token: string): number {
 	const decoded = jwt.decode(token);
 

@@ -9,7 +9,7 @@ import {
 	generateAccessToken,
 	generateRefreshToken,
 } from "@infrastructure/services/token";
-import { loginConstants } from "@shared/constants/auth.constants";
+import { authConstants } from "@shared/constants/auth.constants";
 import { HttpStatus } from "@shared/constants/http.constants";
 import { AppError } from "@shared/util/app.error";
 import { inject, injectable } from "inversify";
@@ -28,14 +28,14 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		const user = await this._adminRepository.findByEmail(email);
 
 		if (!user) {
-			throw new AppError(loginConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 		}
 
 		const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
 		if (!isPasswordValid) {
 			throw new AppError(
-				loginConstants.INVALID_PASSWORD,
+				authConstants.INVALID_PASSWORD,
 				HttpStatus.BAD_REQUEST,
 			);
 		}

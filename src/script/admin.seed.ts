@@ -13,6 +13,8 @@ async function main() {
 		);
 	}
 
+	console.log(email)
+
 	const passwordHash = await hashPassword(password);
 
 	const admin = await prisma.platformAdmin.upsert({

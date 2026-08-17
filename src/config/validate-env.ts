@@ -33,6 +33,13 @@ const envSchema = z.object({
 		.transform((val) => val === "true")
 		.default(true),
 	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
+	JWT_TEMP_SECRET: z.string().min(1),
+	JWT_TEMP_EXPIRES_IN: z.string().min(1),
+
+	BREVO_API_KEY: z.string().min(1, "BREVO_API_KEY is required"),
+	BREVO_SENDER_EMAIL: z.string().email("BREVO_SENDER_EMAIL must be a valid email"),
+	BREVO_SENDER_NAME: z.string().default("SpotQ"),
+
 });
 
 export const validateEnv = () => {

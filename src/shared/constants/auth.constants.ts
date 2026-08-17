@@ -1,4 +1,4 @@
-export const loginConstants = {
+export const authConstants = {
 	INVALID_EMAIL: "Invalid email address",
 	PASSWORD_TOO_SHORT: "Password must be at least 6 characters long",
 	INVALID_PASSWORD: "Invalid credentials",
