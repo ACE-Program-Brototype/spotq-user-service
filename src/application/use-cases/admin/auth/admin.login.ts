@@ -1,6 +1,6 @@
 import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
-import { AdminLoginMapper } from "@application/mappers/admin/auth/admin.login.mapper";
+import { toAdminLoginResponse } from "@application/mappers/admin/auth/admin.login.mapper";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
 import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo";
@@ -54,6 +54,6 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 			user.updatedAt,
 		);
 
-		return AdminLoginMapper.toResponse(domainUser, accessToken, refreshToken);
+		return toAdminLoginResponse(domainUser, accessToken, refreshToken);
 	}
 }

@@ -36,7 +36,7 @@ export class AdminAuthController {
 
 			successResponse(
 				res,
-				{ access_token, user },
+				{ user, access_token },
 				loginConstants.ADMIN_LOGIN_SUCCESS,
 				HttpStatus.OK,
 			);
