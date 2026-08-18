@@ -26,12 +26,36 @@ export class UserController {
 		private readonly _logoutUseCase: ILogoutUseCase,
 	) {}
 
+	private _getCookie(req: Request, name: string): string | undefined {
+		const rc = req.headers.cookie;
+		if (!rc) return undefined;
+		const list: Record<string, string> = {};
+		for (const cookie of rc.split(";")) {
+			const parts = cookie.split("=");
+			const key = parts.shift()?.trim();
+			if (key) {
+				list[key] = decodeURIComponent(parts.join("="));
+			}
+		}
+		return list[name];
+	}
+
 	public register = asyncHandler(
 		async (req: Request, res: Response): Promise<void> => {
 			const result = await this._registerUserUseCase.execute(req.body);
+
+			res.cookie("refreshToken", result.refreshToken, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging",
+				sameSite: "strict",
+				maxAge: 7 * 24 * 60 * 60 * 1000,
+			});
+
+			const { refreshToken, ...responseBody } = result;
+
 			sendSuccessResponse(
 				res,
-				result,
+				responseBody,
 				ResponseMessage.REGISTRATION_SUCCESS,
 				HttpStatus.CREATED,
 			);
@@ -55,10 +79,23 @@ export class UserController {
 	public logout = asyncHandler(
 		async (req: AuthenticatedRequest, res: Response): Promise<void> => {
 			const userId = req.user?.userId ?? "";
+			const refreshToken =
+				req.body?.refreshToken ||
+				(req as any).cookies?.refreshToken ||
+				this._getCookie(req, "refreshToken") ||
+				"";
+
 			const result = await this._logoutUseCase.execute({
 				userId,
-				refreshToken: req.body?.refreshToken,
+				refreshToken,
 			});
+
+			res.clearCookie("refreshToken", {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging",
+				sameSite: "strict",
+			});
+
 			sendSuccessResponse(res, undefined, result.message);
 		},
 	);

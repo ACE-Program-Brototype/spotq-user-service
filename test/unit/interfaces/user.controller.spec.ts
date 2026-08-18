@@ -45,6 +45,8 @@ describe("UserController", () => {
 		mockRes = {
 			status: jest.fn().mockReturnThis(),
 			json: jest.fn().mockReturnThis(),
+			cookie: jest.fn().mockReturnThis(),
+			clearCookie: jest.fn().mockReturnThis(),
 		};
 		mockNext = jest.fn();
 	});
@@ -81,11 +83,19 @@ describe("UserController", () => {
 		);
 
 		expect(mockRes.status).toHaveBeenCalledWith(201);
+		expect(mockRes.cookie).toHaveBeenCalledWith(
+			"refreshToken",
+			"refresh_token_123",
+			expect.any(Object),
+		);
 		expect(mockRes.json).toHaveBeenCalledWith(
 			expect.objectContaining({
 				success: true,
 				statusCode: 201,
-				data: registrationResult,
+				data: {
+					user: registrationResult.user,
+					accessToken: registrationResult.accessToken,
+				},
 			}),
 		);
 	});
@@ -162,6 +172,10 @@ describe("UserController", () => {
 		);
 
 		expect(mockRes.status).toHaveBeenCalledWith(200);
+		expect(mockRes.clearCookie).toHaveBeenCalledWith(
+			"refreshToken",
+			expect.any(Object),
+		);
 		expect(mockRes.json).toHaveBeenCalledWith(
 			expect.objectContaining({
 				success: true,
