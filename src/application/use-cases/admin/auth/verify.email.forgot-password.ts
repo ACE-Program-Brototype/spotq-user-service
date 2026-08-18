@@ -1,5 +1,4 @@
 import { TYPES } from "@config/di/types.ts";
-import { logger } from "@infrastructure/logger/logger.ts";
 import { inject, injectable } from "inversify";
 import { IOtpService } from "@infrastructure/interface/shared/IOtp.service.ts";
 import { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo.ts";
