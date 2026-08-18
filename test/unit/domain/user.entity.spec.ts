@@ -20,6 +20,23 @@ describe("Domain Entities", () => {
 			expect(user.status).toBe("ACTIVE");
 			expect(user.createdAt).toBeInstanceOf(Date);
 		});
+
+		it("should create user entity directly from raw string parameters", () => {
+			const user = UserEntity.create({
+				id: "123e4567-e89b-12d3-a456-426614174000",
+				fullName: "Jane Doe",
+				phone: "+919876543210",
+				email: "jane.doe@example.com",
+				passwordHash: "hashed_password",
+			});
+
+			expect(user.id).toBe("123e4567-e89b-12d3-a456-426614174000");
+			expect(user.fullName.getValue()).toBe("Jane Doe");
+			expect(user.phone.getValue()).toBe("+919876543210");
+			expect(user.email.getValue()).toBe("jane.doe@example.com");
+			expect(user.status).toBe("ACTIVE");
+			expect(user.createdAt).toBeInstanceOf(Date);
+		});
 	});
 
 	describe("RefreshTokenEntity", () => {

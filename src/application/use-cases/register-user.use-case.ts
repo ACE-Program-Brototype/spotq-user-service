@@ -15,12 +15,7 @@ import {
 	PhoneAlreadyExistsError,
 } from "@domain/errors/domain.error.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
-import {
-	Email,
-	FullName,
-	PhoneNumber,
-	PlainPassword,
-} from "@domain/value-objects/index.ts";
+import { PlainPassword } from "@domain/value-objects/index.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { inject, injectable } from "inversify";
 import type {
@@ -47,18 +42,15 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
 	public async execute(dto: RegisterUserDto): Promise<RegisterUserResultDto> {
 		// 1. Domain-level value object validations
-		const fullName = FullName.create(dto.fullName);
-		const email = Email.create(dto.email);
-		const phoneNumber = PhoneNumber.create(dto.phoneNumber);
 		const plainPassword = PlainPassword.create(dto.password);
 
 		// 2. Application-level uniqueness checks
-		const existingEmail = await this.userRepository.findByEmail(email);
+		const existingEmail = await this.userRepository.findByEmail(dto.email);
 		if (existingEmail) {
 			throw new EmailAlreadyExistsError();
 		}
 
-		const existingPhone = await this.userRepository.findByPhone(phoneNumber);
+		const existingPhone = await this.userRepository.findByPhone(dto.phoneNumber);
 		if (existingPhone) {
 			throw new PhoneAlreadyExistsError();
 		}
@@ -94,9 +86,9 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
 		const userEntity = UserEntity.create({
 			id: userId,
-			fullName,
-			phone: phoneNumber,
-			email,
+			fullName: dto.fullName,
+			phone: dto.phoneNumber,
+			email: dto.email,
 			passwordHash,
 		});
 
@@ -108,12 +100,12 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		});
 
 		// 6. Generate 6-digit OTP and store SHA-256 hash in Redis
-		const otp = await this.otpService.generateAndStoreOtp(email.getValue());
+		const otp = await this.otpService.generateAndStoreOtp(dto.email);
 
 		// 7. Queue email delivery job in BullMQ
 		try {
 			await this.emailQueueProducer.queueVerificationEmail({
-				email: email.getValue(),
+				email: dto.email,
 				otp,
 			});
 		} catch (error) {

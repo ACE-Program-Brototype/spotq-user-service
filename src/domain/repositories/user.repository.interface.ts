@@ -12,7 +12,7 @@ export interface CreateUserWithSessionParams {
 }
 
 export interface IUserRepository extends IBaseRepository<UserEntity> {
-	findByEmail(email: Email): Promise<UserEntity | null>;
-	findByPhone(phone: PhoneNumber): Promise<UserEntity | null>;
+	findByEmail(email: Email | string): Promise<UserEntity | null>;
+	findByPhone(phone: PhoneNumber | string): Promise<UserEntity | null>;
 	createWithSession(params: CreateUserWithSessionParams): Promise<UserEntity>;
 }

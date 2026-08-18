@@ -24,17 +24,19 @@ export class PrismaUserRepository
 		super(prisma.user, UserMapper);
 	}
 
-	public async findByEmail(email: Email): Promise<UserEntity | null> {
+	public async findByEmail(email: Email | string): Promise<UserEntity | null> {
+		const emailStr = typeof email === "string" ? email : email.getValue();
 		const record = await prisma.user.findUnique({
-			where: { email: email.getValue() },
+			where: { email: emailStr },
 		});
 
 		return record ? UserMapper.toDomain(record) : null;
 	}
 
-	public async findByPhone(phone: PhoneNumber): Promise<UserEntity | null> {
+	public async findByPhone(phone: PhoneNumber | string): Promise<UserEntity | null> {
+		const phoneStr = typeof phone === "string" ? phone : phone.getValue();
 		const record = await prisma.user.findUnique({
-			where: { phone: phone.getValue() },
+			where: { phone: phoneStr },
 		});
 
 		return record ? UserMapper.toDomain(record) : null;

@@ -1,4 +1,4 @@
-import type { Email, FullName, PhoneNumber } from "../value-objects/index.ts";
+import { Email, FullName, PhoneNumber } from "../value-objects/index.ts";
 
 export type UserStatus = "ACTIVE";
 
@@ -23,18 +23,31 @@ export class UserEntity {
 
 	public static create(params: {
 		id: string;
-		fullName: FullName;
-		phone: PhoneNumber;
-		email: Email;
+		fullName: string | FullName;
+		phone: string | PhoneNumber;
+		email: string | Email;
 		passwordHash: string;
 		googleId?: string | null;
 	}): UserEntity {
 		const now = new Date();
+		const fullNameVo =
+			typeof params.fullName === "string"
+				? FullName.create(params.fullName)
+				: params.fullName;
+		const phoneVo =
+			typeof params.phone === "string"
+				? PhoneNumber.create(params.phone)
+				: params.phone;
+		const emailVo =
+			typeof params.email === "string"
+				? Email.create(params.email)
+				: params.email;
+
 		return new UserEntity({
 			id: params.id,
-			fullName: params.fullName,
-			phone: params.phone,
-			email: params.email,
+			fullName: fullNameVo,
+			phone: phoneVo,
+			email: emailVo,
 			passwordHash: params.passwordHash,
 			googleId: params.googleId ?? null,
 			status: "ACTIVE",
