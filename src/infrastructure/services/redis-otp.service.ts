@@ -6,13 +6,11 @@ import {
 	OtpMaxAttemptsExceededError,
 } from "@domain/errors/domain.error.ts";
 import { redisClient } from "@infrastructure/redis/redis.client.ts";
+import { OTP_CONSTANTS } from "@shared/constants/index.ts";
 import { injectable } from "inversify";
 
 @injectable()
 export class RedisOtpService implements IOtpService {
-	private static readonly OTP_TTL_SECONDS = 300; // 5 minutes
-	private static readonly MAX_ATTEMPTS = 5;
-
 	private async ensureConnected(): Promise<void> {
 		if (!redisClient.isOpen) {
 			await redisClient.connect();
@@ -40,7 +38,7 @@ export class RedisOtpService implements IOtpService {
 			hash: hashedOtp,
 			attempts: "0",
 		});
-		await redisClient.expire(key, RedisOtpService.OTP_TTL_SECONDS);
+		await redisClient.expire(key, OTP_CONSTANTS.TTL_SECONDS);
 
 		return otp;
 	}
@@ -57,7 +55,7 @@ export class RedisOtpService implements IOtpService {
 		const attempts = Number.parseInt(data.attempts || "0", 10) + 1;
 		await redisClient.hSet(key, "attempts", attempts.toString());
 
-		if (attempts > RedisOtpService.MAX_ATTEMPTS) {
+		if (attempts > OTP_CONSTANTS.MAX_ATTEMPTS) {
 			// Invalidate OTP as max attempts exceeded
 			await redisClient.del(key);
 			throw new OtpMaxAttemptsExceededError(
@@ -74,7 +72,7 @@ export class RedisOtpService implements IOtpService {
 		);
 
 		if (!isMatch) {
-			if (attempts === RedisOtpService.MAX_ATTEMPTS) {
+			if (attempts === OTP_CONSTANTS.MAX_ATTEMPTS) {
 				await redisClient.del(key);
 				throw new OtpMaxAttemptsExceededError(
 					"Maximum OTP verification attempts exceeded. Please request a new OTP.",

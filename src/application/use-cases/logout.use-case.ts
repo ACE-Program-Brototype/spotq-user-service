@@ -2,6 +2,7 @@ import type { ITokenService } from "@application/ports/services/token-service.in
 import { TYPES } from "@config/di/types.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
+import { ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
 import type { LogoutDto, LogoutResultDto } from "../dtos/logout.dto.ts";
 
@@ -38,7 +39,7 @@ export class LogoutUseCase {
 
 		return {
 			success: true,
-			message: "Logged out successfully.",
+			message: ResponseMessage.LOGOUT_SUCCESS,
 		};
 	}
 }

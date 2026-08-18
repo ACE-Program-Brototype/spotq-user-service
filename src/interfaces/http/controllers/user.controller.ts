@@ -6,6 +6,7 @@ import type {
 } from "@application/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
+import { ResponseMessage } from "@shared/constants/index.ts";
 import { ApiResponse } from "@shared/response/api-response.model.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
@@ -36,7 +37,7 @@ export class UserController {
 				.json(
 					ApiResponse.ok(
 						result,
-						"Registration successful. A verification OTP has been queued for delivery to your email.",
+						ResponseMessage.REGISTRATION_SUCCESS,
 						HttpStatus.CREATED,
 					),
 				);

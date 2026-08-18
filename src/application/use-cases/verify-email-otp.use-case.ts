@@ -3,6 +3,7 @@ import { TYPES } from "@config/di/types.ts";
 import { InvalidOtpError } from "@domain/errors/domain.error.ts";
 import { Email } from "@domain/value-objects/email.vo.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
+import { OTP_CONSTANTS, ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
 import type {
 	VerifyEmailOtpDto,
@@ -21,7 +22,7 @@ export class VerifyEmailOtpUseCase {
 	): Promise<VerifyEmailOtpResultDto> {
 		const email = Email.create(dto.email);
 
-		if (!dto.otp || !/^\d{6}$/.test(dto.otp.trim())) {
+		if (!dto.otp || !OTP_CONSTANTS.REGEX.test(dto.otp.trim())) {
 			throw new InvalidOtpError("OTP must be exactly 6 digits.");
 		}
 
@@ -37,7 +38,7 @@ export class VerifyEmailOtpUseCase {
 
 		return {
 			success: true,
-			message: "Email verified successfully.",
+			message: ResponseMessage.EMAIL_VERIFIED,
 		};
 	}
 }
