@@ -1,3 +1,4 @@
+export { asyncHandler } from "./async.middleware.ts";
 export {
 	type AuthenticatedRequest,
 	authMiddleware,

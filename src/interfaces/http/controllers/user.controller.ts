@@ -11,6 +11,7 @@ import { ApiResponse } from "@shared/response/api-response.model.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../middlewares/auth.middleware.ts";
+import { asyncHandler } from "../middlewares/async.middleware.ts";
 
 @injectable()
 export class UserController {
@@ -25,12 +26,8 @@ export class UserController {
 		private readonly logoutUseCase: LogoutUseCase,
 	) {}
 
-	public register = async (
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> => {
-		try {
+	public register = asyncHandler(
+		async (req: Request, res: Response): Promise<void> => {
 			const result = await this.registerUserUseCase.execute(req.body);
 			res
 				.status(HttpStatus.CREATED)
@@ -41,47 +38,29 @@ export class UserController {
 						HttpStatus.CREATED,
 					),
 				);
-		} catch (error) {
-			next(error);
-		}
-	};
+		},
+	);
 
-	public verifyEmail = async (
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> => {
-		try {
+	public verifyEmail = asyncHandler(
+		async (req: Request, res: Response): Promise<void> => {
 			const result = await this.verifyEmailOtpUseCase.execute(req.body);
 			res
 				.status(HttpStatus.OK)
 				.json(ApiResponse.ok(undefined, result.message, HttpStatus.OK));
-		} catch (error) {
-			next(error);
-		}
-	};
+		},
+	);
 
-	public resendEmailOtp = async (
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> => {
-		try {
+	public resendEmailOtp = asyncHandler(
+		async (req: Request, res: Response): Promise<void> => {
 			const result = await this.resendEmailOtpUseCase.execute(req.body);
 			res
 				.status(HttpStatus.OK)
 				.json(ApiResponse.ok(undefined, result.message, HttpStatus.OK));
-		} catch (error) {
-			next(error);
-		}
-	};
+		},
+	);
 
-	public logout = async (
-		req: AuthenticatedRequest,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> => {
-		try {
+	public logout = asyncHandler(
+		async (req: AuthenticatedRequest, res: Response): Promise<void> => {
 			const userId = req.user?.userId ?? "";
 			const result = await this.logoutUseCase.execute({
 				userId,
@@ -90,8 +69,6 @@ export class UserController {
 			res
 				.status(HttpStatus.OK)
 				.json(ApiResponse.ok(undefined, result.message, HttpStatus.OK));
-		} catch (error) {
-			next(error);
-		}
-	};
+		},
+	);
 }
