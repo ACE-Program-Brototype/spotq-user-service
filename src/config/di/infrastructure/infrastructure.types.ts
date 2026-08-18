@@ -7,6 +7,7 @@ export const INFRASTRUCTURE_TYPES = {
 	BullMQService: Symbol.for("BullMQService"),
 
 	// Infrastructure Services
+	IdGenerator: Symbol.for("IdGenerator"),
 	PasswordHasher: Symbol.for("PasswordHasher"),
 	TokenService: Symbol.for("TokenService"),
 	OtpService: Symbol.for("OtpService"),

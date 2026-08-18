@@ -1,9 +1,9 @@
-import crypto from "node:crypto";
 import type {
 	IEmailQueueProducer,
 	IOtpService,
 	IPasswordHasher,
 	ITokenService,
+	IIdGenerator,
 } from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
@@ -40,6 +40,8 @@ export class RegisterUserUseCase {
 		private readonly otpService: IOtpService,
 		@inject(TYPES.EmailQueueProducer)
 		private readonly emailQueueProducer: IEmailQueueProducer,
+		@inject(TYPES.IdGenerator)
+		private readonly idGenerator: IIdGenerator,
 	) {}
 
 	public async execute(dto: RegisterUserDto): Promise<RegisterUserResultDto> {
@@ -64,14 +66,14 @@ export class RegisterUserUseCase {
 		const passwordHash = await this.passwordHasher.hash(plainPassword);
 
 		// 4. Generate identifiers and tokens
-		const userId = crypto.randomUUID();
+		const userId = this.idGenerator.generateUuid();
 		const refreshTokenData = this.tokenService.generateRefreshToken();
 
 		let deviceEntity: DeviceEntity | null = null;
 		let deviceId: string | null = null;
 
 		if (dto.device) {
-			deviceId = crypto.randomUUID();
+			deviceId = this.idGenerator.generateUuid();
 			deviceEntity = DeviceEntity.create({
 				id: deviceId,
 				userId,
@@ -82,7 +84,7 @@ export class RegisterUserUseCase {
 		}
 
 		const refreshTokenEntity = RefreshTokenEntity.create({
-			id: crypto.randomUUID(),
+			id: this.idGenerator.generateUuid(),
 			userId,
 			deviceId,
 			tokenHash: refreshTokenData.tokenHash,

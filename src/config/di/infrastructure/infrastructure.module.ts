@@ -5,6 +5,7 @@ import type {
 	IOtpService,
 	IPasswordHasher,
 	ITokenService,
+	IIdGenerator,
 } from "@application/ports/services/index.ts";
 import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
 import type { IHealthCheckable } from "@infrastructure/health/health.interface.ts";
@@ -17,6 +18,7 @@ import {
 	BrevoEmailService,
 	JwtTokenService,
 	RedisOtpService,
+	CryptoIdGenerator,
 } from "@infrastructure/services/index.ts";
 import { INFRASTRUCTURE_TYPES } from "./infrastructure.types.ts";
 
@@ -38,6 +40,7 @@ export const infrastructureModule = new ContainerModule(({ bind }) => {
 	);
 
 	// Core Security & Messaging Services
+	bind<IIdGenerator>(INFRASTRUCTURE_TYPES.IdGenerator).to(CryptoIdGenerator);
 	bind<IPasswordHasher>(INFRASTRUCTURE_TYPES.PasswordHasher).to(
 		BcryptPasswordHasher,
 	);
