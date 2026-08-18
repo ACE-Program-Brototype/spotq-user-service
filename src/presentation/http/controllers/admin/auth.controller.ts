@@ -104,4 +104,16 @@ export class AdminAuthController {
 		}
 	)
 
+	verifyOtpResend = expressAsyncHandler(
+		async(req: Request, res: Response): Promise<void> => {
+
+			const { email } = req.body
+
+			await this._adminForgotPasswordUseCase.execute(email)
+
+			successResponse(res, {}, authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS)
+
+		}
+	)
+
 }

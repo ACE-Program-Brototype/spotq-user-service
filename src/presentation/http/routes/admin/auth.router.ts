@@ -15,5 +15,6 @@ router.post("/login", validate(loginValidator), adminAuthController.login);
 router.post("/logout", adminAuthController.logout);
 router.post("/forgot-password", validate(forgotPasswordValidate), adminAuthController.forgotPassword)
 router.post("/forgot-password/verify", validate(forgotPasswordVerifyValidate), adminAuthController.forgotPasswordEmailVerify)
+router.post("/forgot-password/resend-otp", validate(forgotPasswordValidate), adminAuthController.verifyOtpResend)
 
 export default router;

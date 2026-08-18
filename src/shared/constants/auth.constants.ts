@@ -7,5 +7,6 @@ export const authConstants = {
 	ADMIN_LOGIN_SUCCESS: "Admin login successful",
 	ADMIN_LOGOUT_SUCCESS: "Admin logout successful",
     FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS: "Forgot Password verification OTP send successfully",
-	EMAIL_VERIFIED_SUCCESS: "Email verified successfully"
+	EMAIL_VERIFIED_SUCCESS: "Email verified successfully",
+	FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS: "Forgot Password verification OTP re-send successfully",
 };
