@@ -1,6 +1,7 @@
 import type { RefreshTokenEntity } from "../entities/refresh-token.entity.ts";
+import type { IBaseRepository } from "./base.repository.interface.ts";
 
-export interface IRefreshTokenRepository {
+export interface IRefreshTokenRepository extends IBaseRepository<RefreshTokenEntity> {
 	save(refreshToken: RefreshTokenEntity): Promise<void>;
 	findByTokenHash(tokenHash: string): Promise<RefreshTokenEntity | null>;
 	revoke(tokenHash: string, revokedAt?: Date): Promise<void>;

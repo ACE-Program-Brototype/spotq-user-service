@@ -16,4 +16,18 @@ export const UserMapper = {
 			updatedAt: raw.updatedAt,
 		});
 	},
+
+	toPersistence(entity: UserEntity): any {
+		return {
+			id: entity.id,
+			fullname: entity.fullName.getValue(),
+			phone: entity.phone.getValue(),
+			email: entity.email.getValue(),
+			passwordHash: entity.passwordHash,
+			googleId: entity.googleId,
+			status: entity.status,
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
+		};
+	},
 };

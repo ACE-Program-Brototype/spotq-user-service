@@ -3,6 +3,7 @@ import type { RefreshTokenEntity } from "../entities/refresh-token.entity.ts";
 import type { UserEntity } from "../entities/user.entity.ts";
 import type { Email } from "../value-objects/email.vo.ts";
 import type { PhoneNumber } from "../value-objects/phone-number.vo.ts";
+import type { IBaseRepository } from "./base.repository.interface.ts";
 
 export interface CreateUserWithSessionParams {
 	user: UserEntity;
@@ -10,9 +11,8 @@ export interface CreateUserWithSessionParams {
 	refreshToken: RefreshTokenEntity;
 }
 
-export interface IUserRepository {
+export interface IUserRepository extends IBaseRepository<UserEntity> {
 	findByEmail(email: Email): Promise<UserEntity | null>;
 	findByPhone(phone: PhoneNumber): Promise<UserEntity | null>;
-	findById(id: string): Promise<UserEntity | null>;
 	createWithSession(params: CreateUserWithSessionParams): Promise<UserEntity>;
 }

@@ -13,4 +13,16 @@ export const RefreshTokenMapper = {
 			revokedAt: raw.revokedAt,
 		});
 	},
+
+	toPersistence(entity: RefreshTokenEntity): any {
+		return {
+			id: entity.id,
+			userId: entity.userId,
+			deviceId: entity.deviceId,
+			tokenHash: entity.tokenHash,
+			expiresAt: entity.expiresAt,
+			createdAt: entity.createdAt,
+			revokedAt: entity.revokedAt,
+		};
+	},
 };

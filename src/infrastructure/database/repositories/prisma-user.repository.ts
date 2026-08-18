@@ -10,12 +10,20 @@ import type {
 import type { Email } from "@domain/value-objects/email.vo.ts";
 import type { PhoneNumber } from "@domain/value-objects/phone-number.vo.ts";
 import { prisma } from "@infrastructure/database/prisma/prisma.ts";
-import { Prisma } from "@prisma/client";
+import { Prisma, User as PrismaUserModel } from "@prisma/client";
 import { injectable } from "inversify";
 import { UserMapper } from "../mappers/user.mapper.ts";
+import { PrismaBaseRepository } from "./prisma-base.repository.ts";
 
 @injectable()
-export class PrismaUserRepository implements IUserRepository {
+export class PrismaUserRepository
+	extends PrismaBaseRepository<UserEntity, PrismaUserModel>
+	implements IUserRepository
+{
+	constructor() {
+		super(prisma.user, UserMapper);
+	}
+
 	public async findByEmail(email: Email): Promise<UserEntity | null> {
 		const record = await prisma.user.findUnique({
 			where: { email: email.getValue() },
@@ -27,14 +35,6 @@ export class PrismaUserRepository implements IUserRepository {
 	public async findByPhone(phone: PhoneNumber): Promise<UserEntity | null> {
 		const record = await prisma.user.findUnique({
 			where: { phone: phone.getValue() },
-		});
-
-		return record ? UserMapper.toDomain(record) : null;
-	}
-
-	public async findById(id: string): Promise<UserEntity | null> {
-		const record = await prisma.user.findUnique({
-			where: { id },
 		});
 
 		return record ? UserMapper.toDomain(record) : null;

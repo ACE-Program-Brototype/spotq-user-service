@@ -15,4 +15,15 @@ export const DeviceMapper = {
 			lastLogin: raw.lastLogin,
 		});
 	},
+
+	toPersistence(entity: DeviceEntity): any {
+		return {
+			id: entity.id,
+			userId: entity.userId,
+			fcmToken: entity.fcmToken,
+			deviceName: entity.deviceName,
+			platform: entity.platform,
+			lastLogin: entity.lastLogin,
+		};
+	},
 };
