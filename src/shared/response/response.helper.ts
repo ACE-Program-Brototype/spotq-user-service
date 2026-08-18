@@ -1,6 +1,6 @@
 import type { Response } from "express";
-import { ApiResponse } from "./api-response.model.ts";
 import { HttpStatus } from "../constants/http.constants.ts";
+import { ApiResponse } from "./api-response.model.ts";
 
 export function sendSuccessResponse<T>(
 	res: Response,

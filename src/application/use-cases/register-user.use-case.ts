@@ -1,12 +1,11 @@
 import type {
 	IEmailQueueProducer,
+	IIdGenerator,
+	ILogger,
 	IOtpService,
 	IPasswordHasher,
 	ITokenService,
-	IIdGenerator,
-	ILogger,
 } from "@application/ports/services/index.ts";
-import type { IRegisterUserUseCase } from "@ports/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
@@ -17,6 +16,7 @@ import {
 } from "@domain/errors/domain.error.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { PlainPassword } from "@domain/value-objects/index.ts";
+import type { IRegisterUserUseCase } from "@ports/use-cases/index.ts";
 import { inject, injectable } from "inversify";
 import type {
 	RegisterUserDto,
@@ -52,7 +52,9 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 			throw new EmailAlreadyExistsError();
 		}
 
-		const existingPhone = await this._userRepository.findByPhone(dto.phoneNumber);
+		const existingPhone = await this._userRepository.findByPhone(
+			dto.phoneNumber,
+		);
 		if (existingPhone) {
 			throw new PhoneAlreadyExistsError();
 		}

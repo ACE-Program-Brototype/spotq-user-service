@@ -1,16 +1,9 @@
-import { ContainerModule } from "inversify";
 import {
 	LogoutUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
 	VerifyEmailOtpUseCase,
 } from "@application/use-cases/index.ts";
-import type {
-	ILogoutUseCase,
-	IRegisterUserUseCase,
-	IResendEmailOtpUseCase,
-	IVerifyEmailOtpUseCase,
-} from "@ports/use-cases/index.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
@@ -21,6 +14,13 @@ import {
 } from "@infrastructure/database/repositories/index.ts";
 import { UserController } from "@interfaces/http/controllers/user.controller.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
+import type {
+	ILogoutUseCase,
+	IRegisterUserUseCase,
+	IResendEmailOtpUseCase,
+	IVerifyEmailOtpUseCase,
+} from "@ports/use-cases/index.ts";
+import { ContainerModule } from "inversify";
 import { USER_TYPES } from "./user.types.ts";
 
 export const userModule = new ContainerModule(({ bind }) => {

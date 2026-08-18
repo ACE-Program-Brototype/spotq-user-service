@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest --forceExit",
-		"test:infisical": "infisical run -- jest --forceExit",
+		"test": "pnpm lint && jest --forceExit",
+		"test:infisical": "infisical run -- pnpm test",
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage --forceExit",
 		"build": "tsup",

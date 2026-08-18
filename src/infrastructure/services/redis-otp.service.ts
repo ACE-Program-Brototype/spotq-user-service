@@ -1,11 +1,11 @@
 import crypto from "node:crypto";
 import type { IOtpService } from "@application/ports/services/otp-service.interface.ts";
+import { config } from "@config/env.ts";
 import {
 	InvalidOtpError,
 	OtpExpiredError,
 	OtpMaxAttemptsExceededError,
 } from "@domain/errors/domain.error.ts";
-import { config } from "@config/env.ts";
 import { redisClient } from "@infrastructure/redis/redis.client.ts";
 import { injectable } from "inversify";
 

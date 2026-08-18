@@ -1,7 +1,7 @@
 import type {
 	IEmailQueueProducer,
-	IOtpService,
 	ILogger,
+	IOtpService,
 } from "@application/ports/services/index.ts";
 import { ResendEmailOtpUseCase } from "@application/use-cases/resend-email-otp.use-case.ts";
 import { UserEntity } from "@domain/entities/user.entity.ts";

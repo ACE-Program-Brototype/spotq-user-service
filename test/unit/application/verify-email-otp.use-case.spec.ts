@@ -1,4 +1,7 @@
-import type { IOtpService, ILogger } from "@application/ports/services/index.ts";
+import type {
+	ILogger,
+	IOtpService,
+} from "@application/ports/services/index.ts";
 import { VerifyEmailOtpUseCase } from "@application/use-cases/verify-email-otp.use-case.ts";
 import { InvalidOtpError } from "@domain/errors/domain.error.ts";
 

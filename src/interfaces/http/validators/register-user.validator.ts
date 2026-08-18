@@ -28,7 +28,8 @@ export const registerUserSchema = z.object({
 		.string({ message: "Email is required." })
 		.trim()
 		.email("Invalid email address format.")
-		.max(254, "Email must not exceed 254 characters."),
+		.max(254, "Email must not exceed 254 characters.")
+		.toLowerCase(),
 
 	phoneNumber: z
 		.string({ message: "Phone number is required." })
@@ -39,7 +40,8 @@ export const registerUserSchema = z.object({
 		.refine((val) => /^\+91[6-9]\d{9}$/.test(val.replace(/[\s-]/g, "")), {
 			message:
 				"Invalid Indian mobile number format. Expected +91 followed by 10 digits.",
-		}),
+		})
+		.transform((val) => `+91${val.slice(3).replace(/[\s-]/g, "")}`),
 
 	password: z
 		.string({ message: "Password is required." })

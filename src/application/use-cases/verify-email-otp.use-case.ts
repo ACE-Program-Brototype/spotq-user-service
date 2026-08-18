@@ -1,8 +1,11 @@
-import type { IOtpService, ILogger } from "@application/ports/services/index.ts";
-import type { IVerifyEmailOtpUseCase } from "@ports/use-cases/index.ts";
+import type {
+	ILogger,
+	IOtpService,
+} from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { InvalidOtpError } from "@domain/errors/domain.error.ts";
 import { Email } from "@domain/value-objects/email.vo.ts";
+import type { IVerifyEmailOtpUseCase } from "@ports/use-cases/index.ts";
 import { REGEX, ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
 import type {

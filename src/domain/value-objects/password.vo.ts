@@ -1,4 +1,8 @@
-import { REGEX, VALIDATION_LIMITS, VALUE_OBJECT_ERRORS } from "@shared/constants/index.ts";
+import {
+	REGEX,
+	VALIDATION_LIMITS,
+	VALUE_OBJECT_ERRORS,
+} from "@shared/constants/index.ts";
 import { InvalidPasswordError } from "../errors/domain.error.ts";
 
 export class PlainPassword {

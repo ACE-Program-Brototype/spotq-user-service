@@ -5,7 +5,8 @@ export const verifyEmailOtpSchema = z.object({
 		.string({ message: "Email is required." })
 		.trim()
 		.email("Invalid email address format.")
-		.max(254, "Email must not exceed 254 characters."),
+		.max(254, "Email must not exceed 254 characters.")
+		.toLowerCase(),
 
 	otp: z
 		.string({ message: "OTP is required." })

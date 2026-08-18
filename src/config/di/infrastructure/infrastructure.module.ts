@@ -1,12 +1,11 @@
-import { ContainerModule } from "inversify";
 import type {
 	IEmailQueueProducer,
 	IEmailService,
+	IIdGenerator,
+	ILogger,
 	IOtpService,
 	IPasswordHasher,
 	ITokenService,
-	IIdGenerator,
-	ILogger,
 } from "@application/ports/services/index.ts";
 import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
 import type { IHealthCheckable } from "@infrastructure/health/health.interface.ts";
@@ -17,19 +16,20 @@ import { RedisService } from "@infrastructure/redis/redis.service.ts";
 import {
 	BcryptPasswordHasher,
 	BrevoEmailService,
-	JwtTokenService,
-	RedisOtpService,
 	CryptoIdGenerator,
+	JwtTokenService,
 	PinoLoggerService,
+	RedisOtpService,
 } from "@infrastructure/services/index.ts";
+import { ContainerModule } from "inversify";
 import { INFRASTRUCTURE_TYPES } from "./infrastructure.types.ts";
 
 export const infrastructureModule = new ContainerModule(({ bind }) => {
 	// Infrastructure Services & Health Checkables
 	bind<PrismaService>(INFRASTRUCTURE_TYPES.PrismaService).to(PrismaService);
-	bind<IHealthCheckable>(INFRASTRUCTURE_TYPES.DatabaseHealthCheckable).toService(
-		INFRASTRUCTURE_TYPES.PrismaService,
-	);
+	bind<IHealthCheckable>(
+		INFRASTRUCTURE_TYPES.DatabaseHealthCheckable,
+	).toService(INFRASTRUCTURE_TYPES.PrismaService);
 
 	bind<RedisService>(INFRASTRUCTURE_TYPES.RedisService).to(RedisService);
 	bind<IHealthCheckable>(INFRASTRUCTURE_TYPES.RedisHealthCheckable).toService(
@@ -55,5 +55,7 @@ export const infrastructureModule = new ContainerModule(({ bind }) => {
 	bind<EmailQueueWorker>(INFRASTRUCTURE_TYPES.EmailQueueWorker).to(
 		EmailQueueWorker,
 	);
-	bind<ILogger>(INFRASTRUCTURE_TYPES.Logger).to(PinoLoggerService).inSingletonScope();
+	bind<ILogger>(INFRASTRUCTURE_TYPES.Logger)
+		.to(PinoLoggerService)
+		.inSingletonScope();
 });

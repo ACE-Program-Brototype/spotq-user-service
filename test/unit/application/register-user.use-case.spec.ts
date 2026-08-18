@@ -1,10 +1,10 @@
 import type {
 	IEmailQueueProducer,
+	IIdGenerator,
+	ILogger,
 	IOtpService,
 	IPasswordHasher,
 	ITokenService,
-	IIdGenerator,
-	ILogger,
 } from "@application/ports/services/index.ts";
 import { RegisterUserUseCase } from "@application/use-cases/register-user.use-case.ts";
 import { UserEntity } from "@domain/entities/user.entity.ts";

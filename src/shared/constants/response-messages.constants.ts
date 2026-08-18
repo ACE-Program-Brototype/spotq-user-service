@@ -7,7 +7,8 @@ export const ResponseMessage = {
 	FORBIDDEN: "Forbidden",
 	NOT_FOUND: "Resource not found",
 	BAD_REQUEST: "Bad request",
-	REGISTRATION_SUCCESS: "Registration successful. A verification OTP has been queued for delivery to your email.",
+	REGISTRATION_SUCCESS:
+		"Registration successful. A verification OTP has been queued for delivery to your email.",
 	EMAIL_VERIFIED: "Email verified successfully.",
 	OTP_RESENT: "Verification OTP resent successfully.",
 	LOGOUT_SUCCESS: "Logged out successfully.",

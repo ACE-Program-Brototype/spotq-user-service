@@ -4,11 +4,10 @@ import type {
 } from "@application/ports/services/email-queue-producer.interface.ts";
 import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
+import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 import { Queue } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
-
-import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 
 export const EMAIL_QUEUE_NAME = "email-verification-queue";
 

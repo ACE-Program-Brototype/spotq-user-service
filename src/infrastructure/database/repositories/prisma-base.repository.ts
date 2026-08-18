@@ -2,7 +2,9 @@ import type { IBaseRepository } from "@domain/repositories/base.repository.inter
 import { injectable } from "inversify";
 
 @injectable()
-export abstract class PrismaBaseRepository<T, TModel> implements IBaseRepository<T> {
+export abstract class PrismaBaseRepository<T, TModel>
+	implements IBaseRepository<T>
+{
 	constructor(
 		protected readonly dbModel: any,
 		protected readonly mapper: {

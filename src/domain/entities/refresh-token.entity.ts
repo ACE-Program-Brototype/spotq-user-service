@@ -66,7 +66,9 @@ export class RefreshTokenEntity {
 	}
 
 	public isRevoked(): boolean {
-		return this._props.revokedAt !== null && this._props.revokedAt !== undefined;
+		return (
+			this._props.revokedAt !== null && this._props.revokedAt !== undefined
+		);
 	}
 
 	public isExpired(): boolean {

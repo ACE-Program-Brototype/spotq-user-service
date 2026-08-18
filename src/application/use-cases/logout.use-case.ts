@@ -1,7 +1,10 @@
-import type { ITokenService, ILogger } from "@application/ports/services/index.ts";
+import type {
+	ILogger,
+	ITokenService,
+} from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
-import type { ILogoutUseCase } from "@ports/use-cases/index.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
+import type { ILogoutUseCase } from "@ports/use-cases/index.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
 import type { LogoutDto, LogoutResultDto } from "../dtos/logout.dto.ts";

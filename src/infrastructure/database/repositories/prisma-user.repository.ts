@@ -10,7 +10,7 @@ import type {
 import type { Email } from "@domain/value-objects/email.vo.ts";
 import type { PhoneNumber } from "@domain/value-objects/phone-number.vo.ts";
 import { prisma } from "@infrastructure/database/prisma/prisma.ts";
-import { Prisma, User as PrismaUserModel } from "@prisma/client";
+import { Prisma, type User as PrismaUserModel } from "@prisma/client";
 import { injectable } from "inversify";
 import { UserMapper } from "../mappers/user.mapper.ts";
 import { PrismaBaseRepository } from "./prisma-base.repository.ts";
@@ -33,7 +33,9 @@ export class PrismaUserRepository
 		return record ? UserMapper.toDomain(record) : null;
 	}
 
-	public async findByPhone(phone: PhoneNumber | string): Promise<UserEntity | null> {
+	public async findByPhone(
+		phone: PhoneNumber | string,
+	): Promise<UserEntity | null> {
 		const phoneStr = typeof phone === "string" ? phone : phone.getValue();
 		const record = await prisma.user.findUnique({
 			where: { phone: phoneStr },

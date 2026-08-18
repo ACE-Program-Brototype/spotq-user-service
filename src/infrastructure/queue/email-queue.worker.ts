@@ -1,10 +1,10 @@
 import type { IEmailService } from "@application/ports/services/email-service.interface.ts";
 import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
+import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 import { type Job, Worker } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
-import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 import { EMAIL_QUEUE_NAME } from "./email-queue.producer.ts";
 
 export interface EmailJobData {

@@ -1,11 +1,11 @@
+import { UserController } from "@interfaces/http/controllers/user.controller.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type {
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
-import { UserController } from "@interfaces/http/controllers/user.controller.ts";
-import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type { NextFunction, Request, Response } from "express";
 
 describe("UserController", () => {
