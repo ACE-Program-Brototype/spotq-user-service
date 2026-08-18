@@ -8,6 +8,8 @@ import { Queue } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
 
+import { QUEUE_LIMITS } from "@shared/constants/index.ts";
+
 export const EMAIL_QUEUE_NAME = "email-verification-queue";
 
 @injectable()
@@ -25,10 +27,10 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 			this._queue = new Queue(EMAIL_QUEUE_NAME, {
 				connection,
 				defaultJobOptions: {
-					attempts: 3,
+					attempts: QUEUE_LIMITS.EMAIL.ATTEMPTS,
 					backoff: {
 						type: "exponential",
-						delay: 2000,
+						delay: QUEUE_LIMITS.EMAIL.BACKOFF_DELAY,
 					},
 					removeOnComplete: true,
 					removeOnFail: false,

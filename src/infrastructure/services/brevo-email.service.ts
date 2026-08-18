@@ -22,7 +22,7 @@ export class BrevoEmailService implements IEmailService {
 		try {
 			const { subject, htmlContent } = renderVerificationOtpTemplate({
 				otp,
-				validityMinutes: 5,
+				validityMinutes: Math.floor(config.otp.ttlSeconds / 60),
 			});
 
 			await this._client.transactionalEmails.sendTransacEmail({

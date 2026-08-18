@@ -1,6 +1,7 @@
 import type {
 	IEmailQueueProducer,
 	IOtpService,
+	ILogger,
 } from "@application/ports/services/index.ts";
 import { ResendEmailOtpUseCase } from "@application/use-cases/resend-email-otp.use-case.ts";
 import { UserEntity } from "@domain/entities/user.entity.ts";
@@ -12,6 +13,7 @@ describe("ResendEmailOtpUseCase", () => {
 	let mockUserRepository: jest.Mocked<IUserRepository>;
 	let mockOtpService: jest.Mocked<IOtpService>;
 	let mockEmailQueueProducer: jest.Mocked<IEmailQueueProducer>;
+	let mockLogger: jest.Mocked<ILogger>;
 	let useCase: ResendEmailOtpUseCase;
 
 	beforeEach(() => {
@@ -32,10 +34,17 @@ describe("ResendEmailOtpUseCase", () => {
 			queueVerificationEmail: jest.fn().mockResolvedValue(undefined),
 		};
 
+		mockLogger = {
+			info: jest.fn(),
+			error: jest.fn(),
+			warn: jest.fn(),
+		};
+
 		useCase = new ResendEmailOtpUseCase(
 			mockUserRepository,
 			mockOtpService,
 			mockEmailQueueProducer,
+			mockLogger,
 		);
 	});
 

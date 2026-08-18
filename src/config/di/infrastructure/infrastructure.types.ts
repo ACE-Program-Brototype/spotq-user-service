@@ -14,4 +14,5 @@ export const INFRASTRUCTURE_TYPES = {
 	EmailService: Symbol.for("EmailService"),
 	EmailQueueProducer: Symbol.for("EmailQueueProducer"),
 	EmailQueueWorker: Symbol.for("EmailQueueWorker"),
+	Logger: Symbol.for("Logger"),
 } as const;

@@ -6,6 +6,7 @@ import type {
 	IPasswordHasher,
 	ITokenService,
 	IIdGenerator,
+	ILogger,
 } from "@application/ports/services/index.ts";
 import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
 import type { IHealthCheckable } from "@infrastructure/health/health.interface.ts";
@@ -19,6 +20,7 @@ import {
 	JwtTokenService,
 	RedisOtpService,
 	CryptoIdGenerator,
+	PinoLoggerService,
 } from "@infrastructure/services/index.ts";
 import { INFRASTRUCTURE_TYPES } from "./infrastructure.types.ts";
 
@@ -53,4 +55,5 @@ export const infrastructureModule = new ContainerModule(({ bind }) => {
 	bind<EmailQueueWorker>(INFRASTRUCTURE_TYPES.EmailQueueWorker).to(
 		EmailQueueWorker,
 	);
+	bind<ILogger>(INFRASTRUCTURE_TYPES.Logger).to(PinoLoggerService).inSingletonScope();
 });

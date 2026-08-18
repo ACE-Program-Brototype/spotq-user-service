@@ -1,10 +1,11 @@
-import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
+import type { ITokenService, ILogger } from "@application/ports/services/index.ts";
 import { LogoutUseCase } from "@application/use-cases/logout.use-case.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 
 describe("LogoutUseCase", () => {
 	let mockRefreshTokenRepository: jest.Mocked<IRefreshTokenRepository>;
 	let mockTokenService: jest.Mocked<ITokenService>;
+	let mockLogger: jest.Mocked<ILogger>;
 	let useCase: LogoutUseCase;
 
 	beforeEach(() => {
@@ -22,7 +23,13 @@ describe("LogoutUseCase", () => {
 			verifyAccessToken: jest.fn(),
 		};
 
-		useCase = new LogoutUseCase(mockRefreshTokenRepository, mockTokenService);
+		mockLogger = {
+			info: jest.fn(),
+			error: jest.fn(),
+			warn: jest.fn(),
+		};
+
+		useCase = new LogoutUseCase(mockRefreshTokenRepository, mockTokenService, mockLogger);
 	});
 
 	it("should revoke the refresh token hash and return success", async () => {

@@ -4,3 +4,4 @@ export * from "./email-service.interface.ts";
 export * from "./otp-service.interface.ts";
 export * from "./password-hasher.interface.ts";
 export * from "./token-service.interface.ts";
+export * from "./logger.interface.ts";

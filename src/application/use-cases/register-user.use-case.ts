@@ -4,6 +4,7 @@ import type {
 	IPasswordHasher,
 	ITokenService,
 	IIdGenerator,
+	ILogger,
 } from "@application/ports/services/index.ts";
 import type { IRegisterUserUseCase } from "@ports/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
@@ -16,7 +17,6 @@ import {
 } from "@domain/errors/domain.error.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { PlainPassword } from "@domain/value-objects/index.ts";
-import { logger } from "@infrastructure/logger/logger.ts";
 import { inject, injectable } from "inversify";
 import type {
 	RegisterUserDto,
@@ -38,6 +38,8 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		private readonly _emailQueueProducer: IEmailQueueProducer,
 		@inject(TYPES.IdGenerator)
 		private readonly _idGenerator: IIdGenerator,
+		@inject(TYPES.Logger)
+		private readonly _logger: ILogger,
 	) {}
 
 	public async execute(dto: RegisterUserDto): Promise<RegisterUserResultDto> {
@@ -110,7 +112,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 			});
 		} catch (error) {
 			// As per story: registration must not be rolled back solely because email queueing fails
-			logger.error(
+			this._logger.error(
 				{ err: error, userId: createdUser.id },
 				"Verification email queuing failed after user registration",
 			);
@@ -123,7 +125,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		});
 
 		// 9. Structured audit logging without logging sensitive credentials
-		logger.info(
+		this._logger.info(
 			{
 				userId: createdUser.id,
 				event: "USER_REGISTRATION_SUCCESS",
@@ -131,7 +133,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 			"User registration successful",
 		);
 
-		logger.info(
+		this._logger.info(
 			{
 				userId: createdUser.id,
 				event: "REFRESH_TOKEN_CREATED",

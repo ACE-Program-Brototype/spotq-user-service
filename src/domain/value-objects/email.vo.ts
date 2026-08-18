@@ -1,11 +1,8 @@
+import { REGEX, VALIDATION_LIMITS, VALUE_OBJECT_ERRORS } from "@shared/constants/index.ts";
 import { InvalidEmailError } from "../errors/domain.error.ts";
 
 export class Email {
 	private readonly _value: string;
-
-	// Standard industry email regex complying with practical RFC-5322
-	private static readonly EMAIL_REGEX =
-		/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
 	private constructor(value: string) {
 		this._value = value;
@@ -13,19 +10,19 @@ export class Email {
 
 	public static create(rawEmail: unknown): Email {
 		if (typeof rawEmail !== "string") {
-			throw new InvalidEmailError("Email must be a string.");
+			throw new InvalidEmailError(VALUE_OBJECT_ERRORS.EMAIL.TYPE);
 		}
 
 		const trimmed = rawEmail.trim();
 
-		if (!trimmed || trimmed.length > 254) {
-			throw new InvalidEmailError("Invalid email length.");
+		if (!trimmed || trimmed.length > VALIDATION_LIMITS.EMAIL.MAX_LENGTH) {
+			throw new InvalidEmailError(VALUE_OBJECT_ERRORS.EMAIL.LENGTH);
 		}
 
 		const normalized = trimmed.toLowerCase();
 
-		if (!Email.EMAIL_REGEX.test(normalized)) {
-			throw new InvalidEmailError("Invalid email format.");
+		if (!REGEX.EMAIL.test(normalized)) {
+			throw new InvalidEmailError(VALUE_OBJECT_ERRORS.EMAIL.FORMAT);
 		}
 
 		return new Email(normalized);

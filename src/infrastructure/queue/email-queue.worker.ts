@@ -4,6 +4,7 @@ import { logger } from "@infrastructure/logger/logger.ts";
 import { type Job, Worker } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
+import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 import { EMAIL_QUEUE_NAME } from "./email-queue.producer.ts";
 
 export interface EmailJobData {
@@ -41,7 +42,7 @@ export class EmailQueueWorker {
 			},
 			{
 				connection,
-				concurrency: 5,
+				concurrency: QUEUE_LIMITS.EMAIL.CONCURRENCY,
 			},
 		);
 

@@ -4,6 +4,7 @@ import type {
 	IPasswordHasher,
 	ITokenService,
 	IIdGenerator,
+	ILogger,
 } from "@application/ports/services/index.ts";
 import { RegisterUserUseCase } from "@application/use-cases/register-user.use-case.ts";
 import { UserEntity } from "@domain/entities/user.entity.ts";
@@ -21,6 +22,7 @@ describe("RegisterUserUseCase", () => {
 	let mockOtpService: jest.Mocked<IOtpService>;
 	let mockEmailQueueProducer: jest.Mocked<IEmailQueueProducer>;
 	let mockIdGenerator: jest.Mocked<IIdGenerator>;
+	let mockLogger: jest.Mocked<ILogger>;
 	let useCase: RegisterUserUseCase;
 
 	beforeEach(() => {
@@ -61,6 +63,12 @@ describe("RegisterUserUseCase", () => {
 			generateUuid: jest.fn().mockReturnValue("usr-123"),
 		};
 
+		mockLogger = {
+			info: jest.fn(),
+			error: jest.fn(),
+			warn: jest.fn(),
+		};
+
 		useCase = new RegisterUserUseCase(
 			mockUserRepository,
 			mockPasswordHasher,
@@ -68,6 +76,7 @@ describe("RegisterUserUseCase", () => {
 			mockOtpService,
 			mockEmailQueueProducer,
 			mockIdGenerator,
+			mockLogger,
 		);
 	});
 

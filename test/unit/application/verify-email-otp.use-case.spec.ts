@@ -1,9 +1,10 @@
-import type { IOtpService } from "@application/ports/services/otp-service.interface.ts";
+import type { IOtpService, ILogger } from "@application/ports/services/index.ts";
 import { VerifyEmailOtpUseCase } from "@application/use-cases/verify-email-otp.use-case.ts";
 import { InvalidOtpError } from "@domain/errors/domain.error.ts";
 
 describe("VerifyEmailOtpUseCase", () => {
 	let mockOtpService: jest.Mocked<IOtpService>;
+	let mockLogger: jest.Mocked<ILogger>;
 	let useCase: VerifyEmailOtpUseCase;
 
 	beforeEach(() => {
@@ -13,7 +14,13 @@ describe("VerifyEmailOtpUseCase", () => {
 			invalidateOtp: jest.fn(),
 		};
 
-		useCase = new VerifyEmailOtpUseCase(mockOtpService);
+		mockLogger = {
+			info: jest.fn(),
+			error: jest.fn(),
+			warn: jest.fn(),
+		};
+
+		useCase = new VerifyEmailOtpUseCase(mockOtpService, mockLogger);
 	});
 
 	it("should verify OTP successfully", async () => {

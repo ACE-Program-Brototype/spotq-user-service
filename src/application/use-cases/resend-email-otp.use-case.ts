@@ -1,13 +1,13 @@
 import type {
 	IEmailQueueProducer,
 	IOtpService,
+	ILogger,
 } from "@application/ports/services/index.ts";
 import type { IResendEmailOtpUseCase } from "@ports/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { UserNotFoundError } from "@domain/errors/domain.error.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { Email } from "@domain/value-objects/email.vo.ts";
-import { logger } from "@infrastructure/logger/logger.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
 import type {
@@ -24,6 +24,8 @@ export class ResendEmailOtpUseCase implements IResendEmailOtpUseCase {
 		private readonly _otpService: IOtpService,
 		@inject(TYPES.EmailQueueProducer)
 		private readonly _emailQueueProducer: IEmailQueueProducer,
+		@inject(TYPES.Logger)
+		private readonly _logger: ILogger,
 	) {}
 
 	public async execute(
@@ -45,7 +47,7 @@ export class ResendEmailOtpUseCase implements IResendEmailOtpUseCase {
 			otp,
 		});
 
-		logger.info(
+		this._logger.info(
 			{
 				email: email.getValue(),
 				userId: user.id,

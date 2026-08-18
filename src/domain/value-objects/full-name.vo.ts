@@ -1,11 +1,8 @@
+import { REGEX, VALIDATION_LIMITS, VALUE_OBJECT_ERRORS } from "@shared/constants/index.ts";
 import { InvalidNameError } from "../errors/domain.error.ts";
 
 export class FullName {
 	private readonly _value: string;
-
-	// Regex allowing unicode letters (marks/alphabets), spaces, hyphens, and apostrophes
-	private static readonly NAME_REGEX =
-		/^[\p{L}\p{M}]+(?:[' -][\p{L}\p{M}]+)*$/u;
 
 	private constructor(value: string) {
 		this._value = value;
@@ -23,27 +20,25 @@ export class FullName {
 
 	public static create(rawName: unknown): FullName {
 		if (typeof rawName !== "string") {
-			throw new InvalidNameError("Full name must be a string.");
+			throw new InvalidNameError(VALUE_OBJECT_ERRORS.FULL_NAME.TYPE);
 		}
 
 		const trimmed = rawName.trim();
 
-		if (!trimmed || trimmed.length < 2 || trimmed.length > 100) {
-			throw new InvalidNameError(
-				"Full name must be between 2 and 100 characters.",
-			);
+		if (
+			!trimmed ||
+			trimmed.length < VALIDATION_LIMITS.FULL_NAME.MIN_LENGTH ||
+			trimmed.length > VALIDATION_LIMITS.FULL_NAME.MAX_LENGTH
+		) {
+			throw new InvalidNameError(VALUE_OBJECT_ERRORS.FULL_NAME.LENGTH);
 		}
 
 		if (FullName.hasControlChars(trimmed)) {
-			throw new InvalidNameError(
-				"Full name must not contain control characters.",
-			);
+			throw new InvalidNameError(VALUE_OBJECT_ERRORS.FULL_NAME.CONTROL_CHARS);
 		}
 
-		if (!FullName.NAME_REGEX.test(trimmed)) {
-			throw new InvalidNameError(
-				"Full name can only contain letters, spaces, hyphens, and apostrophes.",
-			);
+		if (!REGEX.NAME.test(trimmed)) {
+			throw new InvalidNameError(VALUE_OBJECT_ERRORS.FULL_NAME.FORMAT);
 		}
 
 		return new FullName(trimmed);

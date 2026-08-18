@@ -1,3 +1,4 @@
+import { REGEX, VALIDATION_LIMITS, VALUE_OBJECT_ERRORS } from "@shared/constants/index.ts";
 import { InvalidPasswordError } from "../errors/domain.error.ts";
 
 export class PlainPassword {
@@ -9,30 +10,27 @@ export class PlainPassword {
 
 	public static create(rawPassword: unknown): PlainPassword {
 		if (typeof rawPassword !== "string") {
-			throw new InvalidPasswordError("Password must be a string.");
+			throw new InvalidPasswordError(VALUE_OBJECT_ERRORS.PASSWORD.TYPE);
 		}
 
 		if (rawPassword !== rawPassword.trim()) {
-			throw new InvalidPasswordError(
-				"Password must not contain leading or trailing whitespace.",
-			);
+			throw new InvalidPasswordError(VALUE_OBJECT_ERRORS.PASSWORD.WHITESPACE);
 		}
 
-		if (rawPassword.length < 8 || rawPassword.length > 128) {
-			throw new InvalidPasswordError(
-				"Password must be between 8 and 128 characters long.",
-			);
+		if (
+			rawPassword.length < VALIDATION_LIMITS.PASSWORD.MIN_LENGTH ||
+			rawPassword.length > VALIDATION_LIMITS.PASSWORD.MAX_LENGTH
+		) {
+			throw new InvalidPasswordError(VALUE_OBJECT_ERRORS.PASSWORD.LENGTH);
 		}
 
-		const hasUppercase = /[A-Z]/.test(rawPassword);
-		const hasLowercase = /[a-z]/.test(rawPassword);
-		const hasNumber = /[0-9]/.test(rawPassword);
-		const hasSpecial = /[^A-Za-z0-9]/.test(rawPassword);
+		const hasUppercase = REGEX.PASSWORD.UPPERCASE.test(rawPassword);
+		const hasLowercase = REGEX.PASSWORD.LOWERCASE.test(rawPassword);
+		const hasNumber = REGEX.PASSWORD.NUMBER.test(rawPassword);
+		const hasSpecial = REGEX.PASSWORD.SPECIAL.test(rawPassword);
 
 		if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
-			throw new InvalidPasswordError(
-				"Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-			);
+			throw new InvalidPasswordError(VALUE_OBJECT_ERRORS.PASSWORD.STRENGTH);
 		}
 
 		return new PlainPassword(rawPassword);
