@@ -19,6 +19,8 @@ import { TYPES } from "./types.ts";
 import { RedisOtpService } from "@infrastructure/services/redis.otp.ts";
 import { EmailQueueProducer } from "@infrastructure/queue/email.queue.producer.ts";
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
+import { BrevoEmailService } from "@infrastructure/services/brevo.email.ts";
+import { EmailQueueWorker } from "@infrastructure/queue/email.queue.worker.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 
@@ -65,5 +67,7 @@ container
 container.bind<RedisOtpService>(TYPES.OtpService).to(RedisOtpService)
 container.bind<EmailQueueProducer>(TYPES.EmailQueueProducer).to(EmailQueueProducer)
 container.bind<AdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase).to(AdminForgotPasswordUseCase)
+container.bind<BrevoEmailService>(TYPES.EmailService).to(BrevoEmailService)
+container.bind<EmailQueueWorker>(TYPES.EmailQueueWorker).to(EmailQueueWorker)
 
 export { container };

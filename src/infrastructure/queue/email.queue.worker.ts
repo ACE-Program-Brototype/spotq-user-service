@@ -38,7 +38,6 @@ export class EmailQueueWorker {
 					"Processing email verification BullMQ job",
 				);
 				await emailService.sendVerificationEmail(job.data.email, job.data.otp);
-                console.log("Queue email sended")
 			},
 			{
 				connection,

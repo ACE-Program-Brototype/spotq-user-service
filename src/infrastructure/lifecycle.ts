@@ -3,6 +3,9 @@ import { logger } from "@infrastructure/logger/logger.ts";
 import type { PrismaService } from "./database/prisma/database.service.ts";
 import type { BullMQService } from "./queue/bullmq.service.ts";
 import type { RedisService } from "./redis/redis.service.ts";
+import { EmailQueueWorker } from "./queue/email.queue.worker.ts";
+import { IEmailService } from "./interface/shared/IEmail.service.ts";
+import { EmailQueueProducer } from "./queue/email.queue.producer.ts";
 
 export async function initInfrastructure(): Promise<void> {
 	const prismaService = container.get<PrismaService>(TYPES.PrismaService);
@@ -12,12 +15,38 @@ export async function initInfrastructure(): Promise<void> {
 	await prismaService.connect();
 	await redisService.connect();
 	await bullmqService.connect();
+
+	try {
+		const emailWorker = container.get<EmailQueueWorker>(TYPES.EmailQueueWorker);
+		const emailService = container.get<IEmailService>(TYPES.EmailService);
+		emailWorker.start(emailService);
+		logger.info("BullMQ EmailQueueWorker started");
+	} catch (workerErr) {
+		logger.warn({ err: workerErr }, "Could not start BullMQ EmailQueueWorker");
+	}
 }
 
 export async function shutdownInfrastructure(): Promise<void> {
 	const prismaService = container.get<PrismaService>(TYPES.PrismaService);
 	const redisService = container.get<RedisService>(TYPES.RedisService);
 	const bullmqService = container.get<BullMQService>(TYPES.BullMQService);
+
+	try {
+		const emailWorker = container.get<EmailQueueWorker>(TYPES.EmailQueueWorker);
+		await emailWorker.close();
+		logger.info("BullMQ EmailQueueWorker stopped");
+	} catch (err) {
+		logger.error(err, "Error closing BullMQ EmailQueueWorker");
+	}
+
+	try {
+		const emailProducer = container.get<EmailQueueProducer>(TYPES.EmailQueueProducer);
+		await emailProducer.close();
+		logger.info("BullMQ EmailQueueProducer closed");
+	} catch (err) {
+		logger.error(err, "Error closing BullMQ EmailQueueProducer");
+	}
+
 
 	try {
 		logger.info("Disconnecting database client...");
