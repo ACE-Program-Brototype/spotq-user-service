@@ -5,6 +5,7 @@ import type {
 	ITokenService,
 	IIdGenerator,
 } from "@application/ports/services/index.ts";
+import type { IRegisterUserUseCase } from "@ports/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
@@ -28,7 +29,7 @@ import type {
 } from "../dtos/register-user.dto.ts";
 
 @injectable()
-export class RegisterUserUseCase {
+export class RegisterUserUseCase implements IRegisterUserUseCase {
 	constructor(
 		@inject(TYPES.UserRepository)
 		private readonly userRepository: IUserRepository,

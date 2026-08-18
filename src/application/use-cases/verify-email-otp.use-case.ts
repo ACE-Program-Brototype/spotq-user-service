@@ -1,4 +1,5 @@
 import type { IOtpService } from "@application/ports/services/otp-service.interface.ts";
+import type { IVerifyEmailOtpUseCase } from "@ports/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { InvalidOtpError } from "@domain/errors/domain.error.ts";
 import { Email } from "@domain/value-objects/email.vo.ts";
@@ -11,7 +12,7 @@ import type {
 } from "../dtos/verify-email-otp.dto.ts";
 
 @injectable()
-export class VerifyEmailOtpUseCase {
+export class VerifyEmailOtpUseCase implements IVerifyEmailOtpUseCase {
 	constructor(
 		@inject(TYPES.OtpService)
 		private readonly otpService: IOtpService,

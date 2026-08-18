@@ -1,16 +1,18 @@
-import type { LogoutUseCase } from "@application/use-cases/logout.use-case.ts";
-import type { RegisterUserUseCase } from "@application/use-cases/register-user.use-case.ts";
-import type { ResendEmailOtpUseCase } from "@application/use-cases/resend-email-otp.use-case.ts";
-import type { VerifyEmailOtpUseCase } from "@application/use-cases/verify-email-otp.use-case.ts";
+import type {
+	ILogoutUseCase,
+	IRegisterUserUseCase,
+	IResendEmailOtpUseCase,
+	IVerifyEmailOtpUseCase,
+} from "@ports/use-cases/index.ts";
 import { UserController } from "@interfaces/http/controllers/user.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type { NextFunction, Request, Response } from "express";
 
 describe("UserController", () => {
-	let mockRegisterUseCase: jest.Mocked<Partial<RegisterUserUseCase>>;
-	let mockVerifyEmailOtpUseCase: jest.Mocked<Partial<VerifyEmailOtpUseCase>>;
-	let mockResendEmailOtpUseCase: jest.Mocked<Partial<ResendEmailOtpUseCase>>;
-	let mockLogoutUseCase: jest.Mocked<Partial<LogoutUseCase>>;
+	let mockRegisterUseCase: jest.Mocked<Partial<IRegisterUserUseCase>>;
+	let mockVerifyEmailOtpUseCase: jest.Mocked<Partial<IVerifyEmailOtpUseCase>>;
+	let mockResendEmailOtpUseCase: jest.Mocked<Partial<IResendEmailOtpUseCase>>;
+	let mockLogoutUseCase: jest.Mocked<Partial<ILogoutUseCase>>;
 	let controller: UserController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
@@ -31,10 +33,10 @@ describe("UserController", () => {
 		};
 
 		controller = new UserController(
-			mockRegisterUseCase as RegisterUserUseCase,
-			mockVerifyEmailOtpUseCase as VerifyEmailOtpUseCase,
-			mockResendEmailOtpUseCase as ResendEmailOtpUseCase,
-			mockLogoutUseCase as LogoutUseCase,
+			mockRegisterUseCase as IRegisterUserUseCase,
+			mockVerifyEmailOtpUseCase as IVerifyEmailOtpUseCase,
+			mockResendEmailOtpUseCase as IResendEmailOtpUseCase,
+			mockLogoutUseCase as ILogoutUseCase,
 		);
 
 		mockReq = {

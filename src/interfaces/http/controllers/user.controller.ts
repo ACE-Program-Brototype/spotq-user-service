@@ -1,9 +1,9 @@
 import type {
-	LogoutUseCase,
-	RegisterUserUseCase,
-	ResendEmailOtpUseCase,
-	VerifyEmailOtpUseCase,
-} from "@application/use-cases/index.ts";
+	ILogoutUseCase,
+	IRegisterUserUseCase,
+	IResendEmailOtpUseCase,
+	IVerifyEmailOtpUseCase,
+} from "@ports/use-cases/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
@@ -17,13 +17,13 @@ import { asyncHandler } from "../middlewares/async.middleware.ts";
 export class UserController {
 	constructor(
 		@inject(TYPES.RegisterUserUseCase)
-		private readonly registerUserUseCase: RegisterUserUseCase,
+		private readonly registerUserUseCase: IRegisterUserUseCase,
 		@inject(TYPES.VerifyEmailOtpUseCase)
-		private readonly verifyEmailOtpUseCase: VerifyEmailOtpUseCase,
+		private readonly verifyEmailOtpUseCase: IVerifyEmailOtpUseCase,
 		@inject(TYPES.ResendEmailOtpUseCase)
-		private readonly resendEmailOtpUseCase: ResendEmailOtpUseCase,
+		private readonly resendEmailOtpUseCase: IResendEmailOtpUseCase,
 		@inject(TYPES.LogoutUseCase)
-		private readonly logoutUseCase: LogoutUseCase,
+		private readonly logoutUseCase: ILogoutUseCase,
 	) {}
 
 	public register = asyncHandler(

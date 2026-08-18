@@ -5,6 +5,12 @@ import {
 	ResendEmailOtpUseCase,
 	VerifyEmailOtpUseCase,
 } from "@application/use-cases/index.ts";
+import type {
+	ILogoutUseCase,
+	IRegisterUserUseCase,
+	IResendEmailOtpUseCase,
+	IVerifyEmailOtpUseCase,
+} from "@ports/use-cases/index.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
@@ -28,16 +34,16 @@ export const userModule = new ContainerModule(({ bind }) => {
 	);
 
 	// Application Use Cases
-	bind<RegisterUserUseCase>(USER_TYPES.RegisterUserUseCase).to(
+	bind<IRegisterUserUseCase>(USER_TYPES.RegisterUserUseCase).to(
 		RegisterUserUseCase,
 	);
-	bind<VerifyEmailOtpUseCase>(USER_TYPES.VerifyEmailOtpUseCase).to(
+	bind<IVerifyEmailOtpUseCase>(USER_TYPES.VerifyEmailOtpUseCase).to(
 		VerifyEmailOtpUseCase,
 	);
-	bind<ResendEmailOtpUseCase>(USER_TYPES.ResendEmailOtpUseCase).to(
+	bind<IResendEmailOtpUseCase>(USER_TYPES.ResendEmailOtpUseCase).to(
 		ResendEmailOtpUseCase,
 	);
-	bind<LogoutUseCase>(USER_TYPES.LogoutUseCase).to(LogoutUseCase);
+	bind<ILogoutUseCase>(USER_TYPES.LogoutUseCase).to(LogoutUseCase);
 
 	// HTTP Controllers & Routers
 	bind<UserController>(USER_TYPES.UserController).to(UserController);
