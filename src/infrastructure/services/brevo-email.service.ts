@@ -7,10 +7,10 @@ import { injectable } from "inversify";
 
 @injectable()
 export class BrevoEmailService implements IEmailService {
-	private readonly client: BrevoClient;
+	private readonly _client: BrevoClient;
 
 	constructor() {
-		this.client = new BrevoClient({
+		this._client = new BrevoClient({
 			apiKey: config.brevo.apiKey,
 		});
 	}
@@ -25,7 +25,7 @@ export class BrevoEmailService implements IEmailService {
 				validityMinutes: 5,
 			});
 
-			await this.client.transactionalEmails.sendTransacEmail({
+			await this._client.transactionalEmails.sendTransacEmail({
 				sender: {
 					name: config.brevo.senderName,
 					email: config.brevo.senderEmail,

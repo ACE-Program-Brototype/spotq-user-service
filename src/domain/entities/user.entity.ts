@@ -15,10 +15,10 @@ export interface UserEntityProps {
 }
 
 export class UserEntity {
-	private readonly props: UserEntityProps;
+	private readonly _props: UserEntityProps;
 
 	private constructor(props: UserEntityProps) {
-		this.props = props;
+		this._props = props;
 	}
 
 	public static create(params: {
@@ -61,38 +61,38 @@ export class UserEntity {
 	}
 
 	public get id(): string {
-		return this.props.id;
+		return this._props.id;
 	}
 
 	public get fullName(): FullName {
-		return this.props.fullName;
+		return this._props.fullName;
 	}
 
 	public get phone(): PhoneNumber {
-		return this.props.phone;
+		return this._props.phone;
 	}
 
 	public get email(): Email {
-		return this.props.email;
+		return this._props.email;
 	}
 
 	public get passwordHash(): string {
-		return this.props.passwordHash;
+		return this._props.passwordHash;
 	}
 
 	public get googleId(): string | null | undefined {
-		return this.props.googleId;
+		return this._props.googleId;
 	}
 
 	public get status(): UserStatus {
-		return this.props.status;
+		return this._props.status;
 	}
 
 	public get createdAt(): Date {
-		return this.props.createdAt;
+		return this._props.createdAt;
 	}
 
 	public get updatedAt(): Date {
-		return this.props.updatedAt;
+		return this._props.updatedAt;
 	}
 }

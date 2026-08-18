@@ -19,11 +19,11 @@ import type {
 export class ResendEmailOtpUseCase implements IResendEmailOtpUseCase {
 	constructor(
 		@inject(TYPES.UserRepository)
-		private readonly userRepository: IUserRepository,
+		private readonly _userRepository: IUserRepository,
 		@inject(TYPES.OtpService)
-		private readonly otpService: IOtpService,
+		private readonly _otpService: IOtpService,
 		@inject(TYPES.EmailQueueProducer)
-		private readonly emailQueueProducer: IEmailQueueProducer,
+		private readonly _emailQueueProducer: IEmailQueueProducer,
 	) {}
 
 	public async execute(
@@ -31,16 +31,16 @@ export class ResendEmailOtpUseCase implements IResendEmailOtpUseCase {
 	): Promise<ResendEmailOtpResultDto> {
 		const email = Email.create(dto.email);
 
-		const user = await this.userRepository.findByEmail(email);
+		const user = await this._userRepository.findByEmail(email);
 		if (!user) {
 			throw new UserNotFoundError("No account found with this email address.");
 		}
 
 		// Generate new OTP (this resets attempt count and invalidates previous OTP)
-		const otp = await this.otpService.generateAndStoreOtp(email.getValue());
+		const otp = await this._otpService.generateAndStoreOtp(email.getValue());
 
 		// Queue email delivery job in BullMQ
-		await this.emailQueueProducer.queueVerificationEmail({
+		await this._emailQueueProducer.queueVerificationEmail({
 			email: email.getValue(),
 			otp,
 		});

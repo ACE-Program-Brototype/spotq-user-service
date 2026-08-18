@@ -1,14 +1,14 @@
 import { InvalidNameError } from "../errors/domain.error.ts";
 
 export class FullName {
-	private readonly value: string;
+	private readonly _value: string;
 
 	// Regex allowing unicode letters (marks/alphabets), spaces, hyphens, and apostrophes
 	private static readonly NAME_REGEX =
 		/^[\p{L}\p{M}]+(?:[' -][\p{L}\p{M}]+)*$/u;
 
 	private constructor(value: string) {
-		this.value = value;
+		this._value = value;
 	}
 
 	private static hasControlChars(str: string): boolean {
@@ -50,10 +50,10 @@ export class FullName {
 	}
 
 	public getValue(): string {
-		return this.value;
+		return this._value;
 	}
 
 	public toString(): string {
-		return this.value;
+		return this._value;
 	}
 }

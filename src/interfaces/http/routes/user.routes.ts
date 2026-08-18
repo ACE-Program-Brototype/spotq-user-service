@@ -17,7 +17,7 @@ export class UserRouter {
 
 	constructor(
 		@inject(TYPES.UserController)
-		private readonly userController: UserController,
+		private readonly _userController: UserController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
@@ -27,26 +27,26 @@ export class UserRouter {
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),
-			this.userController.register,
+			this._userController.register,
 		);
 
 		this.router.post(
 			"/verify-email",
 			validateRequestBody(verifyEmailOtpSchema),
-			this.userController.verifyEmail,
+			this._userController.verifyEmail,
 		);
 
 		this.router.post(
 			"/resend-email-otp",
 			validateRequestBody(resendEmailOtpSchema),
-			this.userController.resendEmailOtp,
+			this._userController.resendEmailOtp,
 		);
 
 		this.router.post(
 			"/logout",
 			authMiddleware,
 			validateRequestBody(logoutSchema),
-			this.userController.logout,
+			this._userController.logout,
 		);
 	}
 

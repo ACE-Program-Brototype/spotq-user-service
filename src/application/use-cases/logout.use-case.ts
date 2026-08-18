@@ -11,15 +11,15 @@ import type { LogoutDto, LogoutResultDto } from "../dtos/logout.dto.ts";
 export class LogoutUseCase implements ILogoutUseCase {
 	constructor(
 		@inject(TYPES.RefreshTokenRepository)
-		private readonly refreshTokenRepository: IRefreshTokenRepository,
+		private readonly _refreshTokenRepository: IRefreshTokenRepository,
 		@inject(TYPES.TokenService)
-		private readonly tokenService: ITokenService,
+		private readonly _tokenService: ITokenService,
 	) {}
 
 	public async execute(dto: LogoutDto): Promise<LogoutResultDto> {
 		if (dto.refreshToken) {
-			const tokenHash = this.tokenService.hashToken(dto.refreshToken.trim());
-			await this.refreshTokenRepository.revoke(tokenHash, new Date());
+			const tokenHash = this._tokenService.hashToken(dto.refreshToken.trim());
+			await this._refreshTokenRepository.revoke(tokenHash, new Date());
 		}
 
 		logger.info(

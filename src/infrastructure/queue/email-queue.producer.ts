@@ -12,17 +12,17 @@ export const EMAIL_QUEUE_NAME = "email-verification-queue";
 
 @injectable()
 export class EmailQueueProducer implements IEmailQueueProducer {
-	private queue: Queue | null = null;
+	private _queue: Queue | null = null;
 
 	private getQueue(): Queue {
-		if (!this.queue) {
+		if (!this._queue) {
 			const connection = new Redis(config.redis.url, {
 				maxRetriesPerRequest: null,
 				enableOfflineQueue: false,
 				tls: config.redis.url.startsWith("rediss://") ? {} : undefined,
 			});
 
-			this.queue = new Queue(EMAIL_QUEUE_NAME, {
+			this._queue = new Queue(EMAIL_QUEUE_NAME, {
 				connection,
 				defaultJobOptions: {
 					attempts: 3,
@@ -35,7 +35,7 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 				},
 			});
 		}
-		return this.queue;
+		return this._queue;
 	}
 
 	public async queueVerificationEmail(
@@ -60,9 +60,9 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 	}
 
 	public async close(): Promise<void> {
-		if (this.queue) {
-			await this.queue.close();
-			this.queue = null;
+		if (this._queue) {
+			await this._queue.close();
+			this._queue = null;
 		}
 	}
 }

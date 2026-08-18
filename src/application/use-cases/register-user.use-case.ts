@@ -27,17 +27,17 @@ import type {
 export class RegisterUserUseCase implements IRegisterUserUseCase {
 	constructor(
 		@inject(TYPES.UserRepository)
-		private readonly userRepository: IUserRepository,
+		private readonly _userRepository: IUserRepository,
 		@inject(TYPES.PasswordHasher)
-		private readonly passwordHasher: IPasswordHasher,
+		private readonly _passwordHasher: IPasswordHasher,
 		@inject(TYPES.TokenService)
-		private readonly tokenService: ITokenService,
+		private readonly _tokenService: ITokenService,
 		@inject(TYPES.OtpService)
-		private readonly otpService: IOtpService,
+		private readonly _otpService: IOtpService,
 		@inject(TYPES.EmailQueueProducer)
-		private readonly emailQueueProducer: IEmailQueueProducer,
+		private readonly _emailQueueProducer: IEmailQueueProducer,
 		@inject(TYPES.IdGenerator)
-		private readonly idGenerator: IIdGenerator,
+		private readonly _idGenerator: IIdGenerator,
 	) {}
 
 	public async execute(dto: RegisterUserDto): Promise<RegisterUserResultDto> {
@@ -45,28 +45,28 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		const plainPassword = PlainPassword.create(dto.password);
 
 		// 2. Application-level uniqueness checks
-		const existingEmail = await this.userRepository.findByEmail(dto.email);
+		const existingEmail = await this._userRepository.findByEmail(dto.email);
 		if (existingEmail) {
 			throw new EmailAlreadyExistsError();
 		}
 
-		const existingPhone = await this.userRepository.findByPhone(dto.phoneNumber);
+		const existingPhone = await this._userRepository.findByPhone(dto.phoneNumber);
 		if (existingPhone) {
 			throw new PhoneAlreadyExistsError();
 		}
 
 		// 3. Hash password
-		const passwordHash = await this.passwordHasher.hash(plainPassword);
+		const passwordHash = await this._passwordHasher.hash(plainPassword);
 
 		// 4. Generate identifiers and tokens
-		const userId = this.idGenerator.generateUuid();
-		const refreshTokenData = this.tokenService.generateRefreshToken();
+		const userId = this._idGenerator.generateUuid();
+		const refreshTokenData = this._tokenService.generateRefreshToken();
 
 		let deviceEntity: DeviceEntity | null = null;
 		let deviceId: string | null = null;
 
 		if (dto.device) {
-			deviceId = this.idGenerator.generateUuid();
+			deviceId = this._idGenerator.generateUuid();
 			deviceEntity = DeviceEntity.create({
 				id: deviceId,
 				userId,
@@ -77,7 +77,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		}
 
 		const refreshTokenEntity = RefreshTokenEntity.create({
-			id: this.idGenerator.generateUuid(),
+			id: this._idGenerator.generateUuid(),
 			userId,
 			deviceId,
 			tokenHash: refreshTokenData.tokenHash,
@@ -93,18 +93,18 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		});
 
 		// 5. Database-level atomic transaction for User + Device + Session
-		const createdUser = await this.userRepository.createWithSession({
+		const createdUser = await this._userRepository.createWithSession({
 			user: userEntity,
 			device: deviceEntity,
 			refreshToken: refreshTokenEntity,
 		});
 
 		// 6. Generate 6-digit OTP and store SHA-256 hash in Redis
-		const otp = await this.otpService.generateAndStoreOtp(dto.email);
+		const otp = await this._otpService.generateAndStoreOtp(dto.email);
 
 		// 7. Queue email delivery job in BullMQ
 		try {
-			await this.emailQueueProducer.queueVerificationEmail({
+			await this._emailQueueProducer.queueVerificationEmail({
 				email: dto.email,
 				otp,
 			});
@@ -117,7 +117,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		}
 
 		// 8. Generate JWT access token
-		const accessToken = this.tokenService.generateAccessToken({
+		const accessToken = this._tokenService.generateAccessToken({
 			userId: createdUser.id,
 			email: createdUser.email.getValue(),
 		});

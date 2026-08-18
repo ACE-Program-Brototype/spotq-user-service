@@ -10,10 +10,10 @@ export interface DeviceProps {
 }
 
 export class DeviceEntity {
-	private readonly props: DeviceProps;
+	private readonly _props: DeviceProps;
 
 	private constructor(props: DeviceProps) {
-		this.props = props;
+		this._props = props;
 	}
 
 	public static create(params: {
@@ -38,35 +38,35 @@ export class DeviceEntity {
 	}
 
 	public get id(): string {
-		return this.props.id;
+		return this._props.id;
 	}
 
 	public get userId(): string {
-		return this.props.userId;
+		return this._props.userId;
 	}
 
 	public get fcmToken(): string | null | undefined {
-		return this.props.fcmToken;
+		return this._props.fcmToken;
 	}
 
 	public get deviceName(): string | null | undefined {
-		return this.props.deviceName;
+		return this._props.deviceName;
 	}
 
 	public get platform(): PlatformType {
-		return this.props.platform;
+		return this._props.platform;
 	}
 
 	public get lastLogin(): Date {
-		return this.props.lastLogin;
+		return this._props.lastLogin;
 	}
 
 	public updateFcmToken(fcmToken: string | null): void {
-		this.props.fcmToken = fcmToken;
-		this.props.lastLogin = new Date();
+		this._props.fcmToken = fcmToken;
+		this._props.lastLogin = new Date();
 	}
 
 	public updateLastLogin(date = new Date()): void {
-		this.props.lastLogin = date;
+		this._props.lastLogin = date;
 	}
 }

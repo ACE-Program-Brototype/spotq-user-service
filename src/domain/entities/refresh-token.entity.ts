@@ -9,10 +9,10 @@ export interface RefreshTokenProps {
 }
 
 export class RefreshTokenEntity {
-	private readonly props: RefreshTokenProps;
+	private readonly _props: RefreshTokenProps;
 
 	private constructor(props: RefreshTokenProps) {
-		this.props = props;
+		this._props = props;
 	}
 
 	public static create(params: {
@@ -38,39 +38,39 @@ export class RefreshTokenEntity {
 	}
 
 	public get id(): string {
-		return this.props.id;
+		return this._props.id;
 	}
 
 	public get userId(): string {
-		return this.props.userId;
+		return this._props.userId;
 	}
 
 	public get deviceId(): string | null | undefined {
-		return this.props.deviceId;
+		return this._props.deviceId;
 	}
 
 	public get tokenHash(): string {
-		return this.props.tokenHash;
+		return this._props.tokenHash;
 	}
 
 	public get expiresAt(): Date {
-		return this.props.expiresAt;
+		return this._props.expiresAt;
 	}
 
 	public get createdAt(): Date {
-		return this.props.createdAt;
+		return this._props.createdAt;
 	}
 
 	public get revokedAt(): Date | null | undefined {
-		return this.props.revokedAt;
+		return this._props.revokedAt;
 	}
 
 	public isRevoked(): boolean {
-		return this.props.revokedAt !== null && this.props.revokedAt !== undefined;
+		return this._props.revokedAt !== null && this._props.revokedAt !== undefined;
 	}
 
 	public isExpired(): boolean {
-		return new Date() > this.props.expiresAt;
+		return new Date() > this._props.expiresAt;
 	}
 
 	public isValid(): boolean {
@@ -78,6 +78,6 @@ export class RefreshTokenEntity {
 	}
 
 	public revoke(revocationTime = new Date()): void {
-		this.props.revokedAt = revocationTime;
+		this._props.revokedAt = revocationTime;
 	}
 }

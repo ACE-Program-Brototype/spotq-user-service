@@ -1,13 +1,13 @@
 import { InvalidPhoneNumberError } from "../errors/domain.error.ts";
 
 export class PhoneNumber {
-	private readonly value: string;
+	private readonly _value: string;
 
 	// Indian mobile number: +91 followed by 10 digits starting with 6, 7, 8, 9
 	private static readonly INDIAN_PHONE_REGEX = /^\+91[6-9]\d{9}$/;
 
 	private constructor(value: string) {
-		this.value = value;
+		this._value = value;
 	}
 
 	public static create(rawPhone: unknown): PhoneNumber {
@@ -40,14 +40,14 @@ export class PhoneNumber {
 	}
 
 	public getValue(): string {
-		return this.value;
+		return this._value;
 	}
 
 	public toString(): string {
-		return this.value;
+		return this._value;
 	}
 
 	public equals(other: PhoneNumber): boolean {
-		return this.value === other.value;
+		return this._value === other._value;
 	}
 }

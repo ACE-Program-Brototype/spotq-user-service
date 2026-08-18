@@ -1,10 +1,10 @@
 import { InvalidPasswordError } from "../errors/domain.error.ts";
 
 export class PlainPassword {
-	private readonly value: string;
+	private readonly _value: string;
 
 	private constructor(value: string) {
-		this.value = value;
+		this._value = value;
 	}
 
 	public static create(rawPassword: unknown): PlainPassword {
@@ -39,6 +39,6 @@ export class PlainPassword {
 	}
 
 	public getValue(): string {
-		return this.value;
+		return this._value;
 	}
 }

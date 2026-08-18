@@ -1,14 +1,14 @@
 import { InvalidEmailError } from "../errors/domain.error.ts";
 
 export class Email {
-	private readonly value: string;
+	private readonly _value: string;
 
 	// Standard industry email regex complying with practical RFC-5322
 	private static readonly EMAIL_REGEX =
 		/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
 	private constructor(value: string) {
-		this.value = value;
+		this._value = value;
 	}
 
 	public static create(rawEmail: unknown): Email {
@@ -32,14 +32,14 @@ export class Email {
 	}
 
 	public getValue(): string {
-		return this.value;
+		return this._value;
 	}
 
 	public toString(): string {
-		return this.value;
+		return this._value;
 	}
 
 	public equals(other: Email): boolean {
-		return this.value === other.value;
+		return this._value === other._value;
 	}
 }
