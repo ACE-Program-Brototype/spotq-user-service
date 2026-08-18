@@ -7,7 +7,7 @@ import type {
 import { TYPES } from "@config/di/types.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
-import { ApiResponse } from "@shared/response/api-response.model.ts";
+import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../middlewares/auth.middleware.ts";
@@ -29,33 +29,26 @@ export class UserController {
 	public register = asyncHandler(
 		async (req: Request, res: Response): Promise<void> => {
 			const result = await this.registerUserUseCase.execute(req.body);
-			res
-				.status(HttpStatus.CREATED)
-				.json(
-					ApiResponse.ok(
-						result,
-						ResponseMessage.REGISTRATION_SUCCESS,
-						HttpStatus.CREATED,
-					),
-				);
+			sendSuccessResponse(
+				res,
+				result,
+				ResponseMessage.REGISTRATION_SUCCESS,
+				HttpStatus.CREATED,
+			);
 		},
 	);
 
 	public verifyEmail = asyncHandler(
 		async (req: Request, res: Response): Promise<void> => {
 			const result = await this.verifyEmailOtpUseCase.execute(req.body);
-			res
-				.status(HttpStatus.OK)
-				.json(ApiResponse.ok(undefined, result.message, HttpStatus.OK));
+			sendSuccessResponse(res, undefined, result.message);
 		},
 	);
 
 	public resendEmailOtp = asyncHandler(
 		async (req: Request, res: Response): Promise<void> => {
 			const result = await this.resendEmailOtpUseCase.execute(req.body);
-			res
-				.status(HttpStatus.OK)
-				.json(ApiResponse.ok(undefined, result.message, HttpStatus.OK));
+			sendSuccessResponse(res, undefined, result.message);
 		},
 	);
 
@@ -66,9 +59,7 @@ export class UserController {
 				userId,
 				refreshToken: req.body?.refreshToken,
 			});
-			res
-				.status(HttpStatus.OK)
-				.json(ApiResponse.ok(undefined, result.message, HttpStatus.OK));
+			sendSuccessResponse(res, undefined, result.message);
 		},
 	);
 }
