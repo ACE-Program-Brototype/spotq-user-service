@@ -2,12 +2,12 @@ import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto
 import { IAdminForgotPasswordUseCase } from "@application/interface/admin/auth/IAdmin.forgot-password";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
 import type { IAdminLogoutUseCase } from "@application/interface/admin/auth/IAdmin.logout";
+import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/interface/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types";
 import { config } from "@config/env.ts";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { successResponse } from "@shared/response/api-response.model";
-import { AppError } from "@shared/util/app.error";
 import type { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { inject, injectable } from "inversify";
@@ -19,7 +19,9 @@ export class AdminAuthController {
 		@inject(TYPES.AdminLogoutUseCase)
 		private readonly _adminLogoutUseCase: IAdminLogoutUseCase,
 		@inject(TYPES.AdminForgotPasswordUseCase)
-		private readonly _adminForgotPasswordUseCase: IAdminForgotPasswordUseCase
+		private readonly _adminForgotPasswordUseCase: IAdminForgotPasswordUseCase,
+		@inject(TYPES.AdminForgotPasswordEmailVerifyUseCase)
+		private readonly _adminForgotPasswordVerifyEmailUseCase : IAdminVerifyEmailForgotPasswordUseCase
 	) { }
 
 	login = expressAsyncHandler(
@@ -36,6 +38,7 @@ export class AdminAuthController {
 				httpOnly: config.cookie.httpOnly,
 				secure: config.cookie.secure,
 				sameSite: config.cookie.sameSite,
+				maxAge: Number(config.cookie.refreshMaxAge)
 			});
 
 			successResponse(
@@ -76,20 +79,28 @@ export class AdminAuthController {
 
 			const { email } = req.body
 
-			const temp_token = await this._adminForgotPasswordUseCase.execute(email)
+			await this._adminForgotPasswordUseCase.execute(email)
 
-			if(!temp_token){
-				throw new AppError("Forgot Password failed", 500)
-			}
+			successResponse(res, {}, authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS)
+		}
+	)
 
-			res.cookie("tempToken", temp_token, {
+	forgotPasswordEmailVerify = expressAsyncHandler(
+		async(req: Request, res: Response): Promise<void> => {
+
+			const { email, otp } = req.body
+
+			const tempToken = await this._adminForgotPasswordVerifyEmailUseCase.execute(email, otp)
+
+			res.cookie("tempToken", tempToken, {
 				httpOnly: config.cookie.httpOnly,
 				secure: config.cookie.secure,
 				sameSite: config.cookie.sameSite,
-				maxAge: 300
+				maxAge: Number(config.cookie.tempMaxAge)
 			})
 
-			successResponse(res, {}, "Forgot Password verification OTP send successfully")
+			successResponse(res, {} , authConstants.EMAIL_VERIFIED_SUCCESS)
+
 		}
 	)
 

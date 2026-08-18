@@ -49,6 +49,8 @@ export const config = {
 		httpOnly: env.COOKIE_HTTPONLY,
 		secure: env.COOKIE_SECURE,
 		sameSite: env.COOKIE_SAME_SITE,
+		refreshMaxAge: env.COOKIE_REFRESH_MAX_AGE,
+		tempMaxAge: env.COOKIE_TEMP_MAX_AGE
 	},
 
 	brevo: {

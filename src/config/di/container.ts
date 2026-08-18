@@ -21,6 +21,7 @@ import { EmailQueueProducer } from "@infrastructure/queue/email.queue.producer.t
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 import { BrevoEmailService } from "@infrastructure/services/brevo.email.ts";
 import { EmailQueueWorker } from "@infrastructure/queue/email.queue.worker.ts";
+import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 
@@ -69,5 +70,6 @@ container.bind<EmailQueueProducer>(TYPES.EmailQueueProducer).to(EmailQueueProduc
 container.bind<AdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase).to(AdminForgotPasswordUseCase)
 container.bind<BrevoEmailService>(TYPES.EmailService).to(BrevoEmailService)
 container.bind<EmailQueueWorker>(TYPES.EmailQueueWorker).to(EmailQueueWorker)
+container.bind<VerifyForgotPasswordEmailUseCase>(TYPES.AdminForgotPasswordEmailVerifyUseCase).to(VerifyForgotPasswordEmailUseCase)
 
 export { container };

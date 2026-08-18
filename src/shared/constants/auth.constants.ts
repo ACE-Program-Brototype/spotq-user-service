@@ -6,4 +6,6 @@ export const authConstants = {
 	INCORRECT_PASSWORD: "Incorrect password",
 	ADMIN_LOGIN_SUCCESS: "Admin login successful",
 	ADMIN_LOGOUT_SUCCESS: "Admin logout successful",
+    FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS: "Forgot Password verification OTP send successfully",
+	EMAIL_VERIFIED_SUCCESS: "Email verified successfully"
 };

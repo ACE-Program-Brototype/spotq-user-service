@@ -33,6 +33,9 @@ const envSchema = z.object({
 		.transform((val) => val === "true")
 		.default(true),
 	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
+	COOKIE_REFRESH_MAX_AGE: z.string(),
+	COOKIE_TEMP_MAX_AGE: z.string(),
+
 	JWT_TEMP_SECRET: z.string().min(1),
 	JWT_TEMP_EXPIRES_IN: z.string().min(1),
 
