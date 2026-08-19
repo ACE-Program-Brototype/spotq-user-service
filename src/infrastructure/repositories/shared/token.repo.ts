@@ -1,4 +1,4 @@
-import { ITokenService } from "@application/ports/service/IToken.service";
+import type { ITokenService } from "@application/ports/service/IToken.service";
 import { TYPES } from "@config/di/types";
 import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";
 import { inject, injectable } from "inversify";

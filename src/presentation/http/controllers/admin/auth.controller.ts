@@ -1,9 +1,9 @@
 
-import { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
-import { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
-import { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
-import { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
-import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
+import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
+import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
+import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
+import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
+import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types";
 import { config } from "@config/env.ts";
 import { HttpStatus } from "@shared/constants";

@@ -1,8 +1,5 @@
 import { config } from "@config/env.ts";
-import type {
-	IEmailQueueProducer,
-	QueueVerificationEmailParams,
-} from "@infrastructure/interface/shared/IEmail.queue.producer";
+import type { IEmailQueueProducer, QueueVerificationEmailParams } from "@domain/repository/shared/IEmail.queue.producer";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { Queue } from "bullmq";
 import { injectable } from "inversify";

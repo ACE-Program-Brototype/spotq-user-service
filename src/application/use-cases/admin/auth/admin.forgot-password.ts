@@ -1,8 +1,8 @@
 import { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
 import { TYPES } from "@config/di/types.ts";
-import { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
-import { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer";
-import { IOtpService } from "@domain/repository/shared/IOtp.service";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer";
+import type { IOtpService } from "@domain/repository/shared/IOtp.service";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";

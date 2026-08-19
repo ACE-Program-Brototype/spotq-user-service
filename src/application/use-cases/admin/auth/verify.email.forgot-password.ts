@@ -1,8 +1,8 @@
-import { ITokenService } from "@application/ports/service/IToken.service";
+import type { ITokenService } from "@application/ports/service/IToken.service";
 import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types.ts";
-import { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
-import { IOtpService } from "@domain/repository/shared/IOtp.service";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import type { IOtpService } from "@domain/repository/shared/IOtp.service";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";

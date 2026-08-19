@@ -1,10 +1,10 @@
 import type { AdminResetPasswordDto } from "@application/dtos/admin/auth/admin.forgot-password";
 import { toAdminResetPasswordResponse } from "@application/mappers/admin/auth/admin.reset.password.mapper";
-import { IPasswordHasher } from "@application/ports/service/IPassword.service";
+import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
 import { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
-import { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
