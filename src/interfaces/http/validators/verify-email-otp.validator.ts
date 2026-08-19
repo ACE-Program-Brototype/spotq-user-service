@@ -1,18 +1,19 @@
+import { VALIDATION_MESSAGES } from "@shared/constants/index.ts";
 import { z } from "zod";
 
 export const verifyEmailOtpSchema = z.object({
 	email: z
-		.string({ message: "Email is required." })
+		.string({ message: VALIDATION_MESSAGES.EMAIL.REQUIRED })
 		.trim()
-		.email("Invalid email address format.")
-		.max(254, "Email must not exceed 254 characters.")
+		.email(VALIDATION_MESSAGES.EMAIL.FORMAT)
+		.max(254, VALIDATION_MESSAGES.EMAIL.MAX)
 		.toLowerCase(),
 
 	otp: z
-		.string({ message: "OTP is required." })
+		.string({ message: VALIDATION_MESSAGES.OTP.REQUIRED })
 		.trim()
-		.length(6, "OTP must be exactly 6 digits.")
-		.regex(/^\d{6}$/, "OTP must contain numbers only."),
+		.length(6, VALIDATION_MESSAGES.OTP.LENGTH)
+		.regex(/^\d{6}$/, VALIDATION_MESSAGES.OTP.FORMAT),
 });
 
 export type VerifyEmailOtpInput = z.infer<typeof verifyEmailOtpSchema>;

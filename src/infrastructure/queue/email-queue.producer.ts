@@ -2,11 +2,12 @@ import type {
 	IEmailQueueProducer,
 	QueueVerificationEmailParams,
 } from "@application/ports/services/email-queue-producer.interface.ts";
+import type { ILogger } from "@application/ports/services/logger.interface.ts";
+import { TYPES } from "@config/di/types.ts";
 import { config } from "@config/env.ts";
-import { logger } from "@infrastructure/logger/logger.ts";
 import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 import { Queue } from "bullmq";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Redis } from "ioredis";
 
 export const EMAIL_QUEUE_NAME = "email-verification-queue";
@@ -14,6 +15,11 @@ export const EMAIL_QUEUE_NAME = "email-verification-queue";
 @injectable()
 export class EmailQueueProducer implements IEmailQueueProducer {
 	private _queue: Queue | null = null;
+
+	constructor(
+		@inject(TYPES.Logger)
+		private readonly _logger: ILogger,
+	) {}
 
 	private getQueue(): Queue {
 		if (!this._queue) {
@@ -47,12 +53,12 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 				email: params.email,
 				otp: params.otp,
 			});
-			logger.info(
+			this._logger.info(
 				{ email: params.email, event: "EMAIL_OTP_QUEUED" },
 				"Verification email job successfully queued in BullMQ",
 			);
 		} catch (error) {
-			logger.error(
+			this._logger.error(
 				{ err: error, email: params.email, event: "EMAIL_OTP_QUEUE_FAILED" },
 				"Failed to queue verification email in BullMQ",
 			);

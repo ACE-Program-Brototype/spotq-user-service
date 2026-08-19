@@ -54,6 +54,10 @@ const envSchema = z.object({
 		: z.string().email("BREVO_SENDER_EMAIL must be a valid email"),
 
 	BREVO_SENDER_NAME: z.string().default("SpotQ"),
+	GOOGLE_CLIENT_ID: isTest
+		? z.string().default("test_google_client_id")
+		: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
+
 	OTP_TTL_SECONDS: z.coerce.number().positive().default(300),
 	OTP_MAX_ATTEMPTS: z.coerce.number().positive().default(5),
 });

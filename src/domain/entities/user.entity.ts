@@ -1,17 +1,23 @@
 import { Email, FullName, PhoneNumber } from "../value-objects/index.ts";
+import type { UserProfileEntity } from "./user-profile.entity.ts";
 
-export type UserStatus = "ACTIVE";
+export enum UserStatus {
+	ACTIVE = "ACTIVE",
+	INACTIVE = "INACTIVE",
+	BLOCKED = "BLOCKED",
+}
 
 export interface UserEntityProps {
 	id: string;
 	fullName: FullName;
-	phone: PhoneNumber;
+	phone: PhoneNumber | null;
 	email: Email;
-	passwordHash: string;
+	passwordHash: string | null;
 	googleId?: string | null;
 	status: UserStatus;
 	createdAt: Date;
 	updatedAt: Date;
+	profile?: UserProfileEntity | null;
 }
 
 export class UserEntity {
@@ -24,10 +30,11 @@ export class UserEntity {
 	public static create(params: {
 		id: string;
 		fullName: string | FullName;
-		phone: string | PhoneNumber;
+		phone: string | PhoneNumber | null;
 		email: string | Email;
-		passwordHash: string;
+		passwordHash: string | null;
 		googleId?: string | null;
+		profile?: UserProfileEntity | null;
 	}): UserEntity {
 		const now = new Date();
 		const fullNameVo =
@@ -35,9 +42,11 @@ export class UserEntity {
 				? FullName.create(params.fullName)
 				: params.fullName;
 		const phoneVo =
-			typeof params.phone === "string"
-				? PhoneNumber.create(params.phone)
-				: params.phone;
+			params.phone === null
+				? null
+				: typeof params.phone === "string"
+					? PhoneNumber.create(params.phone)
+					: params.phone;
 		const emailVo =
 			typeof params.email === "string"
 				? Email.create(params.email)
@@ -50,9 +59,10 @@ export class UserEntity {
 			email: emailVo,
 			passwordHash: params.passwordHash,
 			googleId: params.googleId ?? null,
-			status: "ACTIVE",
+			status: UserStatus.ACTIVE,
 			createdAt: now,
 			updatedAt: now,
+			profile: params.profile ?? null,
 		});
 	}
 
@@ -68,7 +78,7 @@ export class UserEntity {
 		return this._props.fullName;
 	}
 
-	public get phone(): PhoneNumber {
+	public get phone(): PhoneNumber | null {
 		return this._props.phone;
 	}
 
@@ -76,7 +86,7 @@ export class UserEntity {
 		return this._props.email;
 	}
 
-	public get passwordHash(): string {
+	public get passwordHash(): string | null {
 		return this._props.passwordHash;
 	}
 
@@ -94,5 +104,9 @@ export class UserEntity {
 
 	public get updatedAt(): Date {
 		return this._props.updatedAt;
+	}
+
+	public get profile(): UserProfileEntity | null | undefined {
+		return this._props.profile;
 	}
 }

@@ -1,3 +1,4 @@
+import { VALIDATION_MESSAGES } from "@shared/constants/index.ts";
 import { z } from "zod";
 
 function hasNoControlChars(str: string): boolean {
@@ -12,55 +13,53 @@ function hasNoControlChars(str: string): boolean {
 
 export const registerUserSchema = z.object({
 	fullName: z
-		.string({ message: "Full name is required." })
+		.string({ message: VALIDATION_MESSAGES.FULL_NAME.REQUIRED })
 		.trim()
-		.min(2, "Full name must be at least 2 characters.")
-		.max(100, "Full name must not exceed 100 characters.")
+		.min(2, VALIDATION_MESSAGES.FULL_NAME.MIN)
+		.max(100, VALIDATION_MESSAGES.FULL_NAME.MAX)
 		.refine(hasNoControlChars, {
-			message: "Full name must not contain control characters.",
+			message: VALIDATION_MESSAGES.FULL_NAME.CONTROL_CHARS,
 		})
 		.refine((val) => /^[\p{L}\p{M}]+(?:[' -][\p{L}\p{M}]+)*$/u.test(val), {
-			message:
-				"Full name can only contain letters, spaces, hyphens, and apostrophes.",
+			message: VALIDATION_MESSAGES.FULL_NAME.FORMAT,
 		}),
 
 	email: z
-		.string({ message: "Email is required." })
+		.string({ message: VALIDATION_MESSAGES.EMAIL.REQUIRED })
 		.trim()
-		.email("Invalid email address format.")
-		.max(254, "Email must not exceed 254 characters.")
+		.email(VALIDATION_MESSAGES.EMAIL.FORMAT)
+		.max(254, VALIDATION_MESSAGES.EMAIL.MAX)
 		.toLowerCase(),
 
 	phoneNumber: z
-		.string({ message: "Phone number is required." })
+		.string({ message: VALIDATION_MESSAGES.PHONE.REQUIRED })
 		.trim()
 		.refine((val) => val.startsWith("+91"), {
-			message: "Phone number must start with +91 (Indian numbers only).",
+			message: VALIDATION_MESSAGES.PHONE.REGION,
 		})
 		.refine((val) => /^\+91[6-9]\d{9}$/.test(val.replace(/[\s-]/g, "")), {
-			message:
-				"Invalid Indian mobile number format. Expected +91 followed by 10 digits.",
+			message: VALIDATION_MESSAGES.PHONE.FORMAT,
 		})
 		.transform((val) => `+91${val.slice(3).replace(/[\s-]/g, "")}`),
 
 	password: z
-		.string({ message: "Password is required." })
-		.min(8, "Password must be at least 8 characters.")
-		.max(128, "Password must not exceed 128 characters.")
+		.string({ message: VALIDATION_MESSAGES.PASSWORD.REQUIRED })
+		.min(8, VALIDATION_MESSAGES.PASSWORD.MIN)
+		.max(128, VALIDATION_MESSAGES.PASSWORD.MAX)
 		.refine((val) => val === val.trim(), {
-			message: "Password must not contain leading or trailing whitespace.",
+			message: VALIDATION_MESSAGES.PASSWORD.WHITESPACE,
 		})
 		.refine((val) => /[A-Z]/.test(val), {
-			message: "Password must contain at least one uppercase letter.",
+			message: VALIDATION_MESSAGES.PASSWORD.UPPERCASE,
 		})
 		.refine((val) => /[a-z]/.test(val), {
-			message: "Password must contain at least one lowercase letter.",
+			message: VALIDATION_MESSAGES.PASSWORD.LOWERCASE,
 		})
 		.refine((val) => /[0-9]/.test(val), {
-			message: "Password must contain at least one number.",
+			message: VALIDATION_MESSAGES.PASSWORD.NUMBER,
 		})
 		.refine((val) => /[^A-Za-z0-9]/.test(val), {
-			message: "Password must contain at least one special character.",
+			message: VALIDATION_MESSAGES.PASSWORD.SPECIAL_CHAR,
 		}),
 
 	device: z

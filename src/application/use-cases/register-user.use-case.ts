@@ -22,6 +22,7 @@ import type {
 	RegisterUserDto,
 	RegisterUserResultDto,
 } from "../dtos/register-user.dto.ts";
+import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 
 @injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {
@@ -144,14 +145,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		);
 
 		return {
-			user: {
-				id: createdUser.id,
-				fullName: createdUser.fullName.getValue(),
-				email: createdUser.email.getValue(),
-				phoneNumber: createdUser.phone.getValue(),
-				status: createdUser.status,
-				createdAt: createdUser.createdAt.toISOString(),
-			},
+			user: UserDtoMapper.toRegisteredUserResponse(createdUser),
 			accessToken,
 			refreshToken: refreshTokenData.token,
 		};

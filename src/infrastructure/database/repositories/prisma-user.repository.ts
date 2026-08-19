@@ -28,6 +28,7 @@ export class PrismaUserRepository
 		const emailStr = typeof email === "string" ? email : email.getValue();
 		const record = await prisma.user.findUnique({
 			where: { email: emailStr },
+			include: { profile: true },
 		});
 
 		return record ? UserMapper.toDomain(record) : null;
@@ -39,6 +40,25 @@ export class PrismaUserRepository
 		const phoneStr = typeof phone === "string" ? phone : phone.getValue();
 		const record = await prisma.user.findUnique({
 			where: { phone: phoneStr },
+			include: { profile: true },
+		});
+
+		return record ? UserMapper.toDomain(record) : null;
+	}
+
+	public async findById(id: string): Promise<UserEntity | null> {
+		const record = await prisma.user.findUnique({
+			where: { id },
+			include: { profile: true },
+		});
+
+		return record ? UserMapper.toDomain(record) : null;
+	}
+
+	public async findByGoogleId(googleId: string): Promise<UserEntity | null> {
+		const record = await prisma.user.findFirst({
+			where: { googleId },
+			include: { profile: true },
 		});
 
 		return record ? UserMapper.toDomain(record) : null;
@@ -54,15 +74,29 @@ export class PrismaUserRepository
 					data: {
 						id: params.user.id,
 						fullname: params.user.fullName.getValue(),
-						phone: params.user.phone.getValue(),
+						phone: params.user.phone?.getValue() ?? null,
 						email: params.user.email.getValue(),
 						passwordHash: params.user.passwordHash,
 						googleId: params.user.googleId,
-						status: "ACTIVE",
+						status: params.user.status,
 					},
 				});
 
-				// 2. Create Device record if provided
+				// 2. Create UserProfile if present on the UserEntity
+				if (params.user.profile) {
+					await tx.userProfile.create({
+						data: {
+							id: params.user.profile.id,
+							userId: createdUser.id,
+							avatarUrl: params.user.profile.avatarUrl,
+							dob: params.user.profile.dob,
+							gender: params.user.profile.gender,
+							location: params.user.profile.location,
+						},
+					});
+				}
+
+				// 3. Create Device record if provided
 				let deviceId: string | null = null;
 				if (params.device) {
 					const createdDevice = await tx.device.create({
@@ -78,7 +112,7 @@ export class PrismaUserRepository
 					deviceId = createdDevice.id;
 				}
 
-				// 3. Create initial RefreshToken record
+				// 4. Create initial RefreshToken record
 				await tx.refreshToken.create({
 					data: {
 						id: params.refreshToken.id,
@@ -90,8 +124,18 @@ export class PrismaUserRepository
 					},
 				});
 
-				return createdUser;
+				// Re-fetch created user with its profile to return fully populated object
+				return tx.user.findUnique({
+					where: { id: createdUser.id },
+					include: { profile: true },
+				});
 			});
+
+			if (!result) {
+				throw new Error(
+					"Failed to retrieve created user record from transaction",
+				);
+			}
 
 			return UserMapper.toDomain(result);
 		} catch (error) {

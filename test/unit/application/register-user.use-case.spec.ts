@@ -30,6 +30,7 @@ describe("RegisterUserUseCase", () => {
 			findByEmail: jest.fn(),
 			findByPhone: jest.fn(),
 			findById: jest.fn(),
+			findByGoogleId: jest.fn(),
 			createWithSession: jest.fn(),
 		};
 

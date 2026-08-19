@@ -7,3 +7,4 @@ export * from "./redis-events.constants.ts";
 export * from "./regex.constants.ts";
 export * from "./response-messages.constants.ts";
 export * from "./routes.constants.ts";
+export * from "./validation-messages.constants.ts";

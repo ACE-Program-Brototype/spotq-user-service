@@ -71,6 +71,7 @@
 		"bullmq": "^6.0.5",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
+		"google-auth-library": "^11.0.2",
 		"inversify": "^8.2.3",
 		"ioredis": "^6.0.0",
 		"jsonwebtoken": "^9.0.3",

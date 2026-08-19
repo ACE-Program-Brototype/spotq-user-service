@@ -1,6 +1,7 @@
-import { UserController } from "@interfaces/http/controllers/user.controller.ts";
+import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type {
+	IGoogleAuthUseCase,
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
@@ -8,12 +9,13 @@ import type {
 } from "@ports/use-cases/index.ts";
 import type { NextFunction, Request, Response } from "express";
 
-describe("UserController", () => {
+describe("UserAuthController", () => {
 	let mockRegisterUseCase: jest.Mocked<Partial<IRegisterUserUseCase>>;
 	let mockVerifyEmailOtpUseCase: jest.Mocked<Partial<IVerifyEmailOtpUseCase>>;
 	let mockResendEmailOtpUseCase: jest.Mocked<Partial<IResendEmailOtpUseCase>>;
 	let mockLogoutUseCase: jest.Mocked<Partial<ILogoutUseCase>>;
-	let controller: UserController;
+	let mockGoogleAuthUseCase: jest.Mocked<Partial<IGoogleAuthUseCase>>;
+	let controller: UserAuthController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
 	let mockNext: jest.MockedFunction<NextFunction>;
@@ -31,12 +33,16 @@ describe("UserController", () => {
 		mockLogoutUseCase = {
 			execute: jest.fn(),
 		};
+		mockGoogleAuthUseCase = {
+			execute: jest.fn(),
+		};
 
-		controller = new UserController(
+		controller = new UserAuthController(
 			mockRegisterUseCase as IRegisterUserUseCase,
 			mockVerifyEmailOtpUseCase as IVerifyEmailOtpUseCase,
 			mockResendEmailOtpUseCase as IResendEmailOtpUseCase,
 			mockLogoutUseCase as ILogoutUseCase,
+			mockGoogleAuthUseCase as IGoogleAuthUseCase,
 		);
 
 		mockReq = {
@@ -180,6 +186,56 @@ describe("UserController", () => {
 			expect.objectContaining({
 				success: true,
 				message: "Logged out successfully.",
+			}),
+		);
+	});
+
+	it("should return 200 and set cookie on successful Google authentication", async () => {
+		const googleAuthResult = {
+			user: {
+				id: "u-1",
+				fullName: "John Doe",
+				email: "john.doe@gmail.com",
+				status: "ACTIVE",
+			},
+			accessToken: "access_token_123",
+			refreshToken: "refresh_token_123",
+		};
+
+		(mockGoogleAuthUseCase.execute as jest.Mock).mockResolvedValue(
+			googleAuthResult,
+		);
+
+		mockReq.body = {
+			idToken: "some-google-id-token",
+		};
+
+		await controller.googleAuth(
+			mockReq as Request,
+			mockRes as Response,
+			mockNext,
+		);
+
+		expect(mockRes.status).toHaveBeenCalledWith(200);
+		expect(mockRes.cookie).toHaveBeenCalledWith(
+			"refreshToken",
+			"refresh_token_123",
+			expect.any(Object),
+		);
+		expect(mockRes.json).toHaveBeenCalledWith(
+			expect.objectContaining({
+				success: true,
+				statusCode: 200,
+				message: "Google authentication successful.",
+				data: {
+					user: {
+						id: "u-1",
+						full_name: "John Doe",
+						email: "john.doe@gmail.com",
+						status: "ACTIVE",
+					},
+					access_token: "access_token_123",
+				},
 			}),
 		);
 	});

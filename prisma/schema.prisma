@@ -30,9 +30,9 @@ model PlatformAdmin {
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   fullname     String        @map("fullname")
-  phone        String        @unique @map("phone")
+  phone        String?       @unique @map("phone")
   email        String        @unique @map("email")
-  passwordHash String        @map("password_hash")
+  passwordHash String?       @map("password_hash")
   googleId     String?       @map("google_id")
   status       UserStatus    @default(ACTIVE) @map("status")
   createdAt    DateTime      @default(now()) @map("created_at")
@@ -40,8 +40,24 @@ model User {
 
   refreshTokens RefreshToken[]
   devices       Device[]
+  profile       UserProfile?
 
   @@map("users")
+}
+
+model UserProfile {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @unique @map("user_id") @db.Uuid
+  avatarUrl  String?  @map("avatar_url")
+  dob        DateTime? @map("dob") @db.Date
+  gender     String?  @map("gender")
+  location   String?  @map("location")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
 }
 
 model RefreshToken {

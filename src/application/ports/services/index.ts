@@ -1,5 +1,6 @@
 export * from "./email-queue-producer.interface.ts";
 export * from "./email-service.interface.ts";
+export * from "./google-auth-service.interface.ts";
 export * from "./id-generator.interface.ts";
 export * from "./logger.interface.ts";
 export * from "./otp-service.interface.ts";

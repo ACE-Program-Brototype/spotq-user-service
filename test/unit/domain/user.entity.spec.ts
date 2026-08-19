@@ -1,5 +1,5 @@
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
-import { UserEntity } from "@domain/entities/user.entity.ts";
+import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
 
 describe("Domain Entities", () => {
@@ -15,9 +15,9 @@ describe("Domain Entities", () => {
 
 			expect(user.id).toBe("123e4567-e89b-12d3-a456-426614174000");
 			expect(user.fullName.getValue()).toBe("Jane Doe");
-			expect(user.phone.getValue()).toBe("+919876543210");
+			expect(user.phone?.getValue()).toBe("+919876543210");
 			expect(user.email.getValue()).toBe("jane.doe@example.com");
-			expect(user.status).toBe("ACTIVE");
+			expect(user.status).toBe(UserStatus.ACTIVE);
 			expect(user.createdAt).toBeInstanceOf(Date);
 		});
 
@@ -34,7 +34,7 @@ describe("Domain Entities", () => {
 			expect(user.fullName.getValue()).toBe("Jane Doe");
 			expect(user.phone.getValue()).toBe("+919876543210");
 			expect(user.email.getValue()).toBe("jane.doe@example.com");
-			expect(user.status).toBe("ACTIVE");
+			expect(user.status).toBe(UserStatus.ACTIVE);
 			expect(user.createdAt).toBeInstanceOf(Date);
 		});
 	});

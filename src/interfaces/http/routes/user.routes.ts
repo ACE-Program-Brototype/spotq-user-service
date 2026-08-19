@@ -1,7 +1,8 @@
 import { TYPES } from "@config/di/types.ts";
-import type { UserController } from "@interfaces/http/controllers/user.controller.ts";
+import type { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
+	googleAuthSchema,
 	logoutSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
@@ -16,8 +17,8 @@ export class UserRouter {
 	public router: Router;
 
 	constructor(
-		@inject(TYPES.UserController)
-		private readonly _userController: UserController,
+		@inject(TYPES.UserAuthController)
+		private readonly _userController: UserAuthController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
@@ -47,6 +48,12 @@ export class UserRouter {
 			authMiddleware,
 			validateRequestBody(logoutSchema),
 			this._userController.logout,
+		);
+
+		this.router.post(
+			"/oauth/google",
+			validateRequestBody(googleAuthSchema),
+			this._userController.googleAuth,
 		);
 	}
 
