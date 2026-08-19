@@ -7,11 +7,7 @@ import type {
 import { LoginUseCase } from "@application/use-cases/login.use-case.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
-import {
-	AccountBlockedError,
-	AccountInactiveError,
-	InvalidCredentialsError,
-} from "@domain/errors/domain.error.ts";
+import { InvalidCredentialsError } from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
 	IRefreshTokenRepository,
@@ -141,13 +137,14 @@ describe("LoginUseCase", () => {
 	it("should throw AccountBlockedError if user status is BLOCKED", async () => {
 		const user = createMockUser(UserStatus.BLOCKED);
 		mockUserRepository.findByEmail.mockResolvedValue(user);
+		mockPasswordHasher.compare.mockResolvedValue(true);
 
 		await expect(
 			useCase.execute({
 				email: "jane.doe@example.com",
 				password: "password123",
 			}),
-		).rejects.toThrow(AccountBlockedError);
+		).rejects.toThrow(InvalidCredentialsError);
 
 		expect(mockLogger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({ event: "LOGIN_BLOCKED_ACCOUNT" }),
@@ -158,13 +155,14 @@ describe("LoginUseCase", () => {
 	it("should throw AccountInactiveError if user status is INACTIVE", async () => {
 		const user = createMockUser(UserStatus.INACTIVE);
 		mockUserRepository.findByEmail.mockResolvedValue(user);
+		mockPasswordHasher.compare.mockResolvedValue(true);
 
 		await expect(
 			useCase.execute({
 				email: "jane.doe@example.com",
 				password: "password123",
 			}),
-		).rejects.toThrow(AccountInactiveError);
+		).rejects.toThrow(InvalidCredentialsError);
 
 		expect(mockLogger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({ event: "LOGIN_INACTIVE_ACCOUNT" }),

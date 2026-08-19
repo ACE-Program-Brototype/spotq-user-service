@@ -8,11 +8,7 @@ import { TYPES } from "@config/di/types.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
 import { UserStatus } from "@domain/entities/user.entity.ts";
-import {
-	AccountBlockedError,
-	AccountInactiveError,
-	InvalidCredentialsError,
-} from "@domain/errors/domain.error.ts";
+import { InvalidCredentialsError } from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
 	IRefreshTokenRepository,
@@ -53,32 +49,25 @@ export class LoginUseCase implements ILoginUseCase {
 					{ event: "LOGIN_FAILED", email: normalizedEmail },
 					"Login failed: User not found",
 				);
+				// Dummy comparison to prevent timing attacks
+				await this._passwordHasher.compare(
+					params.password,
+					"$2b$10$y613u91o.pP.xX2XhE8TqF9T1d6M2.8g1K2nO123456789012345",
+				);
 				throw new InvalidCredentialsError();
 			}
 
-			// 2. Validate Account Status
-			if (user.status === UserStatus.BLOCKED) {
-				this._logger.warn(
-					{ event: "LOGIN_BLOCKED_ACCOUNT", userId: user.id },
-					"Login failed: Account is blocked",
-				);
-				throw new AccountBlockedError();
-			}
-
-			if (user.status === UserStatus.INACTIVE) {
-				this._logger.warn(
-					{ event: "LOGIN_INACTIVE_ACCOUNT", userId: user.id },
-					"Login failed: Account is inactive",
-				);
-				throw new AccountInactiveError();
-			}
-
-			// 3. Verify Password
+			// 2. Verify Password
 			if (!user.passwordHash) {
 				// Google-only account or no password set
 				this._logger.warn(
 					{ event: "LOGIN_FAILED", userId: user.id },
 					"Login failed: Password hash missing (Google-only account)",
+				);
+				// Dummy comparison to prevent timing attacks
+				await this._passwordHasher.compare(
+					params.password,
+					"$2b$10$y613u91o.pP.xX2XhE8TqF9T1d6M2.8g1K2nO123456789012345",
 				);
 				throw new InvalidCredentialsError();
 			}
@@ -92,6 +81,23 @@ export class LoginUseCase implements ILoginUseCase {
 				this._logger.warn(
 					{ event: "LOGIN_FAILED", userId: user.id },
 					"Login failed: Incorrect password",
+				);
+				throw new InvalidCredentialsError();
+			}
+
+			// 3. Validate Account Status (only after password verification)
+			if (user.status === UserStatus.BLOCKED) {
+				this._logger.warn(
+					{ event: "LOGIN_BLOCKED_ACCOUNT", userId: user.id },
+					"Login failed: Account is blocked",
+				);
+				throw new InvalidCredentialsError();
+			}
+
+			if (user.status === UserStatus.INACTIVE) {
+				this._logger.warn(
+					{ event: "LOGIN_INACTIVE_ACCOUNT", userId: user.id },
+					"Login failed: Account is inactive",
 				);
 				throw new InvalidCredentialsError();
 			}
@@ -120,6 +126,7 @@ export class LoginUseCase implements ILoginUseCase {
 						platform: params.device.platform,
 					});
 					await this._deviceRepository.save(newDevice);
+					deviceId = newDevice.id;
 				}
 			}
 
@@ -157,11 +164,7 @@ export class LoginUseCase implements ILoginUseCase {
 				refreshToken: refreshTokenData.token,
 			};
 		} catch (error) {
-			if (
-				error instanceof InvalidCredentialsError ||
-				error instanceof AccountBlockedError ||
-				error instanceof AccountInactiveError
-			) {
+			if (error instanceof InvalidCredentialsError) {
 				throw error;
 			}
 
