@@ -21,5 +21,6 @@ export const TYPES = {
 	EmailService: Symbol.for("EmailService"),
 	EmailQueueWorker: Symbol.for("EmailQueueWorker"),
 	AdminForgotPasswordEmailVerifyUseCase: Symbol.for("AdminForgotPasswordEmailVerifyUseCase"),
+	AdminResetPasswordUseCase: Symbol.for("AdminResetPasswordUseCase")
 
 } as const;

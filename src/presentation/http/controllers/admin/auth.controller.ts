@@ -2,12 +2,14 @@ import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto
 import { IAdminForgotPasswordUseCase } from "@application/interface/admin/auth/IAdmin.forgot-password";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
 import type { IAdminLogoutUseCase } from "@application/interface/admin/auth/IAdmin.logout";
+import { IAdminResetPasswordUseCase } from "@application/interface/admin/auth/IAdmin.reset.password";
 import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/interface/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types";
 import { config } from "@config/env.ts";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { successResponse } from "@shared/response/api-response.model";
+import { AppError } from "@shared/util/app.error";
 import type { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { inject, injectable } from "inversify";
@@ -21,7 +23,9 @@ export class AdminAuthController {
 		@inject(TYPES.AdminForgotPasswordUseCase)
 		private readonly _adminForgotPasswordUseCase: IAdminForgotPasswordUseCase,
 		@inject(TYPES.AdminForgotPasswordEmailVerifyUseCase)
-		private readonly _adminForgotPasswordVerifyEmailUseCase : IAdminVerifyEmailForgotPasswordUseCase
+		private readonly _adminForgotPasswordVerifyEmailUseCase: IAdminVerifyEmailForgotPasswordUseCase,
+		@inject(TYPES.AdminResetPasswordUseCase)
+		private readonly _adminResetPasswordUseCase: IAdminResetPasswordUseCase
 	) { }
 
 	login = expressAsyncHandler(
@@ -96,7 +100,8 @@ export class AdminAuthController {
 				httpOnly: config.cookie.httpOnly,
 				secure: config.cookie.secure,
 				sameSite: config.cookie.sameSite,
-				maxAge: Number(config.cookie.tempMaxAge)
+				maxAge: Number(config.cookie.tempMaxAge),
+				"path" : "/"
 			})
 
 			successResponse(res, {} , authConstants.EMAIL_VERIFIED_SUCCESS)
@@ -112,6 +117,29 @@ export class AdminAuthController {
 			await this._adminForgotPasswordUseCase.execute(email)
 
 			successResponse(res, {}, authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS)
+
+		}
+	)
+
+	resetPassword = expressAsyncHandler(
+		async(req: Request, res: Response): Promise<void> => {
+
+			const userId = (req as any).userId
+			const { password } = req.body
+
+			if(!userId){
+				throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+			}
+
+			const user = await this._adminResetPasswordUseCase.execute(userId, password)
+
+			res.clearCookie("tempToken",{
+				httpOnly: config.cookie.httpOnly,
+				secure: config.cookie.secure,
+				sameSite: config.cookie.sameSite
+			})
+
+			successResponse(res, user, authConstants.PASSWORD_RESET_SUCCESS)
 
 		}
 	)

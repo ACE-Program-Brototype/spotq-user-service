@@ -22,6 +22,7 @@ import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/ad
 import { BrevoEmailService } from "@infrastructure/services/brevo.email.ts";
 import { EmailQueueWorker } from "@infrastructure/queue/email.queue.worker.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
+import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admiin.reset.password.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 
@@ -71,5 +72,6 @@ container.bind<AdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase).to(
 container.bind<BrevoEmailService>(TYPES.EmailService).to(BrevoEmailService)
 container.bind<EmailQueueWorker>(TYPES.EmailQueueWorker).to(EmailQueueWorker)
 container.bind<VerifyForgotPasswordEmailUseCase>(TYPES.AdminForgotPasswordEmailVerifyUseCase).to(VerifyForgotPasswordEmailUseCase)
+container.bind<AdminResetPasswordUseCase>(TYPES.AdminResetPasswordUseCase).to(AdminResetPasswordUseCase)
 
 export { container };
