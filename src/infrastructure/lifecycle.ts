@@ -1,11 +1,11 @@
 import { container, TYPES } from "@config/di/index.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import type { PrismaService } from "./database/prisma/database.service.ts";
+import type { IEmailService } from "./interface/shared/IEmail.service.ts";
 import type { BullMQService } from "./queue/bullmq.service.ts";
+import type { EmailQueueProducer } from "./queue/email.queue.producer.ts";
+import type { EmailQueueWorker } from "./queue/email.queue.worker.ts";
 import type { RedisService } from "./redis/redis.service.ts";
-import { EmailQueueWorker } from "./queue/email.queue.worker.ts";
-import { IEmailService } from "./interface/shared/IEmail.service.ts";
-import { EmailQueueProducer } from "./queue/email.queue.producer.ts";
 
 export async function initInfrastructure(): Promise<void> {
 	const prismaService = container.get<PrismaService>(TYPES.PrismaService);
@@ -40,13 +40,14 @@ export async function shutdownInfrastructure(): Promise<void> {
 	}
 
 	try {
-		const emailProducer = container.get<EmailQueueProducer>(TYPES.EmailQueueProducer);
+		const emailProducer = container.get<EmailQueueProducer>(
+			TYPES.EmailQueueProducer,
+		);
 		await emailProducer.close();
 		logger.info("BullMQ EmailQueueProducer closed");
 	} catch (err) {
 		logger.error(err, "Error closing BullMQ EmailQueueProducer");
 	}
-
 
 	try {
 		logger.info("Disconnecting database client...");

@@ -1,21 +1,21 @@
 export interface VerificationOtpTemplateProps {
-    otp: string;
-    validityMinutes?: number;
+	otp: string;
+	validityMinutes?: number;
 }
 
 export interface RenderedEmailTemplate {
-    subject: string;
-    htmlContent: string;
+	subject: string;
+	htmlContent: string;
 }
 
 export function renderVerificationOtpTemplate(
-    props: VerificationOtpTemplateProps,
+	props: VerificationOtpTemplateProps,
 ): RenderedEmailTemplate {
-    const validityMinutes = props.validityMinutes ?? 5;
+	const validityMinutes = props.validityMinutes ?? 5;
 
-    return {
-        subject: "SpotQ - Verify Your Email Address",
-        htmlContent: `
+	return {
+		subject: "SpotQ - Verify Your Email Address",
+		htmlContent: `
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -86,5 +86,5 @@ export function renderVerificationOtpTemplate(
             </body>
             </html>
 		`.trim(),
-    };
+	};
 }

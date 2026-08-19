@@ -1,5 +1,3 @@
-
-
 export interface IAdminVerifyEmailForgotPasswordUseCase {
-    execute(email: string, otp: string) : Promise<string>
+	execute(email: string, otp: string): Promise<string>;
 }

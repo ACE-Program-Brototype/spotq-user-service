@@ -13,7 +13,7 @@ async function main() {
 		);
 	}
 
-	console.log(email)
+	console.log(email);
 
 	const passwordHash = await hashPassword(password);
 

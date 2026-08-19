@@ -40,9 +40,10 @@ const envSchema = z.object({
 	JWT_TEMP_EXPIRES_IN: z.string().min(1),
 
 	BREVO_API_KEY: z.string().min(1, "BREVO_API_KEY is required"),
-	BREVO_SENDER_EMAIL: z.string().email("BREVO_SENDER_EMAIL must be a valid email"),
+	BREVO_SENDER_EMAIL: z
+		.string()
+		.email("BREVO_SENDER_EMAIL must be a valid email"),
 	BREVO_SENDER_NAME: z.string().default("SpotQ"),
-
 });
 
 export const validateEnv = () => {

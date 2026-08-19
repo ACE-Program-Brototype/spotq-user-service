@@ -1,9 +1,9 @@
 import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto";
-import { IAdminForgotPasswordUseCase } from "@application/interface/admin/auth/IAdmin.forgot-password";
+import type { IAdminForgotPasswordUseCase } from "@application/interface/admin/auth/IAdmin.forgot-password";
 import type { IAdminLoginUseCase } from "@application/interface/admin/auth/IAdmin.login";
 import type { IAdminLogoutUseCase } from "@application/interface/admin/auth/IAdmin.logout";
-import { IAdminResetPasswordUseCase } from "@application/interface/admin/auth/IAdmin.reset.password";
-import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/interface/admin/auth/IVerify.email.forgot-password";
+import type { IAdminResetPasswordUseCase } from "@application/interface/admin/auth/IAdmin.reset.password";
+import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/interface/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types";
 import { config } from "@config/env.ts";
 import { HttpStatus } from "@shared/constants";
@@ -25,8 +25,8 @@ export class AdminAuthController {
 		@inject(TYPES.AdminForgotPasswordEmailVerifyUseCase)
 		private readonly _adminForgotPasswordVerifyEmailUseCase: IAdminVerifyEmailForgotPasswordUseCase,
 		@inject(TYPES.AdminResetPasswordUseCase)
-		private readonly _adminResetPasswordUseCase: IAdminResetPasswordUseCase
-	) { }
+		private readonly _adminResetPasswordUseCase: IAdminResetPasswordUseCase,
+	) {}
 
 	login = expressAsyncHandler(
 		async (req: Request, res: Response): Promise<void> => {
@@ -42,7 +42,7 @@ export class AdminAuthController {
 				httpOnly: config.cookie.httpOnly,
 				secure: config.cookie.secure,
 				sameSite: config.cookie.sameSite,
-				maxAge: Number(config.cookie.refreshMaxAge)
+				maxAge: Number(config.cookie.refreshMaxAge),
 			});
 
 			successResponse(
@@ -77,71 +77,77 @@ export class AdminAuthController {
 		},
 	);
 
-
 	forgotPassword = expressAsyncHandler(
 		async (req: Request, res: Response): Promise<void> => {
+			const { email } = req.body;
 
-			const { email } = req.body
+			await this._adminForgotPasswordUseCase.execute(email);
 
-			await this._adminForgotPasswordUseCase.execute(email)
-
-			successResponse(res, {}, authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS)
-		}
-	)
+			successResponse(
+				res,
+				{},
+				authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS,
+			);
+		},
+	);
 
 	forgotPasswordEmailVerify = expressAsyncHandler(
-		async(req: Request, res: Response): Promise<void> => {
+		async (req: Request, res: Response): Promise<void> => {
+			const { email, otp } = req.body;
 
-			const { email, otp } = req.body
-
-			const tempToken = await this._adminForgotPasswordVerifyEmailUseCase.execute(email, otp)
+			const tempToken =
+				await this._adminForgotPasswordVerifyEmailUseCase.execute(email, otp);
 
 			res.cookie("tempToken", tempToken, {
 				httpOnly: config.cookie.httpOnly,
 				secure: config.cookie.secure,
 				sameSite: config.cookie.sameSite,
 				maxAge: Number(config.cookie.tempMaxAge),
-				"path" : "/"
-			})
+				path: "/",
+			});
 
-			successResponse(res, {} , authConstants.EMAIL_VERIFIED_SUCCESS)
-
-		}
-	)
+			successResponse(res, {}, authConstants.EMAIL_VERIFIED_SUCCESS);
+		},
+	);
 
 	verifyOtpResend = expressAsyncHandler(
-		async(req: Request, res: Response): Promise<void> => {
+		async (req: Request, res: Response): Promise<void> => {
+			const { email } = req.body;
 
-			const { email } = req.body
+			await this._adminForgotPasswordUseCase.execute(email);
 
-			await this._adminForgotPasswordUseCase.execute(email)
-
-			successResponse(res, {}, authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS)
-
-		}
-	)
+			successResponse(
+				res,
+				{},
+				authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS,
+			);
+		},
+	);
 
 	resetPassword = expressAsyncHandler(
-		async(req: Request, res: Response): Promise<void> => {
+		async (req: Request, res: Response): Promise<void> => {
+			const userId = req.userId;
+			const { password } = req.body;
 
-			const userId = (req as any).userId
-			const { password } = req.body
-
-			if(!userId){
-				throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+			if (!userId) {
+				throw new AppError(
+					authConstants.USER_NOT_FOUND,
+					HttpStatus.BAD_REQUEST,
+				);
 			}
 
-			const user = await this._adminResetPasswordUseCase.execute(userId, password)
+			const user = await this._adminResetPasswordUseCase.execute(
+				userId,
+				password,
+			);
 
-			res.clearCookie("tempToken",{
+			res.clearCookie("tempToken", {
 				httpOnly: config.cookie.httpOnly,
 				secure: config.cookie.secure,
-				sameSite: config.cookie.sameSite
-			})
+				sameSite: config.cookie.sameSite,
+			});
 
-			successResponse(res, user, authConstants.PASSWORD_RESET_SUCCESS)
-
-		}
-	)
-
+			successResponse(res, user, authConstants.PASSWORD_RESET_SUCCESS);
+		},
+	);
 }

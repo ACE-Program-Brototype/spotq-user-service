@@ -1,6 +1,6 @@
 import { config } from "@config/env.ts";
 import { BrevoClient } from "@getbrevo/brevo";
-import { IEmailService } from "@infrastructure/interface/shared/IEmail.service";
+import type { IEmailService } from "@infrastructure/interface/shared/IEmail.service";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { renderVerificationOtpTemplate } from "@infrastructure/template/email.template";
 import { injectable } from "inversify";

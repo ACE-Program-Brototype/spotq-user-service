@@ -17,10 +17,10 @@ export function generateRefreshToken(payload: object): string {
 	return token;
 }
 
-export function generateTempToken(payload: object) : string {
+export function generateTempToken(payload: object): string {
 	const token = jwt.sign(payload, config.jwt.temp.secret, {
-		expiresIn: config.jwt.temp.expiresIn as jwt.SignOptions["expiresIn"]
-	})
+		expiresIn: config.jwt.temp.expiresIn as jwt.SignOptions["expiresIn"],
+	});
 	return token;
 }
 
@@ -44,7 +44,6 @@ export function hashRefreshToken(token: string): string {
 	return crypto.createHash("sha256").update(token).digest("hex");
 }
 
-
-export function verifyTempToken(token : string){
-    return jwt.verify(token , String(config.jwt.temp.secret))
+export function verifyTempToken(token: string) {
+	return jwt.verify(token, String(config.jwt.temp.secret));
 }

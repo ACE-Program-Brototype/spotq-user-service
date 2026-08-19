@@ -1,14 +1,13 @@
 import crypto from "node:crypto";
+import type { IOtpService } from "@infrastructure/interface/shared/IOtp.service";
 import { redisClient } from "@infrastructure/redis/redis.client.ts";
-import { injectable } from "inversify";
-import { IOtpService } from "@infrastructure/interface/shared/IOtp.service";
-import { AppError } from "@shared/util/app.error";
 import { HttpStatus } from "@shared/constants";
+import { AppError } from "@shared/util/app.error";
+import { injectable } from "inversify";
 
 @injectable()
 export class RedisOtpService implements IOtpService {
 	private static readonly OTP_TTL_SECONDS = 300; // 5 minutes
-
 
 	private getKey(email: string): string {
 		return `otp:email:${email.trim().toLowerCase()}`;
@@ -27,7 +26,7 @@ export class RedisOtpService implements IOtpService {
 
 		// Store hash and reset attempts
 		await redisClient.hSet(key, {
-			hash: hashedOtp
+			hash: hashedOtp,
 		});
 		await redisClient.expire(key, RedisOtpService.OTP_TTL_SECONDS);
 
@@ -35,12 +34,14 @@ export class RedisOtpService implements IOtpService {
 	}
 
 	public async verifyOtp(email: string, otp: string): Promise<boolean> {
-		
-        const key = this.getKey(email);
+		const key = this.getKey(email);
 		const data = await redisClient.hGetAll(key);
 
 		if (!data?.hash) {
-			throw new AppError("OTP is invalid or has expired.", HttpStatus.BAD_REQUEST);
+			throw new AppError(
+				"OTP is invalid or has expired.",
+				HttpStatus.BAD_REQUEST,
+			);
 		}
 
 		const inputHash = this.hashOtp(otp);
@@ -52,7 +53,7 @@ export class RedisOtpService implements IOtpService {
 		);
 
 		if (!isMatch) {
-			throw new AppError("OTP is invalid", HttpStatus.BAD_REQUEST)
+			throw new AppError("OTP is invalid", HttpStatus.BAD_REQUEST);
 		}
 
 		// Invalidate OTP immediately upon successful verification (single-use)

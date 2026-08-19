@@ -6,11 +6,13 @@ export const authConstants = {
 	INCORRECT_PASSWORD: "Incorrect password",
 	ADMIN_LOGIN_SUCCESS: "Admin login successful",
 	ADMIN_LOGOUT_SUCCESS: "Admin logout successful",
-    FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS: "Forgot Password verification OTP send successfully",
+	FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS:
+		"Forgot Password verification OTP send successfully",
 	EMAIL_VERIFIED_SUCCESS: "Email verified successfully",
-	FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS: "Forgot Password verification OTP re-send successfully",
+	FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS:
+		"Forgot Password verification OTP re-send successfully",
 	MISSING_TOKEN: "Token not found",
 	INVALID_USER: "Invalid user",
 	RESET_PASSWORD_FAILED: "Reset password failed",
-	PASSWORD_RESET_SUCCESS: "Password reset Successfully"
+	PASSWORD_RESET_SUCCESS: "Password reset Successfully",
 };

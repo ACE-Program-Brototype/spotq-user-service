@@ -42,21 +42,20 @@ export const config = {
 		},
 		temp: {
 			secret: env.JWT_TEMP_SECRET,
-			expiresIn: env.JWT_TEMP_EXPIRES_IN
-		}
+			expiresIn: env.JWT_TEMP_EXPIRES_IN,
+		},
 	},
 	cookie: {
 		httpOnly: env.COOKIE_HTTPONLY,
 		secure: env.COOKIE_SECURE,
 		sameSite: env.COOKIE_SAME_SITE,
 		refreshMaxAge: env.COOKIE_REFRESH_MAX_AGE,
-		tempMaxAge: env.COOKIE_TEMP_MAX_AGE
+		tempMaxAge: env.COOKIE_TEMP_MAX_AGE,
 	},
 
 	brevo: {
 		apiKey: env.BREVO_API_KEY,
 		senderName: env.BREVO_SENDER_NAME,
-		senderEmail: env.BREVO_SENDER_EMAIL
-	}
-
+		senderEmail: env.BREVO_SENDER_EMAIL,
+	},
 } as const;

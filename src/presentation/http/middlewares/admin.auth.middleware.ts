@@ -2,34 +2,39 @@ import { verifyTempToken } from "@infrastructure/services/token";
 import { HttpStatus, ResponseMessage } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
+export const adminTempTokenCheck = async (
+	req: Request,
+	_res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { tempToken } = req.cookies;
 
-export const adminTempTokenCheck = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { tempToken } = req.cookies
+		if (!tempToken) {
+			throw new AppError(authConstants.MISSING_TOKEN, HttpStatus.BAD_REQUEST);
+		}
 
-        console.log("-----------tempToken------------" , tempToken)
-        console.log("--------cookies--------", req.cookies)
+		const decoded = verifyTempToken(tempToken) as {
+			userId: string;
+			role: string;
+		};
 
-        if (!tempToken) {
-            throw new AppError(authConstants.MISSING_TOKEN, HttpStatus.BAD_REQUEST)
-        }
+		if (decoded.role !== "admin") {
+			throw new AppError(authConstants.INVALID_USER, HttpStatus.UNAUTHORIZED);
+		}
 
-        const decoded = verifyTempToken(tempToken) as {userId: string, role: string}
+		req.userId = decoded.userId;
 
-        if (decoded.role != "admin") {
-            throw new AppError(authConstants.INVALID_USER, HttpStatus.UNAUTHORIZED)
-        }
-
-        (req as any).userId = decoded.userId
-
-        next()
-
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            throw new AppError(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
-        throw new AppError(ResponseMessage.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-}
+		next();
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			throw new AppError(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		throw new AppError(
+			ResponseMessage.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR,
+		);
+	}
+};

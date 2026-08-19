@@ -1,9 +1,9 @@
 import { config } from "@config/env.ts";
+import type { IEmailService } from "@infrastructure/interface/shared/IEmail.service.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { type Job, Worker } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
-import { IEmailService } from "@infrastructure/interface/shared/IEmail.service.ts";
 import { EMAIL_QUEUE_NAME } from "./email.queue.producer";
 
 export interface EmailJobData {
