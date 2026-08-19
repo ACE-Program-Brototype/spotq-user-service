@@ -33,7 +33,7 @@ export class AdminAuthController {
 		const { access_token, refresh_token, user } =
 			await this._adminLoginUseCase.execute(email, password);
 
-		res.cookie("token", refresh_token, {
+		res.cookie("refreshToken", refresh_token, {
 			httpOnly: config.cookie.httpOnly,
 			secure: config.cookie.secure,
 			sameSite: config.cookie.sameSite,
