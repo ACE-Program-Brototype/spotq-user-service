@@ -13,9 +13,8 @@ import type {
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import { asyncHandler } from "../middlewares/async.middleware.ts";
 import type { AuthenticatedRequest } from "../middlewares/auth.middleware.ts";
 
 @injectable()
@@ -45,73 +44,65 @@ export class UserController {
 		return list[name];
 	}
 
-	public register = asyncHandler(
-		async (req: Request, res: Response): Promise<void> => {
-			const result = await this._registerUserUseCase.execute(
-				req.body as RegisterUserDto,
-			);
+	public async register(req: Request, res: Response): Promise<void> {
+		const result = await this._registerUserUseCase.execute(
+			req.body as RegisterUserDto,
+		);
 
-			res.cookie("refreshToken", result.refreshToken, {
-				httpOnly: true,
-				secure:
-					process.env.NODE_ENV === "production" ||
-					process.env.NODE_ENV === "staging",
-				sameSite: "strict",
-				maxAge: 7 * 24 * 60 * 60 * 1000,
-			});
+		res.cookie("refreshToken", result.refreshToken, {
+			httpOnly: true,
+			secure:
+				process.env.NODE_ENV === "production" ||
+				process.env.NODE_ENV === "staging",
+			sameSite: "strict",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
 
-			const { refreshToken, ...responseBody } = result;
+		const { refreshToken, ...responseBody } = result;
 
-			sendSuccessResponse(
-				res,
-				responseBody,
-				ResponseMessage.REGISTRATION_SUCCESS,
-				HttpStatus.CREATED,
-			);
-		},
-	);
+		sendSuccessResponse(
+			res,
+			responseBody,
+			ResponseMessage.REGISTRATION_SUCCESS,
+			HttpStatus.CREATED,
+		);
+	}
 
-	public verifyEmail = asyncHandler(
-		async (req: Request, res: Response): Promise<void> => {
-			const result = await this._verifyEmailOtpUseCase.execute(
-				req.body as VerifyEmailOtpDto,
-			);
-			sendSuccessResponse(res, undefined, result.message);
-		},
-	);
+	public async verifyEmail(req: Request, res: Response): Promise<void> {
+		const result = await this._verifyEmailOtpUseCase.execute(
+			req.body as VerifyEmailOtpDto,
+		);
+		sendSuccessResponse(res, undefined, result.message);
+	}
 
-	public resendEmailOtp = asyncHandler(
-		async (req: Request, res: Response): Promise<void> => {
-			const result = await this._resendEmailOtpUseCase.execute(
-				req.body as ResendEmailOtpDto,
-			);
-			sendSuccessResponse(res, undefined, result.message);
-		},
-	);
+	public async resendEmailOtp(req: Request, res: Response): Promise<void> {
+		const result = await this._resendEmailOtpUseCase.execute(
+			req.body as ResendEmailOtpDto,
+		);
+		sendSuccessResponse(res, undefined, result.message);
+	}
 
-	public logout = asyncHandler(
-		async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-			const userId = req.user?.userId ?? "";
-			const refreshToken =
-				req.body?.refreshToken ||
-				(req as any).cookies?.refreshToken ||
-				this._getCookie(req, "refreshToken") ||
-				"";
+	public async logout(req: AuthenticatedRequest, res: Response): Promise<void> {
+		const userId = req.user?.userId ?? "";
+		const refreshToken =
+			req.body?.refreshToken ||
+			(req as any).cookies?.refreshToken ||
+			this._getCookie(req, "refreshToken") ||
+			"";
 
-			const result = await this._logoutUseCase.execute({
-				userId,
-				refreshToken,
-			});
+		const result = await this._logoutUseCase.execute({
+			userId,
+			refreshToken,
+		});
 
-			res.clearCookie("refreshToken", {
-				httpOnly: true,
-				secure:
-					process.env.NODE_ENV === "production" ||
-					process.env.NODE_ENV === "staging",
-				sameSite: "strict",
-			});
+		res.clearCookie("refreshToken", {
+			httpOnly: true,
+			secure:
+				process.env.NODE_ENV === "production" ||
+				process.env.NODE_ENV === "staging",
+			sameSite: "strict",
+		});
 
-			sendSuccessResponse(res, undefined, result.message);
-		},
-	);
+		sendSuccessResponse(res, undefined, result.message);
+	}
 }
