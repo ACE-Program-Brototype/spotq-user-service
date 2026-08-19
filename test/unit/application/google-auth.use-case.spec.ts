@@ -6,7 +6,7 @@ import type {
 } from "@application/ports/services/index.ts";
 import { GoogleAuthUseCase } from "@application/use-cases/google-auth.use-case.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
-import { UserEntity } from "@domain/entities/user.entity.ts";
+import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import {
 	EmailAlreadyRegisteredError,
 	UserBlockedError,
@@ -183,7 +183,7 @@ describe("GoogleAuthUseCase", () => {
 			email: Email.create("john@gmail.com"),
 			passwordHash: null,
 			googleId: "google-sub-123",
-			status: "BLOCKED",
+			status: UserStatus.BLOCKED,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});

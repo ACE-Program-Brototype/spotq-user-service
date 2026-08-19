@@ -21,7 +21,12 @@ import { PrismaBaseRepository } from "./prisma-base.repository.ts";
 
 @injectable()
 export class PrismaUserRepository
-	extends PrismaBaseRepository<UserEntity, PrismaUserModel>
+	extends PrismaBaseRepository<
+		UserEntity,
+		PrismaUserModel,
+		Prisma.UserCreateInput,
+		Prisma.UserUpdateInput
+	>
 	implements IUserRepository
 {
 	constructor() {

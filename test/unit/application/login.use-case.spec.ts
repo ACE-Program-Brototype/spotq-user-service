@@ -32,7 +32,7 @@ describe("LoginUseCase", () => {
 			findById: jest.fn(),
 			findByGoogleId: jest.fn(),
 			createWithSession: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IUserRepository>;
 		mockTokenService = {
 			generateAccessToken: jest.fn().mockReturnValue("access-token-abc"),
 			generateRefreshToken: jest.fn().mockReturnValue({
@@ -42,22 +42,22 @@ describe("LoginUseCase", () => {
 			}),
 			hashToken: jest.fn().mockReturnValue("hashed-token-xyz"),
 			verifyAccessToken: jest.fn(),
-		};
+		} as unknown as jest.Mocked<ITokenService>;
 		mockPasswordHasher = {
 			hash: jest.fn(),
 			compare: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IPasswordHasher>;
 		mockDeviceRepository = {
 			save: jest.fn(),
 			findByUserIdAndPlatform: jest.fn(),
 			findById: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IDeviceRepository>;
 		mockRefreshTokenRepository = {
 			save: jest.fn(),
 			findByTokenHash: jest.fn(),
 			revoke: jest.fn(),
-			revokeAllUserSessions: jest.fn(),
-		};
+			revokeAllForUser: jest.fn(),
+		} as unknown as jest.Mocked<IRefreshTokenRepository>;
 		mockLogger = {
 			info: jest.fn(),
 			warn: jest.fn(),
@@ -66,7 +66,7 @@ describe("LoginUseCase", () => {
 		} as unknown as jest.Mocked<ILogger>;
 		mockIdGenerator = {
 			generateUuid: jest.fn().mockReturnValue("uuid-1234"),
-		};
+		} as unknown as jest.Mocked<IIdGenerator>;
 
 		useCase = new LoginUseCase(
 			mockUserRepository,

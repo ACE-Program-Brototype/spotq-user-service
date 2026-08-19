@@ -44,7 +44,7 @@ export const UserMapper = {
 		return {
 			id: entity.id,
 			fullname: entity.fullName.getValue(),
-			phone: entity.phone.getValue(),
+			phone: entity.phone ? entity.phone.getValue() : null,
 			email: entity.email.getValue(),
 			passwordHash: entity.passwordHash,
 			googleId: entity.googleId ?? null,
