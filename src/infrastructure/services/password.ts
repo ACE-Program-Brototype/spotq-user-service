@@ -1,14 +1,21 @@
+import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
 import bcrypt from "bcrypt";
 
-const SALT_ROUNDS = 12;
+export class BcryptPasswordHasher implements IPasswordHasher {
+	private readonly saltRounds: number;
 
-export async function hashPassword(password: string): Promise<string> {
-	return bcrypt.hash(password, SALT_ROUNDS);
-}
+	constructor() {
+		this.saltRounds = 10;
+	}
 
-export async function verifyPassword(
-	password: string,
-	passwordHash: string,
-): Promise<boolean> {
-	return bcrypt.compare(password, passwordHash);
+	async hashPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, this.saltRounds);
+	}
+
+	async verifyPassword(
+		password: string,
+		passwordHash: string,
+	): Promise<boolean> {
+		return bcrypt.compare(password, passwordHash);
+	}
 }

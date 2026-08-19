@@ -6,4 +6,5 @@ export const loginConstants = {
 	INCORRECT_PASSWORD: "Incorrect password",
 	ADMIN_LOGIN_SUCCESS: "Admin login successful",
 	ADMIN_LOGOUT_SUCCESS: "Admin logout successful",
+	INVALID_EMAIL_PASSWORD: "Invalid email or password",
 };

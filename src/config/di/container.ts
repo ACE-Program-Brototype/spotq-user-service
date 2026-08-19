@@ -10,6 +10,8 @@ import { BullMQService } from "@infrastructure/queue/bullmq.service.ts";
 import { RedisService } from "@infrastructure/redis/redis.service.ts";
 import { AdminAuthRepository } from "@infrastructure/repositories/admin/admin.auth.repo.ts";
 import { RefreshTokenRepository } from "@infrastructure/repositories/shared/token.repo.ts";
+import { BcryptPasswordHasher } from "@infrastructure/services/password.ts";
+import { JwtTokenService } from "@infrastructure/services/token.ts";
 import { HealthController } from "@modules/health/health.controller.ts";
 import { HealthRouter } from "@modules/health/health.routes.ts";
 import { HealthService } from "@modules/health/health.service.ts";
@@ -59,5 +61,10 @@ container
 container
 	.bind<AdminLogoutUseCase>(TYPES.AdminLogoutUseCase)
 	.to(AdminLogoutUseCase);
+
+container
+	.bind<BcryptPasswordHasher>(TYPES.PasswordService)
+	.to(BcryptPasswordHasher);
+container.bind<JwtTokenService>(TYPES.TokenService).to(JwtTokenService);
 
 export { container };

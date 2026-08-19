@@ -1,7 +1,7 @@
 import { container, TYPES } from "@config/di";
 import type { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller";
 import { Router } from "express";
-import { validate } from "../../middlewares/validate.middlware";
+import { validate } from "../../middlewares/validate.middleware";
 import { loginValidator } from "../../validators/login.validate";
 
 const router = Router();

@@ -41,14 +41,21 @@ export function errorMiddleware(
 	// -----------------------------
 
 	if (err instanceof AppError) {
-		const statusCode = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
+		const statusCode = err.statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
-		const message = isProduction
-			? ResponseMessage.UNEXPECTED_ERROR
-			: err.message;
+		const isServerError = statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
 
-		const errorLabel =
-			statusCode >= 500 ? ResponseMessage.INTERNAL_SERVER_ERROR : undefined;
+		// Operational 4xx errors are safe to expose.
+		// 5xx errors may contain internal implementation details,
+		// so they are masked in production.
+		const message =
+			isProduction && isServerError
+				? ResponseMessage.UNEXPECTED_ERROR
+				: err.message;
+
+		const errorLabel = isServerError
+			? ResponseMessage.INTERNAL_SERVER_ERROR
+			: undefined;
 
 		res.status(statusCode).json({
 			success: false,

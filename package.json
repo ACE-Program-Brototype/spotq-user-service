@@ -74,7 +74,6 @@
 		"cookie-parser": "^1.4.7",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
-		"express-async-handler": "^1.2.0",
 		"inversify": "^8.2.3",
 		"ioredis": "^6.0.0",
 		"jsonwebtoken": "^9.0.3",
