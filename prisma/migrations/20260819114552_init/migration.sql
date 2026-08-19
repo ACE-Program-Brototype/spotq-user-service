@@ -20,29 +20,15 @@ CREATE TABLE "platform_admins" (
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "fullname" TEXT NOT NULL,
-    "phone" TEXT,
+    "phone" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password_hash" TEXT,
+    "password_hash" TEXT NOT NULL,
     "google_id" TEXT,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "user_profiles" (
-    "id" UUID NOT NULL,
-    "user_id" UUID NOT NULL,
-    "avatar_url" TEXT,
-    "dob" DATE,
-    "gender" TEXT,
-    "location" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "user_profiles_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -80,9 +66,6 @@ CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_profiles_user_id_key" ON "user_profiles"("user_id");
-
--- CreateIndex
 CREATE INDEX "refresh_tokens_token_hash_idx" ON "refresh_tokens"("token_hash");
 
 -- CreateIndex
@@ -90,9 +73,6 @@ CREATE INDEX "refresh_tokens_user_id_idx" ON "refresh_tokens"("user_id");
 
 -- CreateIndex
 CREATE INDEX "devices_user_id_idx" ON "devices"("user_id");
-
--- AddForeignKey
-ALTER TABLE "user_profiles" ADD CONSTRAINT "user_profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
