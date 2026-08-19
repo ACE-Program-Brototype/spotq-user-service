@@ -1,0 +1,17 @@
+export const VALIDATION_LIMITS = {
+	EMAIL: { MAX_LENGTH: 254 },
+	FULL_NAME: { MIN_LENGTH: 2, MAX_LENGTH: 100 },
+	PASSWORD: { MIN_LENGTH: 8, MAX_LENGTH: 128 },
+};
+
+export const QUEUE_LIMITS = {
+	EMAIL: {
+		CONCURRENCY: 5,
+		ATTEMPTS: 3,
+		BACKOFF_DELAY: 2000,
+	},
+};
+
+export const OTP_LIMITS = {
+	VALIDITY_MINUTES: 5,
+};
