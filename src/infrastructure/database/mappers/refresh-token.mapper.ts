@@ -18,11 +18,11 @@ export const RefreshTokenMapper = {
 		return {
 			id: entity.id,
 			userId: entity.userId,
-			deviceId: entity.deviceId,
+			deviceId: entity.deviceId ?? null,
 			tokenHash: entity.tokenHash,
 			expiresAt: entity.expiresAt,
 			createdAt: entity.createdAt,
-			revokedAt: entity.revokedAt,
+			revokedAt: entity.revokedAt ?? null,
 		};
 	},
 };

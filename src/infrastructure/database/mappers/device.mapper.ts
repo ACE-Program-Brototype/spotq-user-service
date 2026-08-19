@@ -20,8 +20,8 @@ export const DeviceMapper = {
 		return {
 			id: entity.id,
 			userId: entity.userId,
-			fcmToken: entity.fcmToken,
-			deviceName: entity.deviceName,
+			fcmToken: entity.fcmToken ?? null,
+			deviceName: entity.deviceName ?? null,
 			platform: entity.platform,
 			lastLogin: entity.lastLogin,
 		};
