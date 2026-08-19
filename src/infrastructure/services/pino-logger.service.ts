@@ -4,12 +4,12 @@ import { injectable } from "inversify";
 
 @injectable()
 export class PinoLoggerService implements ILogger {
-	public info(mergObj: object, message?: string, ...args: any[]): void;
-	public info(message: string, ...args: any[]): void;
+	public info(mergObj: object, message?: string, ...args: unknown[]): void;
+	public info(message: string, ...args: unknown[]): void;
 	public info(
 		msgOrObj: string | object,
 		message?: string,
-		...args: any[]
+		...args: unknown[]
 	): void {
 		if (typeof msgOrObj === "string") {
 			logger.info(msgOrObj, ...args);
@@ -18,12 +18,12 @@ export class PinoLoggerService implements ILogger {
 		}
 	}
 
-	public error(mergObj: object, message?: string, ...args: any[]): void;
-	public error(message: string, ...args: any[]): void;
+	public error(mergObj: object, message?: string, ...args: unknown[]): void;
+	public error(message: string, ...args: unknown[]): void;
 	public error(
 		msgOrObj: string | object,
 		message?: string,
-		...args: any[]
+		...args: unknown[]
 	): void {
 		if (typeof msgOrObj === "string") {
 			logger.error(msgOrObj, ...args);
@@ -32,12 +32,12 @@ export class PinoLoggerService implements ILogger {
 		}
 	}
 
-	public warn(mergObj: object, message?: string, ...args: any[]): void;
-	public warn(message: string, ...args: any[]): void;
+	public warn(mergObj: object, message?: string, ...args: unknown[]): void;
+	public warn(message: string, ...args: unknown[]): void;
 	public warn(
 		msgOrObj: string | object,
 		message?: string,
-		...args: any[]
+		...args: unknown[]
 	): void {
 		if (typeof msgOrObj === "string") {
 			logger.warn(msgOrObj, ...args);

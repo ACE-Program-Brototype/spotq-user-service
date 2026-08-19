@@ -85,10 +85,7 @@ export class UserController {
 	public async logout(req: AuthenticatedRequest, res: Response): Promise<void> {
 		const userId = req.user?.userId ?? "";
 		const refreshToken =
-			req.body?.refreshToken ||
-			(req as any).cookies?.refreshToken ||
-			this._getCookie(req, "refreshToken") ||
-			"";
+			req.body?.refreshToken || this._getCookie(req, "refreshToken") || "";
 
 		const result = await this._logoutUseCase.execute({
 			userId,
