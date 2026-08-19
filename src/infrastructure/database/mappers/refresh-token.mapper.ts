@@ -14,7 +14,7 @@ export const RefreshTokenMapper = {
 		});
 	},
 
-	toPersistence(entity: RefreshTokenEntity): any {
+	toPersistence(entity: RefreshTokenEntity): PrismaRefreshTokenModel {
 		return {
 			id: entity.id,
 			userId: entity.userId,

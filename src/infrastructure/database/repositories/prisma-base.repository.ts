@@ -1,15 +1,31 @@
 import type { IBaseRepository } from "@domain/repositories/base.repository.interface.ts";
 import { injectable } from "inversify";
 
+export interface IPrismaModelDelegate<TModel, TCreateInput, TUpdateInput> {
+	findMany(): Promise<TModel[]>;
+	findUnique(args: { where: { id: string } }): Promise<TModel | null>;
+	create(args: { data: TCreateInput }): Promise<TModel>;
+	update(args: { where: { id: string }; data: TUpdateInput }): Promise<TModel>;
+	delete(args: { where: { id: string } }): Promise<TModel>;
+}
+
 @injectable()
-export abstract class PrismaBaseRepository<T, TModel>
-	implements IBaseRepository<T>
+export abstract class PrismaBaseRepository<
+	T,
+	TModel,
+	TCreateInput = unknown,
+	TUpdateInput = unknown,
+> implements IBaseRepository<T>
 {
 	constructor(
-		protected readonly dbModel: any,
+		protected readonly dbModel: IPrismaModelDelegate<
+			TModel,
+			TCreateInput,
+			TUpdateInput
+		>,
 		protected readonly mapper: {
 			toDomain(raw: TModel): T;
-			toPersistence(entity: T): any;
+			toPersistence(entity: T): TCreateInput;
 		},
 	) {}
 
@@ -32,7 +48,7 @@ export abstract class PrismaBaseRepository<T, TModel>
 	}
 
 	public async update(id: string, entity: T): Promise<T> {
-		const data = this.mapper.toPersistence(entity);
+		const data = this.mapper.toPersistence(entity) as unknown as TUpdateInput;
 		const record = await this.dbModel.update({
 			where: { id },
 			data,

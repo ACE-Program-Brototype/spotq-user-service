@@ -1,6 +1,6 @@
 import { UserEntity } from "@domain/entities/user.entity.ts";
 import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
-import type { User as PrismaUserModel } from "@prisma/client";
+import type { User as PrismaUserModel, UserStatus } from "@prisma/client";
 
 export const UserMapper = {
 	toDomain(raw: PrismaUserModel): UserEntity {
@@ -17,7 +17,7 @@ export const UserMapper = {
 		});
 	},
 
-	toPersistence(entity: UserEntity): any {
+	toPersistence(entity: UserEntity): PrismaUserModel {
 		return {
 			id: entity.id,
 			fullname: entity.fullName.getValue(),
@@ -25,7 +25,7 @@ export const UserMapper = {
 			email: entity.email.getValue(),
 			passwordHash: entity.passwordHash,
 			googleId: entity.googleId,
-			status: entity.status,
+			status: entity.status as UserStatus,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 		};

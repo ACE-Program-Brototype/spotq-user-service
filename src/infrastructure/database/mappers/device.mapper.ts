@@ -16,7 +16,7 @@ export const DeviceMapper = {
 		});
 	},
 
-	toPersistence(entity: DeviceEntity): any {
+	toPersistence(entity: DeviceEntity): PrismaDeviceModel {
 		return {
 			id: entity.id,
 			userId: entity.userId,
