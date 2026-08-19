@@ -3,6 +3,7 @@ import type { UserAuthController } from "@interfaces/http/controllers/customer/u
 import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
 	googleAuthSchema,
+	loginSchema,
 	logoutSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
@@ -54,6 +55,12 @@ export class UserRouter {
 			"/oauth/google",
 			validateRequestBody(googleAuthSchema),
 			this._userController.googleAuth,
+		);
+
+		this.router.post(
+			"/login",
+			validateRequestBody(loginSchema),
+			this._userController.login,
 		);
 	}
 

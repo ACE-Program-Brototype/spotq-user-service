@@ -1,5 +1,6 @@
 import {
 	GoogleAuthUseCase,
+	LoginUseCase,
 	LogoutUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
@@ -17,6 +18,7 @@ import { UserAuthController } from "@interfaces/http/controllers/customer/user.a
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
 import type {
 	IGoogleAuthUseCase,
+	ILoginUseCase,
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
@@ -47,6 +49,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	);
 	bind<ILogoutUseCase>(USER_TYPES.LogoutUseCase).to(LogoutUseCase);
 	bind<IGoogleAuthUseCase>(USER_TYPES.GoogleAuthUseCase).to(GoogleAuthUseCase);
+	bind<ILoginUseCase>(USER_TYPES.LoginUseCase).to(LoginUseCase);
 
 	// HTTP Controllers & Routers
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(

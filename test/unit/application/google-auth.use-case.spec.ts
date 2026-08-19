@@ -35,7 +35,7 @@ describe("GoogleAuthUseCase", () => {
 			findById: jest.fn(),
 			findByGoogleId: jest.fn(),
 			createWithSession: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IUserRepository>;
 		mockTokenService = {
 			generateAccessToken: jest.fn().mockReturnValue("access-token-abc"),
 			generateRefreshToken: jest.fn().mockReturnValue({
@@ -53,18 +53,18 @@ describe("GoogleAuthUseCase", () => {
 			save: jest.fn(),
 			findByUserIdAndPlatform: jest.fn(),
 			findById: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IDeviceRepository>;
 		mockRefreshTokenRepository = {
 			save: jest.fn(),
 			findByTokenHash: jest.fn(),
 			revoke: jest.fn(),
 			revokeAllForUser: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IRefreshTokenRepository>;
 		mockLogger = {
 			info: jest.fn(),
 			error: jest.fn(),
 			warn: jest.fn(),
-		};
+		} as unknown as jest.Mocked<ILogger>;
 		mockIdGenerator = {
 			generateUuid: jest.fn().mockReturnValue("mock-generated-uuid"),
 		};

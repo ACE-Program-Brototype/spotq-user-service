@@ -10,6 +10,7 @@ export const USER_TYPES = {
 	ResendEmailOtpUseCase: Symbol.for("ResendEmailOtpUseCase"),
 	LogoutUseCase: Symbol.for("LogoutUseCase"),
 	GoogleAuthUseCase: Symbol.for("GoogleAuthUseCase"),
+	LoginUseCase: Symbol.for("LoginUseCase"),
 
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),

@@ -1,4 +1,5 @@
 export * from "./google-auth.use-case.ts";
+export * from "./login.use-case.ts";
 export * from "./logout.use-case.ts";
 export * from "./register-user.use-case.ts";
 export * from "./resend-email-otp.use-case.ts";

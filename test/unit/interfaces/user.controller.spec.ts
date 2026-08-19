@@ -2,12 +2,13 @@ import { UserAuthController } from "@interfaces/http/controllers/customer/user.a
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type {
 	IGoogleAuthUseCase,
+	ILoginUseCase,
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 
 describe("UserAuthController", () => {
 	let mockRegisterUseCase: jest.Mocked<Partial<IRegisterUserUseCase>>;
@@ -15,10 +16,10 @@ describe("UserAuthController", () => {
 	let mockResendEmailOtpUseCase: jest.Mocked<Partial<IResendEmailOtpUseCase>>;
 	let mockLogoutUseCase: jest.Mocked<Partial<ILogoutUseCase>>;
 	let mockGoogleAuthUseCase: jest.Mocked<Partial<IGoogleAuthUseCase>>;
+	let mockLoginUseCase: jest.Mocked<Partial<ILoginUseCase>>;
 	let controller: UserAuthController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
-	let mockNext: jest.MockedFunction<NextFunction>;
 
 	beforeEach(() => {
 		mockRegisterUseCase = {
@@ -36,6 +37,9 @@ describe("UserAuthController", () => {
 		mockGoogleAuthUseCase = {
 			execute: jest.fn(),
 		};
+		mockLoginUseCase = {
+			execute: jest.fn(),
+		};
 
 		controller = new UserAuthController(
 			mockRegisterUseCase as IRegisterUserUseCase,
@@ -43,6 +47,7 @@ describe("UserAuthController", () => {
 			mockResendEmailOtpUseCase as IResendEmailOtpUseCase,
 			mockLogoutUseCase as ILogoutUseCase,
 			mockGoogleAuthUseCase as IGoogleAuthUseCase,
+			mockLoginUseCase as ILoginUseCase,
 		);
 
 		mockReq = {
@@ -54,7 +59,6 @@ describe("UserAuthController", () => {
 			cookie: jest.fn().mockReturnThis(),
 			clearCookie: jest.fn().mockReturnThis(),
 		};
-		mockNext = jest.fn();
 	});
 
 	it("should return 201 on successful registration", async () => {
@@ -82,11 +86,7 @@ describe("UserAuthController", () => {
 			password: "Password@123",
 		};
 
-		await controller.register(
-			mockReq as Request,
-			mockRes as Response,
-			mockNext,
-		);
+		await controller.register(mockReq as Request, mockRes as Response);
 
 		expect(mockRes.status).toHaveBeenCalledWith(201);
 		expect(mockRes.cookie).toHaveBeenCalledWith(
@@ -117,11 +117,7 @@ describe("UserAuthController", () => {
 			otp: "123456",
 		};
 
-		await controller.verifyEmail(
-			mockReq as Request,
-			mockRes as Response,
-			mockNext,
-		);
+		await controller.verifyEmail(mockReq as Request, mockRes as Response);
 
 		expect(mockRes.status).toHaveBeenCalledWith(200);
 		expect(mockRes.json).toHaveBeenCalledWith(
@@ -142,11 +138,7 @@ describe("UserAuthController", () => {
 			email: "john@example.com",
 		};
 
-		await controller.resendEmailOtp(
-			mockReq as Request,
-			mockRes as Response,
-			mockNext,
-		);
+		await controller.resendEmailOtp(mockReq as Request, mockRes as Response);
 
 		expect(mockRes.status).toHaveBeenCalledWith(200);
 		expect(mockRes.json).toHaveBeenCalledWith(
@@ -174,7 +166,6 @@ describe("UserAuthController", () => {
 		await controller.logout(
 			mockReq as AuthenticatedRequest,
 			mockRes as Response,
-			mockNext,
 		);
 
 		expect(mockRes.status).toHaveBeenCalledWith(200);
@@ -210,11 +201,7 @@ describe("UserAuthController", () => {
 			idToken: "some-google-id-token",
 		};
 
-		await controller.googleAuth(
-			mockReq as Request,
-			mockRes as Response,
-			mockNext,
-		);
+		await controller.googleAuth(mockReq as Request, mockRes as Response);
 
 		expect(mockRes.status).toHaveBeenCalledWith(200);
 		expect(mockRes.cookie).toHaveBeenCalledWith(
@@ -236,6 +223,46 @@ describe("UserAuthController", () => {
 					},
 					access_token: "access_token_123",
 				},
+			}),
+		);
+	});
+
+	it("should return 200 and set cookie on successful Login", async () => {
+		const loginResult = {
+			user: {
+				id: "u-1",
+				fullname: "John Doe",
+				email: "john.doe@example.com",
+				phone: "+919876543210",
+				status: "ACTIVE",
+				createdAt: "2026-07-14T10:00:00Z",
+				updatedAt: "2026-07-14T10:00:00Z",
+			},
+			accessToken: "access_token_123",
+			refreshToken: "refresh_token_123",
+		};
+
+		(mockLoginUseCase.execute as jest.Mock).mockResolvedValue(loginResult);
+
+		mockReq.body = {
+			email: "john.doe@example.com",
+			password: "Password@123",
+		};
+
+		await controller.login(mockReq as Request, mockRes as Response);
+
+		expect(mockRes.status).toHaveBeenCalledWith(200);
+		expect(mockRes.cookie).toHaveBeenCalledWith(
+			"refreshToken",
+			"refresh_token_123",
+			expect.any(Object),
+		);
+		expect(mockRes.json).toHaveBeenCalledWith(
+			expect.objectContaining({
+				success: true,
+				statusCode: 200,
+				message: "Login successful.",
+				data: loginResult,
 			}),
 		);
 	});

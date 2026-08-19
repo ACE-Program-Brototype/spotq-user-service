@@ -1,17 +1,22 @@
 import type {
 	GoogleAuthDto,
+	LoginDto,
 	RegisterUserDto,
 	ResendEmailOtpDto,
 	VerifyEmailOtpDto,
 } from "@application/dtos/index.ts";
+
 import { TYPES } from "@config/di/types.ts";
+
 import type {
 	IGoogleAuthUseCase,
+	ILoginUseCase,
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
+
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
@@ -32,6 +37,8 @@ export class UserAuthController {
 		private readonly _logoutUseCase: ILogoutUseCase,
 		@inject(TYPES.GoogleAuthUseCase)
 		private readonly _googleAuthUseCase: IGoogleAuthUseCase,
+		@inject(TYPES.LoginUseCase)
+		private readonly _loginUseCase: ILoginUseCase,
 	) {}
 
 	private _getCookie(req: Request, name: string): string | undefined {
@@ -147,5 +154,20 @@ export class UserAuthController {
 			"Google authentication successful.",
 			HttpStatus.OK,
 		);
+	};
+
+	public login = async (req: Request, res: Response): Promise<void> => {
+		const result = await this._loginUseCase.execute(req.body as LoginDto);
+
+		res.cookie("refreshToken", result.refreshToken, {
+			httpOnly: true,
+			secure:
+				process.env.NODE_ENV === "production" ||
+				process.env.NODE_ENV === "staging",
+			sameSite: "strict",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
+		sendSuccessResponse(res, result, "Login successful.", HttpStatus.OK);
 	};
 }

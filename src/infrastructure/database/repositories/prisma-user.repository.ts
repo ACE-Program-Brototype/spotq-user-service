@@ -78,7 +78,7 @@ export class PrismaUserRepository
 						email: params.user.email.getValue(),
 						passwordHash: params.user.passwordHash,
 						googleId: params.user.googleId,
-						status: params.user.status,
+						status: params.user.status as any,
 					},
 				});
 
