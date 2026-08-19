@@ -231,15 +231,15 @@ describe("UserAuthController", () => {
 		const loginResult = {
 			user: {
 				id: "u-1",
-				fullname: "John Doe",
+				full_name: "John Doe",
 				email: "john.doe@example.com",
 				phone: "+919876543210",
 				status: "ACTIVE",
-				createdAt: "2026-07-14T10:00:00Z",
-				updatedAt: "2026-07-14T10:00:00Z",
+				created_at: "2026-07-14T10:00:00Z",
+				updated_at: "2026-07-14T10:00:00Z",
 			},
-			accessToken: "access_token_123",
-			refreshToken: "refresh_token_123",
+			access_token: "access_token_123",
+			refresh_token: "refresh_token_123",
 		};
 
 		(mockLoginUseCase.execute as jest.Mock).mockResolvedValue(loginResult);
@@ -257,7 +257,7 @@ describe("UserAuthController", () => {
 			"refresh_token_123",
 			expect.any(Object),
 		);
-		const { refreshToken, ...expectedResponseBody } = loginResult;
+		const { refresh_token, ...expectedResponseBody } = loginResult;
 		expect(mockRes.json).toHaveBeenCalledWith(
 			expect.objectContaining({
 				success: true,

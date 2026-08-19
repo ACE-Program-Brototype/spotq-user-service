@@ -11,6 +11,7 @@ export const USER_TYPES = {
 	LogoutUseCase: Symbol.for("LogoutUseCase"),
 	GoogleAuthUseCase: Symbol.for("GoogleAuthUseCase"),
 	LoginUseCase: Symbol.for("LoginUseCase"),
+	RefreshTokenUseCase: Symbol.for("RefreshTokenUseCase"),
 
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),

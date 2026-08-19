@@ -26,12 +26,12 @@ export const UserDtoMapper = {
 	toLoginResponse(entity: UserEntity): LoginUserResponseDto {
 		return {
 			id: entity.id,
-			fullname: entity.fullName.getValue(),
+			full_name: entity.fullName.getValue(),
 			email: entity.email.getValue(),
 			phone: entity.phone ? entity.phone.getValue() : "",
 			status: entity.status,
-			createdAt: entity.createdAt.toISOString(),
-			updatedAt: entity.updatedAt.toISOString(),
+			created_at: entity.createdAt.toISOString(),
+			updated_at: entity.updatedAt.toISOString(),
 		};
 	},
 };

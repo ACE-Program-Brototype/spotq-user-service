@@ -12,6 +12,7 @@ import type {
 	IGoogleAuthUseCase,
 	ILoginUseCase,
 	ILogoutUseCase,
+	IRefreshTokenUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
@@ -20,7 +21,7 @@ import type {
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
 
@@ -39,6 +40,8 @@ export class UserAuthController {
 		private readonly googleAuthUseCase: IGoogleAuthUseCase,
 		@inject(TYPES.LoginUseCase)
 		private readonly loginUseCase: ILoginUseCase,
+		@inject(TYPES.RefreshTokenUseCase)
+		private readonly refreshTokenUseCase: IRefreshTokenUseCase,
 	) {}
 
 	private getCookie(req: Request, name: string): string | undefined {
@@ -102,7 +105,11 @@ export class UserAuthController {
 	): Promise<void> => {
 		const userId = req.user?.userId ?? "";
 		const refreshToken =
-			req.body?.refreshToken || this.getCookie(req, "refreshToken") || "";
+			req.body?.refreshToken ||
+			(req as Request & { cookies?: Record<string, string> }).cookies
+				?.refreshToken ||
+			this.getCookie(req, "refreshToken") ||
+			"";
 
 		const result = await this.logoutUseCase.execute({
 			userId,
@@ -156,7 +163,7 @@ export class UserAuthController {
 	public login = async (req: Request, res: Response): Promise<void> => {
 		const result = await this.loginUseCase.execute(req.body as LoginDto);
 
-		res.cookie("refreshToken", result.refreshToken, {
+		res.cookie("refreshToken", result.refresh_token, {
 			httpOnly: true,
 			secure:
 				process.env.NODE_ENV === "production" ||
@@ -165,8 +172,54 @@ export class UserAuthController {
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
-		const { refreshToken, ...responseBody } = result;
+		const { refresh_token, ...responseBody } = result;
 
 		sendSuccessResponse(res, responseBody, "Login successful.", HttpStatus.OK);
+	};
+
+	public refresh = async (
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> => {
+		try {
+			const refreshToken =
+				req.body?.refreshToken ||
+				(req as Request & { cookies?: Record<string, string> }).cookies
+					?.refreshToken ||
+				this.getCookie(req, "refreshToken") ||
+				"";
+
+			const result = await this.refreshTokenUseCase.execute({
+				refreshToken,
+			});
+
+			res.cookie("refreshToken", result.refreshToken, {
+				httpOnly: true,
+				secure:
+					process.env.NODE_ENV === "production" ||
+					process.env.NODE_ENV === "staging",
+				sameSite: "strict",
+				maxAge: 7 * 24 * 60 * 60 * 1000,
+			});
+
+			const { refreshToken: _, ...responseBody } = result;
+
+			sendSuccessResponse(
+				res,
+				responseBody,
+				"Token refreshed successfully.",
+				HttpStatus.OK,
+			);
+		} catch (error) {
+			res.clearCookie("refreshToken", {
+				httpOnly: true,
+				secure:
+					process.env.NODE_ENV === "production" ||
+					process.env.NODE_ENV === "staging",
+				sameSite: "strict",
+			});
+			next(error);
+		}
 	};
 }

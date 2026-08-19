@@ -160,8 +160,8 @@ export class LoginUseCase implements ILoginUseCase {
 
 			return {
 				user: UserDtoMapper.toLoginResponse(user),
-				accessToken,
-				refreshToken: refreshTokenData.token,
+				access_token: accessToken,
+				refresh_token: refreshTokenData.token,
 			};
 		} catch (error) {
 			if (error instanceof InvalidCredentialsError) {

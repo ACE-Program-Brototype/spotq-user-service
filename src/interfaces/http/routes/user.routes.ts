@@ -62,6 +62,8 @@ export class UserRouter {
 			validateRequestBody(loginSchema),
 			this.userController.login,
 		);
+
+		this.router.post("/refresh-token", this.userController.refresh);
 	}
 
 	public getRouter(): Router {

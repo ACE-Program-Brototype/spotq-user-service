@@ -113,8 +113,8 @@ describe("LoginUseCase", () => {
 			"hashed-pass",
 		);
 		expect(mockRefreshTokenRepository.save).toHaveBeenCalled();
-		expect(result.accessToken).toBe("access-token-abc");
-		expect(result.refreshToken).toBe("refresh-token-xyz");
+		expect(result.access_token).toBe("access-token-abc");
+		expect(result.refresh_token).toBe("refresh-token-xyz");
 		expect(result.user.email).toBe("jane.doe@example.com");
 	});
 

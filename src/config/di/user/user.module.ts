@@ -2,6 +2,7 @@ import {
 	GoogleAuthUseCase,
 	LoginUseCase,
 	LogoutUseCase,
+	RefreshTokenUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
 	VerifyEmailOtpUseCase,
@@ -20,6 +21,7 @@ import type {
 	IGoogleAuthUseCase,
 	ILoginUseCase,
 	ILogoutUseCase,
+	IRefreshTokenUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
@@ -50,6 +52,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<ILogoutUseCase>(USER_TYPES.LogoutUseCase).to(LogoutUseCase);
 	bind<IGoogleAuthUseCase>(USER_TYPES.GoogleAuthUseCase).to(GoogleAuthUseCase);
 	bind<ILoginUseCase>(USER_TYPES.LoginUseCase).to(LoginUseCase);
+	bind<IRefreshTokenUseCase>(USER_TYPES.RefreshTokenUseCase).to(
+		RefreshTokenUseCase,
+	);
 
 	// HTTP Controllers & Routers
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(

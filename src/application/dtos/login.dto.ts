@@ -14,16 +14,16 @@ export interface LoginDto {
 
 export interface LoginUserResponseDto {
 	id: string;
-	fullname: string;
+	full_name: string;
 	email: string;
 	phone: string;
 	status: string;
-	createdAt: string;
-	updatedAt: string;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface LoginResultDto {
 	user: LoginUserResponseDto;
-	accessToken: string;
-	refreshToken: string;
+	access_token: string;
+	refresh_token: string;
 }
