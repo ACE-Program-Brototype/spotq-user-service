@@ -1,8 +1,8 @@
-import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/interface/admin/auth/IVerify.email.forgot-password";
+import { ITokenService } from "@application/ports/service/IToken.service";
+import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types.ts";
-import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo.ts";
-import type { IOtpService } from "@infrastructure/interface/shared/IOtp.service.ts";
-import { generateTempToken } from "@infrastructure/services/token";
+import { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import { IOtpService } from "@domain/repository/shared/IOtp.service";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
@@ -17,6 +17,8 @@ export class VerifyForgotPasswordEmailUseCase
 		private readonly _adminAuthRepository: IAdminAuthRepository,
 		@inject(TYPES.OtpService)
 		private readonly _otpService: IOtpService,
+		@inject(TYPES.TokenService)
+		private readonly _tokenService: ITokenService
 	) {}
 
 	public async execute(email: string, otp: string): Promise<string> {
@@ -28,7 +30,7 @@ export class VerifyForgotPasswordEmailUseCase
 
 		await this._otpService.verifyOtp(email, otp);
 
-		const tempToken = generateTempToken({ userId: user.id, role: "admin" });
+		const tempToken = this._tokenService.generateTempToken({ userId: user.id, role: "admin" });
 
 		return tempToken;
 	}

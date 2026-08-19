@@ -1,8 +1,11 @@
-import { verifyTempToken } from "@infrastructure/services/token";
+import { container, TYPES } from "@config/di";
+import { JwtTokenService } from "@infrastructure/services/token";
 import { HttpStatus, ResponseMessage } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
+
+const tokenService = container.get<JwtTokenService>(TYPES.TokenService)
 
 export const adminTempTokenCheck = async (
 	req: Request,
@@ -16,7 +19,7 @@ export const adminTempTokenCheck = async (
 			throw new AppError(authConstants.MISSING_TOKEN, HttpStatus.BAD_REQUEST);
 		}
 
-		const decoded = verifyTempToken(tempToken) as {
+		const decoded = tokenService.verifyTempToken(tempToken) as {
 			userId: string;
 			role: string;
 		};

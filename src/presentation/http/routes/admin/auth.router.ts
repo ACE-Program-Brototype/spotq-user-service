@@ -7,7 +7,7 @@ import {
 } from "@presentation/http/validators/forgot-password.validate";
 import { passwordValidate } from "@presentation/http/validators/reset.password.validate";
 import { Router } from "express";
-import { validate } from "../../middlewares/validate.middlware";
+import { validate } from "../../middlewares/validate.middleware";
 import { loginValidator } from "../../validators/login.validate";
 
 const router = Router();

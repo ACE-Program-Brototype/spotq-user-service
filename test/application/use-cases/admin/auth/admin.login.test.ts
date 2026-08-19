@@ -1,49 +1,55 @@
+import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
+import type { ITokenService } from "@application/ports/service/IToken.service";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login";
-import { verifyPassword } from "@infrastructure/services/password";
-import {
-	generateAccessToken,
-	generateRefreshToken,
-} from "@infrastructure/services/token";
-
-jest.mock("@infrastructure/services/password", () => ({
-	verifyPassword: jest.fn(),
-}));
-
-jest.mock("@infrastructure/services/token", () => ({
-	generateAccessToken: jest.fn(),
-	generateRefreshToken: jest.fn(),
-}));
-
-const mockRepository = {
-	findByEmail: jest.fn(),
-	find: jest.fn(),
-	findById: jest.fn(),
-	create: jest.fn(),
-	update: jest.fn(),
-};
 
 describe("AdminLoginUseCase", () => {
-	const useCase = new AdminLoginUseCase(mockRepository);
+	const mockRepository = {
+		findByEmail: jest.fn(),
+		find: jest.fn(),
+		findById: jest.fn(),
+		create: jest.fn(),
+		update: jest.fn(),
+	};
+
+	const mockPasswordHasher: jest.Mocked<IPasswordHasher> = {
+		hashPassword: jest.fn(),
+		verifyPassword: jest.fn(),
+	};
+
+	const mockTokenService: jest.Mocked<ITokenService> = {
+		generateAccessToken: jest.fn(),
+		generateRefreshToken: jest.fn(),
+		getTokenTTL: jest.fn(),
+		hashRefreshToken: jest.fn(),
+	};
+
+	const useCase = new AdminLoginUseCase(
+		mockRepository,
+		mockPasswordHasher,
+		mockTokenService,
+	);
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	it("should login admin successfully", async () => {
-		mockRepository.findByEmail.mockResolvedValue({
+		const admin = {
 			id: "admin-123",
 			name: "Admin",
 			email: "admin@example.com",
 			passwordHash: "hashed-password",
 			createdAt: new Date("2026-01-01"),
 			updatedAt: new Date("2026-01-01"),
-		});
+		};
 
-		(verifyPassword as jest.Mock).mockResolvedValue(true);
+		mockRepository.findByEmail.mockResolvedValue(admin);
 
-		(generateAccessToken as jest.Mock).mockReturnValue("access-token");
+		mockPasswordHasher.verifyPassword.mockResolvedValue(true);
 
-		(generateRefreshToken as jest.Mock).mockReturnValue("refresh-token");
+		mockTokenService.generateAccessToken.mockReturnValue("access-token");
+
+		mockTokenService.generateRefreshToken.mockReturnValue("refresh-token");
 
 		const result = await useCase.execute("admin@example.com", "password123");
 
@@ -62,17 +68,17 @@ describe("AdminLoginUseCase", () => {
 			"admin@example.com",
 		);
 
-		expect(verifyPassword).toHaveBeenCalledWith(
+		expect(mockPasswordHasher.verifyPassword).toHaveBeenCalledWith(
 			"password123",
 			"hashed-password",
 		);
 
-		expect(generateAccessToken).toHaveBeenCalledWith({
+		expect(mockTokenService.generateAccessToken).toHaveBeenCalledWith({
 			userId: "admin-123",
 			role: "admin",
 		});
 
-		expect(generateRefreshToken).toHaveBeenCalledWith({
+		expect(mockTokenService.generateRefreshToken).toHaveBeenCalledWith({
 			userId: "admin-123",
 			role: "admin",
 		});
@@ -83,47 +89,49 @@ describe("AdminLoginUseCase", () => {
 
 		await expect(
 			useCase.execute("unknown@example.com", "password123"),
-		).rejects.toThrow("User not found");
+		).rejects.toThrow("Invalid email or password");
 
 		expect(mockRepository.findByEmail).toHaveBeenCalledWith(
 			"unknown@example.com",
 		);
 
-		expect(verifyPassword).not.toHaveBeenCalled();
+		expect(mockPasswordHasher.verifyPassword).not.toHaveBeenCalled();
 
-		expect(generateAccessToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateAccessToken).not.toHaveBeenCalled();
 
-		expect(generateRefreshToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateRefreshToken).not.toHaveBeenCalled();
 	});
 
 	it("should throw error when password is invalid", async () => {
-		mockRepository.findByEmail.mockResolvedValue({
+		const admin = {
 			id: "admin-123",
 			name: "Admin",
 			email: "admin@example.com",
 			passwordHash: "hashed-password",
 			createdAt: new Date("2026-01-01"),
 			updatedAt: new Date("2026-01-01"),
-		});
+		};
 
-		(verifyPassword as jest.Mock).mockResolvedValue(false);
+		mockRepository.findByEmail.mockResolvedValue(admin);
+
+		mockPasswordHasher.verifyPassword.mockResolvedValue(false);
 
 		await expect(
 			useCase.execute("admin@example.com", "wrong-password"),
-		).rejects.toThrow("Invalid credentials");
+		).rejects.toThrow("Invalid email or password");
 
 		expect(mockRepository.findByEmail).toHaveBeenCalledWith(
 			"admin@example.com",
 		);
 
-		expect(verifyPassword).toHaveBeenCalledWith(
+		expect(mockPasswordHasher.verifyPassword).toHaveBeenCalledWith(
 			"wrong-password",
 			"hashed-password",
 		);
 
-		expect(generateAccessToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateAccessToken).not.toHaveBeenCalled();
 
-		expect(generateRefreshToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateRefreshToken).not.toHaveBeenCalled();
 	});
 
 	it("should propagate repository errors", async () => {
@@ -139,10 +147,10 @@ describe("AdminLoginUseCase", () => {
 			"admin@example.com",
 		);
 
-		expect(verifyPassword).not.toHaveBeenCalled();
+		expect(mockPasswordHasher.verifyPassword).not.toHaveBeenCalled();
 
-		expect(generateAccessToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateAccessToken).not.toHaveBeenCalled();
 
-		expect(generateRefreshToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateRefreshToken).not.toHaveBeenCalled();
 	});
 });

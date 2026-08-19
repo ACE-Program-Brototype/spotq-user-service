@@ -1,4 +1,4 @@
-import type { IBaseRepository } from "@infrastructure/interface/base/Ibase.repo";
+import type { IBaseRepository } from "@domain/repository/base/Ibase.repo";
 
 export abstract class BaseRepository<
 	TEntity,

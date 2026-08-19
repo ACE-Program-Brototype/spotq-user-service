@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
-import type { IOtpService } from "@infrastructure/interface/shared/IOtp.service";
 import { redisClient } from "@infrastructure/redis/redis.client.ts";
 import { HttpStatus } from "@shared/constants";
 import { AppError } from "@shared/util/app.error";
 import { injectable } from "inversify";
+import { IOtpService } from "@domain/repository/shared/IOtp.service";
 
 @injectable()
 export class RedisOtpService implements IOtpService {

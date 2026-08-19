@@ -1,5 +1,5 @@
 import { TYPES } from "@config/di/types";
-import type { IRefreshTokenRepository } from "@infrastructure/interface/shared/IToken.repo";
+import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";
 import { hashRefreshToken } from "@infrastructure/services/token";
 import { inject, injectable } from "inversify";
 import type { RedisClientType } from "redis";

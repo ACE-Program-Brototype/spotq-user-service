@@ -24,4 +24,6 @@ export const TYPES = {
 		"AdminForgotPasswordEmailVerifyUseCase",
 	),
 	AdminResetPasswordUseCase: Symbol.for("AdminResetPasswordUseCase"),
+	PasswordService: Symbol.for("PasswordService"),
+	TokenService: Symbol.for("TokenService"),
 } as const;

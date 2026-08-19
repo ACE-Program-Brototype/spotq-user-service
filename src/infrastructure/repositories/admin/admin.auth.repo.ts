@@ -1,5 +1,5 @@
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import { prisma } from "@infrastructure/index";
-import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo";
 import { BaseRepository } from "@infrastructure/repositories/base/base.repo";
 import type { PlatformAdmin, Prisma } from "@prisma/client";
 

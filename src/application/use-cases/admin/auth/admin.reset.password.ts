@@ -1,10 +1,10 @@
 import type { AdminResetPasswordDto } from "@application/dtos/admin/auth/admin.forgot-password";
-import type { IAdminResetPasswordUseCase } from "@application/interface/admin/auth/IAdmin.reset.password";
 import { toAdminResetPasswordResponse } from "@application/mappers/admin/auth/admin.reset.password.mapper";
+import { IPasswordHasher } from "@application/ports/service/IPassword.service";
+import { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
-import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo";
-import { hashPassword } from "@infrastructure/services/password";
+import { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import { HttpStatus } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
@@ -15,6 +15,8 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminAuthRepository: IAdminAuthRepository,
+		@inject(TYPES.PasswordService)
+		private readonly _passwordService: IPasswordHasher
 	) {}
 
 	async execute(
@@ -27,7 +29,7 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 		}
 
-		const passwordHash = await hashPassword(password);
+		const passwordHash = await this._passwordService.hashPassword(password);
 
 		const updatedUser = await this._adminAuthRepository.update(userId, {
 			passwordHash,

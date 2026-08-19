@@ -17,6 +17,8 @@ import { AdminAuthRepository } from "@infrastructure/repositories/admin/admin.au
 import { RefreshTokenRepository } from "@infrastructure/repositories/shared/token.repo.ts";
 import { BrevoEmailService } from "@infrastructure/services/brevo.email.ts";
 import { RedisOtpService } from "@infrastructure/services/redis.otp.ts";
+import { BcryptPasswordHasher } from "@infrastructure/services/password.ts";
+import { JwtTokenService } from "@infrastructure/services/token.ts";
 import { HealthController } from "@modules/health/health.controller.ts";
 import { HealthRouter } from "@modules/health/health.routes.ts";
 import { HealthService } from "@modules/health/health.service.ts";
@@ -83,5 +85,10 @@ container
 container
 	.bind<AdminResetPasswordUseCase>(TYPES.AdminResetPasswordUseCase)
 	.to(AdminResetPasswordUseCase);
+
+container
+	.bind<BcryptPasswordHasher>(TYPES.PasswordService)
+	.to(BcryptPasswordHasher);
+container.bind<JwtTokenService>(TYPES.TokenService).to(JwtTokenService);
 
 export { container };
