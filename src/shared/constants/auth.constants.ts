@@ -16,4 +16,5 @@ export const authConstants = {
 	RESET_PASSWORD_FAILED: "Reset password failed",
 	PASSWORD_RESET_SUCCESS: "Password reset Successfully",
 	INVALID_EMAIL_PASSWORD: "Invalid email or password",
+	INVALID_TOKEN: "Invalid token"
 };
