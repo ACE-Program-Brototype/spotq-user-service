@@ -37,7 +37,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
 		const tokenEntity =
 			await this.refreshTokenRepository.findByTokenHash(tokenHash);
-		if (!tokenEntity || !tokenEntity.isValid()) {
+		if (!tokenEntity?.isValid()) {
 			this.logger.warn(
 				{ event: "TOKEN_REFRESH_FAILED" },
 				"Refresh token not found or invalid",
