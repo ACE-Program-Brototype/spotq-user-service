@@ -1,9 +1,9 @@
 import { UserEntity, type UserStatus } from "@domain/entities/user.entity.ts";
 import { UserProfileEntity } from "@domain/entities/user-profile.entity.ts";
 import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
-import {
-	type User as PrismaUserModel,
-	type UserProfile as PrismaUserProfileModel,
+import type {
+	User as PrismaUserModel,
+	UserProfile as PrismaUserProfileModel,
 	UserStatus as PrismaUserStatus,
 } from "@prisma/client";
 

@@ -15,7 +15,7 @@ jest.mock("google-auth-library", () => {
 
 describe("GoogleAuthService", () => {
 	let service: GoogleAuthService;
-	let mockOAuthClientInstance: any;
+	let mockOAuthClientInstance: { verifyIdToken: jest.Mock };
 	let mockLogger: jest.Mocked<ILogger>;
 
 	beforeEach(() => {

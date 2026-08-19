@@ -257,12 +257,13 @@ describe("UserAuthController", () => {
 			"refresh_token_123",
 			expect.any(Object),
 		);
+		const { refreshToken, ...expectedResponseBody } = loginResult;
 		expect(mockRes.json).toHaveBeenCalledWith(
 			expect.objectContaining({
 				success: true,
 				statusCode: 200,
 				message: "Login successful.",
-				data: loginResult,
+				data: expectedResponseBody,
 			}),
 		);
 	});

@@ -183,7 +183,7 @@ describe("GoogleAuthUseCase", () => {
 			email: Email.create("john@gmail.com"),
 			passwordHash: null,
 			googleId: "google-sub-123",
-			status: "INACTIVE" as any,
+			status: "BLOCKED",
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});

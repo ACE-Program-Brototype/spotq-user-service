@@ -102,10 +102,7 @@ export class UserAuthController {
 	): Promise<void> => {
 		const userId = req.user?.userId ?? "";
 		const refreshToken =
-			req.body?.refreshToken ||
-			(req as any).cookies?.refreshToken ||
-			this._getCookie(req, "refreshToken") ||
-			"";
+			req.body?.refreshToken || this._getCookie(req, "refreshToken") || "";
 
 		const result = await this._logoutUseCase.execute({
 			userId,
@@ -168,6 +165,8 @@ export class UserAuthController {
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
-		sendSuccessResponse(res, result, "Login successful.", HttpStatus.OK);
+		const { refreshToken, ...responseBody } = result;
+
+		sendSuccessResponse(res, responseBody, "Login successful.", HttpStatus.OK);
 	};
 }

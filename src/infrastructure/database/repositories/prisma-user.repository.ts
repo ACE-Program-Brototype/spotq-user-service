@@ -10,7 +10,11 @@ import type {
 import type { Email } from "@domain/value-objects/email.vo.ts";
 import type { PhoneNumber } from "@domain/value-objects/phone-number.vo.ts";
 import { prisma } from "@infrastructure/database/prisma/prisma.ts";
-import { Prisma, type User as PrismaUserModel } from "@prisma/client";
+import {
+	Prisma,
+	type User as PrismaUserModel,
+	type UserStatus as PrismaUserStatus,
+} from "@prisma/client";
 import { injectable } from "inversify";
 import { UserMapper } from "../mappers/user.mapper.ts";
 import { PrismaBaseRepository } from "./prisma-base.repository.ts";
@@ -78,7 +82,7 @@ export class PrismaUserRepository
 						email: params.user.email.getValue(),
 						passwordHash: params.user.passwordHash,
 						googleId: params.user.googleId,
-						status: params.user.status as any,
+						status: params.user.status as PrismaUserStatus,
 					},
 				});
 
