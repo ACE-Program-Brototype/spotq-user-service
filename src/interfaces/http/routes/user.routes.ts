@@ -19,7 +19,7 @@ export class UserRouter {
 
 	constructor(
 		@inject(TYPES.UserAuthController)
-		private readonly _userController: UserAuthController,
+		private readonly userController: UserAuthController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
@@ -29,38 +29,38 @@ export class UserRouter {
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),
-			this._userController.register,
+			this.userController.register,
 		);
 
 		this.router.post(
 			"/verify-email",
 			validateRequestBody(verifyEmailOtpSchema),
-			this._userController.verifyEmail,
+			this.userController.verifyEmail,
 		);
 
 		this.router.post(
 			"/resend-email-otp",
 			validateRequestBody(resendEmailOtpSchema),
-			this._userController.resendEmailOtp,
+			this.userController.resendEmailOtp,
 		);
 
 		this.router.post(
 			"/logout",
 			authMiddleware,
 			validateRequestBody(logoutSchema),
-			this._userController.logout,
+			this.userController.logout,
 		);
 
 		this.router.post(
-			"/oauth/google",
+			"/google",
 			validateRequestBody(googleAuthSchema),
-			this._userController.googleAuth,
+			this.userController.googleAuth,
 		);
 
 		this.router.post(
 			"/login",
 			validateRequestBody(loginSchema),
-			this._userController.login,
+			this.userController.login,
 		);
 	}
 

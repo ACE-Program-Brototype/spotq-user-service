@@ -28,20 +28,20 @@ import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts"
 export class UserAuthController {
 	constructor(
 		@inject(TYPES.RegisterUserUseCase)
-		private readonly _registerUserUseCase: IRegisterUserUseCase,
+		private readonly registerUserUseCase: IRegisterUserUseCase,
 		@inject(TYPES.VerifyEmailOtpUseCase)
-		private readonly _verifyEmailOtpUseCase: IVerifyEmailOtpUseCase,
+		private readonly verifyEmailOtpUseCase: IVerifyEmailOtpUseCase,
 		@inject(TYPES.ResendEmailOtpUseCase)
-		private readonly _resendEmailOtpUseCase: IResendEmailOtpUseCase,
+		private readonly resendEmailOtpUseCase: IResendEmailOtpUseCase,
 		@inject(TYPES.LogoutUseCase)
-		private readonly _logoutUseCase: ILogoutUseCase,
+		private readonly logoutUseCase: ILogoutUseCase,
 		@inject(TYPES.GoogleAuthUseCase)
-		private readonly _googleAuthUseCase: IGoogleAuthUseCase,
+		private readonly googleAuthUseCase: IGoogleAuthUseCase,
 		@inject(TYPES.LoginUseCase)
-		private readonly _loginUseCase: ILoginUseCase,
+		private readonly loginUseCase: ILoginUseCase,
 	) {}
 
-	private _getCookie(req: Request, name: string): string | undefined {
+	private getCookie(req: Request, name: string): string | undefined {
 		const rc = req.headers.cookie;
 		if (!rc) return undefined;
 		const list: Record<string, string> = {};
@@ -56,7 +56,7 @@ export class UserAuthController {
 	}
 
 	public register = async (req: Request, res: Response): Promise<void> => {
-		const result = await this._registerUserUseCase.execute(
+		const result = await this.registerUserUseCase.execute(
 			req.body as RegisterUserDto,
 		);
 
@@ -80,7 +80,7 @@ export class UserAuthController {
 	};
 
 	public verifyEmail = async (req: Request, res: Response): Promise<void> => {
-		const result = await this._verifyEmailOtpUseCase.execute(
+		const result = await this.verifyEmailOtpUseCase.execute(
 			req.body as VerifyEmailOtpDto,
 		);
 		sendSuccessResponse(res, undefined, result.message);
@@ -90,7 +90,7 @@ export class UserAuthController {
 		req: Request,
 		res: Response,
 	): Promise<void> => {
-		const result = await this._resendEmailOtpUseCase.execute(
+		const result = await this.resendEmailOtpUseCase.execute(
 			req.body as ResendEmailOtpDto,
 		);
 		sendSuccessResponse(res, undefined, result.message);
@@ -102,9 +102,9 @@ export class UserAuthController {
 	): Promise<void> => {
 		const userId = req.user?.userId ?? "";
 		const refreshToken =
-			req.body?.refreshToken || this._getCookie(req, "refreshToken") || "";
+			req.body?.refreshToken || this.getCookie(req, "refreshToken") || "";
 
-		const result = await this._logoutUseCase.execute({
+		const result = await this.logoutUseCase.execute({
 			userId,
 			refreshToken,
 		});
@@ -121,7 +121,7 @@ export class UserAuthController {
 	};
 
 	public googleAuth = async (req: Request, res: Response): Promise<void> => {
-		const result = await this._googleAuthUseCase.execute(
+		const result = await this.googleAuthUseCase.execute(
 			req.body as GoogleAuthDto,
 		);
 
@@ -154,7 +154,7 @@ export class UserAuthController {
 	};
 
 	public login = async (req: Request, res: Response): Promise<void> => {
-		const result = await this._loginUseCase.execute(req.body as LoginDto);
+		const result = await this.loginUseCase.execute(req.body as LoginDto);
 
 		res.cookie("refreshToken", result.refreshToken, {
 			httpOnly: true,

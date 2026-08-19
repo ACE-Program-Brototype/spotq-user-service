@@ -15,18 +15,18 @@ import { injectable } from "inversify";
 export class HealthService implements IHealthService {
 	constructor(
 		@InjectDatabaseHealth()
-		private readonly _databaseHealth: IHealthCheckable,
+		private readonly databaseHealth: IHealthCheckable,
 		@InjectRedisHealth()
-		private readonly _redisHealth: IHealthCheckable,
+		private readonly redisHealth: IHealthCheckable,
 		@InjectBullMQHealth()
-		private readonly _bullmqHealth: IHealthCheckable,
+		private readonly bullmqHealth: IHealthCheckable,
 	) {}
 
 	async check(): Promise<HealthCheckResult> {
 		const [dbHealthy, redisHealthy, bullmqHealthy] = await Promise.all([
-			this._databaseHealth.isHealthy(),
-			this._redisHealth.isHealthy(),
-			this._bullmqHealth.isHealthy(),
+			this.databaseHealth.isHealthy(),
+			this.redisHealth.isHealthy(),
+			this.bullmqHealth.isHealthy(),
 		]);
 
 		const isHealthy = Boolean(dbHealthy && redisHealthy && bullmqHealthy);

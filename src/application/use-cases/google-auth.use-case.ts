@@ -31,24 +31,24 @@ import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 	constructor(
 		@inject(TYPES.UserRepository)
-		private readonly _userRepository: IUserRepository,
+		private readonly userRepository: IUserRepository,
 		@inject(TYPES.TokenService)
-		private readonly _tokenService: ITokenService,
+		private readonly tokenService: ITokenService,
 		@inject(TYPES.GoogleAuthService)
-		private readonly _googleAuthService: IGoogleAuthService,
+		private readonly googleAuthService: IGoogleAuthService,
 		@inject(TYPES.DeviceRepository)
-		private readonly _deviceRepository: IDeviceRepository,
+		private readonly deviceRepository: IDeviceRepository,
 		@inject(TYPES.RefreshTokenRepository)
-		private readonly _refreshTokenRepository: IRefreshTokenRepository,
+		private readonly refreshTokenRepository: IRefreshTokenRepository,
 		@inject(TYPES.IdGenerator)
-		private readonly _idGenerator: IIdGenerator,
+		private readonly idGenerator: IIdGenerator,
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {}
 
 	public async execute(dto: GoogleAuthDto): Promise<GoogleAuthResultDto> {
 		// 1. Verify Google ID token
-		const googlePayload = await this._googleAuthService.verifyIdToken(
+		const googlePayload = await this.googleAuthService.verifyIdToken(
 			dto.idToken,
 		);
 
@@ -57,7 +57,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 		const emailObj = Email.create(normalizedEmailString);
 
 		// Check if user already exists by googleId (immutable sub)
-		const existingUserByGoogleId = await this._userRepository.findByGoogleId(
+		const existingUserByGoogleId = await this.userRepository.findByGoogleId(
 			googlePayload.sub,
 		);
 		let isNewUser = false;
@@ -67,7 +67,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			finalUser = existingUserByGoogleId;
 			// Account exists. Validate account status
 			if (finalUser.status !== UserStatus.ACTIVE) {
-				this._logger.warn(
+				this.logger.warn(
 					{
 						userId: finalUser.id,
 						status: finalUser.status,
@@ -82,12 +82,12 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 		} else {
 			// 2. Google ID doesn't exist, check email
 			const existingUserByEmail =
-				await this._userRepository.findByEmail(emailObj);
+				await this.userRepository.findByEmail(emailObj);
 
 			if (existingUserByEmail) {
 				// Email exists, but googleId is not mapped and user has password-based account
 				if (existingUserByEmail.passwordHash !== null) {
-					this._logger.warn(
+					this.logger.warn(
 						{
 							email: normalizedEmailString,
 							event: "GOOGLE_EMAIL_ALREADY_REGISTERED",
@@ -106,14 +106,14 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 		const deviceData = dto.device;
 		let deviceEntity: DeviceEntity | null = null;
 		let deviceId: string | null = null;
-		const refreshTokenData = this._tokenService.generateRefreshToken();
+		const refreshTokenData = this.tokenService.generateRefreshToken();
 
 		if (isNewUser) {
-			const userId = this._idGenerator.generateUuid();
+			const userId = this.idGenerator.generateUuid();
 			const fullName = FullName.create(googlePayload.name);
 
 			if (deviceData) {
-				deviceId = this._idGenerator.generateUuid();
+				deviceId = this.idGenerator.generateUuid();
 				deviceEntity = DeviceEntity.create({
 					id: deviceId,
 					userId,
@@ -124,7 +124,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			}
 
 			const profileEntity = UserProfileEntity.create({
-				id: this._idGenerator.generateUuid(),
+				id: this.idGenerator.generateUuid(),
 				userId,
 				avatarUrl: googlePayload.picture,
 			});
@@ -140,7 +140,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			});
 
 			const refreshTokenEntity = RefreshTokenEntity.create({
-				id: this._idGenerator.generateUuid(),
+				id: this.idGenerator.generateUuid(),
 				userId,
 				deviceId,
 				tokenHash: refreshTokenData.tokenHash,
@@ -148,13 +148,13 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			});
 
 			// Atomically create User + Profile + Device + RefreshToken Session
-			finalUser = await this._userRepository.createWithSession({
+			finalUser = await this.userRepository.createWithSession({
 				user: userEntity,
 				device: deviceEntity,
 				refreshToken: refreshTokenEntity,
 			});
 
-			this._logger.info(
+			this.logger.info(
 				{ userId: finalUser.id, event: "GOOGLE_REGISTRATION_SUCCESS" },
 				"Google user registered successfully",
 			);
@@ -163,7 +163,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			// Handle device registration / update
 			if (deviceData?.platform) {
 				const existingDevice =
-					await this._deviceRepository.findByUserIdAndPlatform(
+					await this.deviceRepository.findByUserIdAndPlatform(
 						finalUser.id,
 						deviceData.platform,
 					);
@@ -171,10 +171,10 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 				if (existingDevice) {
 					existingDevice.updateFcmToken(deviceData.fcmToken ?? null);
 					existingDevice.updateLastLogin();
-					await this._deviceRepository.save(existingDevice);
+					await this.deviceRepository.save(existingDevice);
 					deviceId = existingDevice.id;
 				} else {
-					deviceId = this._idGenerator.generateUuid();
+					deviceId = this.idGenerator.generateUuid();
 					const newDevice = DeviceEntity.create({
 						id: deviceId,
 						userId: finalUser.id,
@@ -182,34 +182,34 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 						deviceName: deviceData.deviceName,
 						platform: deviceData.platform,
 					});
-					await this._deviceRepository.save(newDevice);
+					await this.deviceRepository.save(newDevice);
 					deviceId = newDevice.id;
 				}
 			}
 
 			const refreshTokenEntity = RefreshTokenEntity.create({
-				id: this._idGenerator.generateUuid(),
+				id: this.idGenerator.generateUuid(),
 				userId: finalUser.id,
 				deviceId,
 				tokenHash: refreshTokenData.tokenHash,
 				expiresAt: refreshTokenData.expiresAt,
 			});
 
-			await this._refreshTokenRepository.save(refreshTokenEntity);
+			await this.refreshTokenRepository.save(refreshTokenEntity);
 
-			this._logger.info(
+			this.logger.info(
 				{ userId: finalUser.id, event: "GOOGLE_AUTH_SUCCESS" },
 				"Google user authenticated successfully",
 			);
 		}
 
-		this._logger.info(
+		this.logger.info(
 			{ userId: finalUser.id, event: "REFRESH_TOKEN_CREATED" },
 			"Google auth session created",
 		);
 
 		// Generate access token
-		const accessToken = this._tokenService.generateAccessToken({
+		const accessToken = this.tokenService.generateAccessToken({
 			userId: finalUser.id,
 			email: finalUser.email.getValue(),
 		});

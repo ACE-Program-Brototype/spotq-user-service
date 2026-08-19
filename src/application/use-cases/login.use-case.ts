@@ -23,19 +23,19 @@ import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 export class LoginUseCase implements ILoginUseCase {
 	constructor(
 		@inject(TYPES.UserRepository)
-		private readonly _userRepository: IUserRepository,
+		private readonly userRepository: IUserRepository,
 		@inject(TYPES.DeviceRepository)
-		private readonly _deviceRepository: IDeviceRepository,
+		private readonly deviceRepository: IDeviceRepository,
 		@inject(TYPES.RefreshTokenRepository)
-		private readonly _refreshTokenRepository: IRefreshTokenRepository,
+		private readonly refreshTokenRepository: IRefreshTokenRepository,
 		@inject(TYPES.PasswordHasher)
-		private readonly _passwordHasher: IPasswordHasher,
+		private readonly passwordHasher: IPasswordHasher,
 		@inject(TYPES.TokenService)
-		private readonly _tokenService: ITokenService,
+		private readonly tokenService: ITokenService,
 		@inject(TYPES.IdGenerator)
-		private readonly _idGenerator: IIdGenerator,
+		private readonly idGenerator: IIdGenerator,
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {}
 
 	public async execute(params: LoginDto): Promise<LoginResultDto> {
@@ -43,14 +43,14 @@ export class LoginUseCase implements ILoginUseCase {
 
 		try {
 			// 1. User Lookup
-			const user = await this._userRepository.findByEmail(normalizedEmail);
+			const user = await this.userRepository.findByEmail(normalizedEmail);
 			if (!user) {
-				this._logger.warn(
+				this.logger.warn(
 					{ event: "LOGIN_FAILED", email: normalizedEmail },
 					"Login failed: User not found",
 				);
 				// Dummy comparison to prevent timing attacks
-				await this._passwordHasher.compare(
+				await this.passwordHasher.compare(
 					params.password,
 					"$2b$10$y613u91o.pP.xX2XhE8TqF9T1d6M2.8g1K2nO123456789012345",
 				);
@@ -60,25 +60,25 @@ export class LoginUseCase implements ILoginUseCase {
 			// 2. Verify Password
 			if (!user.passwordHash) {
 				// Google-only account or no password set
-				this._logger.warn(
+				this.logger.warn(
 					{ event: "LOGIN_FAILED", userId: user.id },
 					"Login failed: Password hash missing (Google-only account)",
 				);
 				// Dummy comparison to prevent timing attacks
-				await this._passwordHasher.compare(
+				await this.passwordHasher.compare(
 					params.password,
 					"$2b$10$y613u91o.pP.xX2XhE8TqF9T1d6M2.8g1K2nO123456789012345",
 				);
 				throw new InvalidCredentialsError();
 			}
 
-			const isPasswordValid = await this._passwordHasher.compare(
+			const isPasswordValid = await this.passwordHasher.compare(
 				params.password,
 				user.passwordHash,
 			);
 
 			if (!isPasswordValid) {
-				this._logger.warn(
+				this.logger.warn(
 					{ event: "LOGIN_FAILED", userId: user.id },
 					"Login failed: Incorrect password",
 				);
@@ -87,7 +87,7 @@ export class LoginUseCase implements ILoginUseCase {
 
 			// 3. Validate Account Status (only after password verification)
 			if (user.status === UserStatus.BLOCKED) {
-				this._logger.warn(
+				this.logger.warn(
 					{ event: "LOGIN_BLOCKED_ACCOUNT", userId: user.id },
 					"Login failed: Account is blocked",
 				);
@@ -95,7 +95,7 @@ export class LoginUseCase implements ILoginUseCase {
 			}
 
 			if (user.status === UserStatus.INACTIVE) {
-				this._logger.warn(
+				this.logger.warn(
 					{ event: "LOGIN_INACTIVE_ACCOUNT", userId: user.id },
 					"Login failed: Account is inactive",
 				);
@@ -106,7 +106,7 @@ export class LoginUseCase implements ILoginUseCase {
 			let deviceId: string | null = null;
 			if (params.device?.platform) {
 				const existingDevice =
-					await this._deviceRepository.findByUserIdAndPlatform(
+					await this.deviceRepository.findByUserIdAndPlatform(
 						user.id,
 						params.device.platform,
 					);
@@ -114,10 +114,10 @@ export class LoginUseCase implements ILoginUseCase {
 				if (existingDevice) {
 					existingDevice.updateFcmToken(params.device.fcmToken ?? null);
 					existingDevice.updateLastLogin();
-					await this._deviceRepository.save(existingDevice);
+					await this.deviceRepository.save(existingDevice);
 					deviceId = existingDevice.id;
 				} else {
-					deviceId = this._idGenerator.generateUuid();
+					deviceId = this.idGenerator.generateUuid();
 					const newDevice = DeviceEntity.create({
 						id: deviceId,
 						userId: user.id,
@@ -125,35 +125,35 @@ export class LoginUseCase implements ILoginUseCase {
 						deviceName: params.device.deviceName ?? null,
 						platform: params.device.platform,
 					});
-					await this._deviceRepository.save(newDevice);
+					await this.deviceRepository.save(newDevice);
 					deviceId = newDevice.id;
 				}
 			}
 
 			// 5. Session Creation (Refresh Token)
-			const refreshTokenData = this._tokenService.generateRefreshToken();
+			const refreshTokenData = this.tokenService.generateRefreshToken();
 			const refreshTokenEntity = RefreshTokenEntity.create({
-				id: this._idGenerator.generateUuid(),
+				id: this.idGenerator.generateUuid(),
 				userId: user.id,
 				deviceId,
 				tokenHash: refreshTokenData.tokenHash,
 				expiresAt: refreshTokenData.expiresAt,
 			});
 
-			await this._refreshTokenRepository.save(refreshTokenEntity);
+			await this.refreshTokenRepository.save(refreshTokenEntity);
 
-			this._logger.info(
+			this.logger.info(
 				{ event: "SESSION_CREATED", userId: user.id, deviceId },
 				"Authentication session / refresh token created",
 			);
 
 			// 6. Generate Access Token
-			const accessToken = this._tokenService.generateAccessToken({
+			const accessToken = this.tokenService.generateAccessToken({
 				userId: user.id,
 				email: user.email.getValue(),
 			});
 
-			this._logger.info(
+			this.logger.info(
 				{ event: "LOGIN_SUCCESS", userId: user.id },
 				"User login successful",
 			);
@@ -168,7 +168,7 @@ export class LoginUseCase implements ILoginUseCase {
 				throw error;
 			}
 
-			this._logger.error(
+			this.logger.error(
 				{ err: error, email: normalizedEmail },
 				"Unexpected error during login execution",
 			);
