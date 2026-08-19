@@ -1,6 +1,10 @@
+import { container, TYPES } from "@config/di";
 import { config } from "@config/env.ts";
 import { prisma } from "@infrastructure/database/prisma/prisma.ts";
-import { hashPassword } from "@infrastructure/services/password.ts";
+import { BcryptPasswordHasher } from "@infrastructure/services/password";
+
+
+const passwordService = container.get<BcryptPasswordHasher>(TYPES.PasswordService)
 
 async function main() {
 	const name = config.admin.name;
@@ -15,7 +19,7 @@ async function main() {
 
 	console.log(email);
 
-	const passwordHash = await hashPassword(password);
+	const passwordHash = await passwordService.hashPassword(password);
 
 	const admin = await prisma.platformAdmin.upsert({
 		where: {

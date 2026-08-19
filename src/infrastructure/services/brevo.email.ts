@@ -3,6 +3,7 @@ import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { renderVerificationOtpTemplate } from "@infrastructure/template/email.template";
 import { injectable } from "inversify";
+import { BrevoClient } from "@getbrevo/brevo";
 
 @injectable()
 export class BrevoEmailService implements IEmailService {
