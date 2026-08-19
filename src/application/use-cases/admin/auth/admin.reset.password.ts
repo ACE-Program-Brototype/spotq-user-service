@@ -1,7 +1,7 @@
 import type { AdminResetPasswordDto } from "@application/dtos/admin/auth/admin.forgot-password";
 import type { IAdminResetPasswordUseCase } from "@application/interface/admin/auth/IAdmin.reset.password";
 import { toAdminResetPasswordResponse } from "@application/mappers/admin/auth/admin.reset.password.mapper";
-import { TYPES } from "@config/di";
+import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
 import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo";
 import { hashPassword } from "@infrastructure/services/password";

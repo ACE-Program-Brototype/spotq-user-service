@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admiin.reset.password.ts";
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
 import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
+import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admin.reset.password.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
 import { PrismaService } from "@infrastructure/database/prisma/database.service.ts";
 import type {

@@ -1,5 +1,5 @@
 import type { IAdminForgotPasswordUseCase } from "@application/interface/admin/auth/IAdmin.forgot-password";
-import { TYPES } from "@config/di";
+import { TYPES } from "@config/di/types.ts";
 import type { IAdminAuthRepository } from "@infrastructure/interface/admin/IAdmin.auth.repo";
 import type { IEmailQueueProducer } from "@infrastructure/interface/shared/IEmail.queue.producer";
 import type { IOtpService } from "@infrastructure/interface/shared/IOtp.service";
