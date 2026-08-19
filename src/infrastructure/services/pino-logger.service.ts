@@ -12,9 +12,9 @@ export class PinoLoggerService implements ILogger {
 		...args: unknown[]
 	): void {
 		if (typeof msgOrObj === "string") {
-			logger.info(msgOrObj, ...args);
+			logger.info(msgOrObj, ...(args as never[]));
 		} else {
-			logger.info(msgOrObj, message, ...args);
+			logger.info(msgOrObj, message, ...(args as never[]));
 		}
 	}
 
@@ -26,9 +26,9 @@ export class PinoLoggerService implements ILogger {
 		...args: unknown[]
 	): void {
 		if (typeof msgOrObj === "string") {
-			logger.error(msgOrObj, ...args);
+			logger.error(msgOrObj, ...(args as never[]));
 		} else {
-			logger.error(msgOrObj, message, ...args);
+			logger.error(msgOrObj, message, ...(args as never[]));
 		}
 	}
 
@@ -40,9 +40,9 @@ export class PinoLoggerService implements ILogger {
 		...args: unknown[]
 	): void {
 		if (typeof msgOrObj === "string") {
-			logger.warn(msgOrObj, ...args);
+			logger.warn(msgOrObj, ...(args as never[]));
 		} else {
-			logger.warn(msgOrObj, message, ...args);
+			logger.warn(msgOrObj, message, ...(args as never[]));
 		}
 	}
 }
