@@ -1,14 +1,13 @@
 import type { ITokenService } from "@application/ports/service/IToken.service";
 import { TYPES } from "@config/di/types";
 import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";
+import { redisClient } from "@infrastructure/redis";
 import { inject, injectable } from "inversify";
-import type { RedisClientType } from "redis";
 
 @injectable()
 export class RefreshTokenRepository implements IRefreshTokenRepository {
+	private readonly _redis = redisClient
 	constructor(
-		@inject(TYPES.RedisService)
-		private readonly _redis: RedisClientType,
 		@inject(TYPES.TokenService)
 		private readonly _tokenService: ITokenService
 	) {}
