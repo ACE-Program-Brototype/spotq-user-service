@@ -4,10 +4,9 @@ import type { IPasswordHasher } from "@application/ports/service/IPassword.servi
 import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
+import { ResetPasswordFailedError } from "@domain/errors/reset.password.error";
+import { UserNotFoundError } from "@domain/errors/user.not-found.error";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
-import { HttpStatus } from "@shared/constants";
-import { authConstants } from "@shared/constants/auth.constants";
-import { AppError } from "@shared/util/app.error";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -26,7 +25,7 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 		const user = await this._adminAuthRepository.findById(userId);
 
 		if (!user) {
-			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+			throw new UserNotFoundError()
 		}
 
 		const passwordHash = await this._passwordService.hashPassword(password);
@@ -36,10 +35,7 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 		});
 
 		if (!updatedUser) {
-			throw new AppError(
-				authConstants.RESET_PASSWORD_FAILED,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			throw new ResetPasswordFailedError()
 		}
 
 		const updatedDomainUser = new Admin(

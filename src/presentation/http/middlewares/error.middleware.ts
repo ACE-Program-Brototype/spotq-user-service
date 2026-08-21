@@ -1,16 +1,20 @@
 import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/index.ts";
 import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
-import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { mapErrorToHttp } from "../errors/error.mapper";
 
 export function errorMiddleware(
-	err: Error,
+	err: unknown,
 	req: Request,
 	res: Response,
 	_next: NextFunction,
 ): void {
+	// --------------------------------------------------
+	// 1. Always log the original error
+	// --------------------------------------------------
+
 	logger.error(
 		{
 			err,
@@ -20,11 +24,12 @@ export function errorMiddleware(
 		"Unhandled error occurred",
 	);
 
-	const isProduction = config.server.nodeEnv === "production";
+	const isProduction =
+		config.server.nodeEnv === "production";
 
-	// -----------------------------
-	// Zod validation error
-	// -----------------------------
+	// --------------------------------------------------
+	// 2. Zod validation error
+	// --------------------------------------------------
 
 	if (err instanceof ZodError) {
 		res.status(HttpStatus.BAD_REQUEST).json({
@@ -36,51 +41,27 @@ export function errorMiddleware(
 		return;
 	}
 
-	// -----------------------------
-	// Application error
-	// -----------------------------
+	// --------------------------------------------------
+	// 3. Domain / Application / Unknown error
+	// --------------------------------------------------
 
-	if (err instanceof AppError) {
-		const statusCode = err.statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR;
+	const mappedError = mapErrorToHttp(err);
 
-		const isServerError = statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
+	const isServerError =
+		mappedError.statusCode >=
+		HttpStatus.INTERNAL_SERVER_ERROR;
 
-		// Operational 4xx errors are safe to expose.
-		// 5xx errors may contain internal implementation details,
-		// so they are masked in production.
-		const message =
-			isProduction && isServerError
-				? ResponseMessage.UNEXPECTED_ERROR
-				: err.message;
+	// Never expose internal 5xx error details in production.
+	const message =
+		isProduction && isServerError
+			? ResponseMessage.UNEXPECTED_ERROR
+			: mappedError.message;
 
-		const errorLabel = isServerError
-			? ResponseMessage.INTERNAL_SERVER_ERROR
-			: undefined;
-
-		res.status(statusCode).json({
-			success: false,
-			message,
-			error: errorLabel,
-		});
-
-		return;
-	}
-
-	// -----------------------------
-	// Unknown error
-	// -----------------------------
-
-	const statusCode =
-		res.statusCode === HttpStatus.OK ||
-		res.statusCode === HttpStatus.NOT_MODIFIED
-			? HttpStatus.INTERNAL_SERVER_ERROR
-			: res.statusCode;
-
-	const message = isProduction ? ResponseMessage.UNEXPECTED_ERROR : err.message;
-
-	res.status(statusCode).json({
+	res.status(mappedError.statusCode).json({
 		success: false,
+		code: mappedError.code,
 		message,
-		error: ResponseMessage.INTERNAL_SERVER_ERROR,
 	});
+
+	return;
 }

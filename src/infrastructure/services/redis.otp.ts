@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
 import type { IOtpService } from "@domain/repository/shared/IOtp.service";
 import { redisClient } from "@infrastructure/redis/redis.client.ts";
-import { HttpStatus } from "@shared/constants";
-import { AppError } from "@shared/util/app.error";
 import { injectable } from "inversify";
+import { OtpExpiredError } from "@domain/errors/otp.expired.error";
+import { InvalidOtpError } from "@domain/errors/invalid.otp.error";
 
 @injectable()
 export class RedisOtpService implements IOtpService {
@@ -38,10 +38,7 @@ export class RedisOtpService implements IOtpService {
 		const data = await redisClient.hGetAll(key);
 
 		if (!data?.hash) {
-			throw new AppError(
-				"OTP is invalid or has expired.",
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new OtpExpiredError()
 		}
 
 		const inputHash = this.hashOtp(otp);
@@ -53,7 +50,7 @@ export class RedisOtpService implements IOtpService {
 		);
 
 		if (!isMatch) {
-			throw new AppError("OTP is invalid", HttpStatus.BAD_REQUEST);
+			throw new InvalidOtpError()
 		}
 
 		// Invalidate OTP immediately upon successful verification (single-use)

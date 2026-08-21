@@ -1,11 +1,9 @@
 import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
 import { TYPES } from "@config/di/types.ts";
+import { InvalidCredentialsError } from "@domain/errors/invalid.credentials.error";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer";
 import type { IOtpService } from "@domain/repository/shared/IOtp.service";
-import { HttpStatus } from "@shared/constants";
-import { authConstants } from "@shared/constants/auth.constants";
-import { AppError } from "@shared/util/app.error";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -23,7 +21,7 @@ export class AdminForgotPasswordUseCase implements IAdminForgotPasswordUseCase {
 		const user = await this._adminAuthRepository.findByEmail(email);
 
 		if (!user) {
-			throw new AppError(authConstants.INVALID_CREDENTIALS, HttpStatus.OK);
+			throw new InvalidCredentialsError()
 		}
 
 		const otp = await this._otpService.generateAndStoreOtp(user.email);

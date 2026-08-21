@@ -5,10 +5,8 @@ import type { ITokenService } from "@application/ports/service/IToken.service";
 import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
+import { InvalidCredentialsError } from "@domain/errors/invalid.credentials.error";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
-import { authConstants } from "@shared/constants/auth.constants";
-import { HttpStatus } from "@shared/constants/http.constants";
-import { AppError } from "@shared/util/app.error";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -26,10 +24,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		const user = await this._adminRepository.findByEmail(email);
 
 		if (!user) {
-			throw new AppError(
-				authConstants.INVALID_CREDENTIALS,
-				HttpStatus.NOT_FOUND,
-			);
+			throw new InvalidCredentialsError()
 		}
 
 		const isPasswordValid = await this._passwordService.verifyPassword(
@@ -38,10 +33,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		);
 
 		if (!isPasswordValid) {
-			throw new AppError(
-				authConstants.INVALID_CREDENTIALS,
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new InvalidCredentialsError()
 		}
 
 		const role = "admin";

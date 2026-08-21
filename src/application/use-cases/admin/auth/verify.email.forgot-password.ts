@@ -1,11 +1,9 @@
 import type { ITokenService } from "@application/ports/service/IToken.service";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types.ts";
+import { UserNotFoundError } from "@domain/errors/user.not-found.error";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import type { IOtpService } from "@domain/repository/shared/IOtp.service";
-import { HttpStatus } from "@shared/constants";
-import { authConstants } from "@shared/constants/auth.constants";
-import { AppError } from "@shared/util/app.error";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -25,10 +23,7 @@ export class VerifyForgotPasswordEmailUseCase
 		const user = await this._adminAuthRepository.findByEmail(email);
 
 		if (!user) {
-			throw new AppError(
-				authConstants.INVALID_CREDENTIALS,
-				HttpStatus.NOT_FOUND,
-			);
+			throw new UserNotFoundError()
 		}
 
 		await this._otpService.verifyOtp(email, otp);
