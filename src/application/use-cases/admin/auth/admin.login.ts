@@ -27,7 +27,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 
 		if (!user) {
 			throw new AppError(
-				authConstants.INVALID_EMAIL_PASSWORD,
+				authConstants.INVALID_CREDENTIALS,
 				HttpStatus.NOT_FOUND,
 			);
 		}
@@ -39,7 +39,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 
 		if (!isPasswordValid) {
 			throw new AppError(
-				authConstants.INVALID_EMAIL_PASSWORD,
+				authConstants.INVALID_CREDENTIALS,
 				HttpStatus.BAD_REQUEST,
 			);
 		}

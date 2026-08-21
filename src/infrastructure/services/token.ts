@@ -73,7 +73,7 @@ export class JwtTokenService implements ITokenService {
 		return Math.max(decoded.exp - currentTime, 0);
 	}
 
-	hashRefreshToken(token: string): string {
+	hashToken(token: string): string {
 		return crypto
 			.createHash("sha256")
 			.update(token)

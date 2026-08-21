@@ -25,7 +25,7 @@ export class VerifyForgotPasswordEmailUseCase
 		const user = await this._adminAuthRepository.findByEmail(email);
 
 		if (!user) {
-			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+			throw new AppError(authConstants.INVALID_CREDENTIALS, HttpStatus.NOT_FOUND);
 		}
 
 		await this._otpService.verifyOtp(email, otp);

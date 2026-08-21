@@ -9,6 +9,7 @@ import { passwordValidate } from "@presentation/http/validators/reset.password.v
 import { Router } from "express";
 import { validate } from "../../middlewares/validate.middleware";
 import { loginValidator } from "../../validators/login.validate";
+import { forgotPasswordRateLimit, forgotPasswordResendRateLimit, forgotPasswordVerifyRateLimit } from "@presentation/http/middlewares/rate.limit.middleware";
 
 const router = Router();
 
@@ -21,16 +22,19 @@ router.post("/logout", adminAuthController.logout);
 router.post(
 	"/forgot-password",
 	validate(forgotPasswordValidate),
+	forgotPasswordRateLimit,
 	adminAuthController.forgotPassword,
 );
 router.post(
 	"/forgot-password/verify",
 	validate(forgotPasswordVerifyValidate),
+	forgotPasswordVerifyRateLimit,
 	adminAuthController.forgotPasswordEmailVerify,
 );
 router.post(
 	"/forgot-password/resend-otp",
 	validate(forgotPasswordValidate),
+	forgotPasswordResendRateLimit,
 	adminAuthController.verifyOtpResend,
 );
 router.post(

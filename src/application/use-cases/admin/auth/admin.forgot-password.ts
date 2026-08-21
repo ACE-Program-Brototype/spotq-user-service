@@ -23,7 +23,7 @@ export class AdminForgotPasswordUseCase implements IAdminForgotPasswordUseCase {
 		const user = await this._adminAuthRepository.findByEmail(email);
 
 		if (!user) {
-			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+			throw new AppError(authConstants.INVALID_CREDENTIALS, HttpStatus.NOT_FOUND);
 		}
 
 		const otp = await this._otpService.generateAndStoreOtp(user.email);

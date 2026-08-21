@@ -13,7 +13,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 	) {}
 
 	async revoke(token: string, ttlSeconds: number): Promise<void> {
-		const key = `auth:revoked-refresh:${this._tokenService.hashRefreshToken(token)}`;
+		const key = `auth:revoked-refresh:${this._tokenService.hashToken(token)}`;
 
 		await this._redis.set(key, "1", {
 			EX: ttlSeconds,
@@ -21,7 +21,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 	}
 
 	async isRevoked(token: string): Promise<boolean> {
-		const key = `auth:revoked-refresh:${this._tokenService.hashRefreshToken(token)}`;
+		const key = `auth:revoked-refresh:${this._tokenService.hashToken(token)}`;
 
 		const exists = await this._redis.exists(key);
 

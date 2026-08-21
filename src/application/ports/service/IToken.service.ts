@@ -13,5 +13,5 @@ export interface ITokenService {
 
 	getTokenTTL(token: string): number;
 
-	hashRefreshToken(token: string): string;
+	hashToken(token: string): string;
 }
