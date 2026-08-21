@@ -1,15 +1,24 @@
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer";
+import type { IOtpService } from "@domain/repository/shared/IOtp.service";
 
 describe("AdminForgotPasswordUseCase", () => {
-	const adminRepository = {
+	const mockAdminRepository: jest.Mocked<IAdminAuthRepository> = {
+		find: jest.fn(),
+		findById: jest.fn(),
+		create: jest.fn(),
+		update: jest.fn(),
 		findByEmail: jest.fn(),
 	};
 
-	const otpService = {
+	const mockOtpService: jest.Mocked<IOtpService> = {
 		generateAndStoreOtp: jest.fn(),
+		verifyOtp: jest.fn(),
+		invalidateOtp: jest.fn(),
 	};
 
-	const emailQueueProducer = {
+	const mockEmailQueueProducer: jest.Mocked<IEmailQueueProducer> = {
 		queueVerificationEmail: jest.fn(),
 	};
 
@@ -19,52 +28,68 @@ describe("AdminForgotPasswordUseCase", () => {
 		jest.clearAllMocks();
 
 		useCase = new AdminForgotPasswordUseCase(
-			adminRepository as any,
-			otpService as any,
-			emailQueueProducer as any,
+			mockAdminRepository,
+			mockOtpService,
+			mockEmailQueueProducer,
 		);
 	});
 
-	it("should generate OTP and send verification email for existing admin", async () => {
+	it("should generate OTP and queue verification email for existing admin", async () => {
 		const admin = {
 			id: "admin-123",
 			name: "Test Admin",
 			email: "admin@test.com",
 			passwordHash: "hashed-password",
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: new Date("2026-01-01"),
+			updatedAt: new Date("2026-01-01"),
 		};
 
-		adminRepository.findByEmail.mockResolvedValue(admin);
-		otpService.generateAndStoreOtp.mockResolvedValue("123456");
-		emailQueueProducer.queueVerificationEmail.mockResolvedValue(undefined);
+		mockAdminRepository.findByEmail.mockResolvedValue(admin);
+
+		mockOtpService.generateAndStoreOtp.mockResolvedValue("123456");
+
+		mockEmailQueueProducer.queueVerificationEmail.mockResolvedValue(undefined);
 
 		await expect(useCase.execute("admin@test.com")).resolves.toBeUndefined();
 
-		expect(adminRepository.findByEmail).toHaveBeenCalledWith("admin@test.com");
+		expect(mockAdminRepository.findByEmail).toHaveBeenCalledTimes(1);
 
-		expect(otpService.generateAndStoreOtp).toHaveBeenCalledWith(
+		expect(mockAdminRepository.findByEmail).toHaveBeenCalledWith(
 			"admin@test.com",
 		);
 
-		expect(emailQueueProducer.queueVerificationEmail).toHaveBeenCalledWith({
+		expect(mockOtpService.generateAndStoreOtp).toHaveBeenCalledTimes(1);
+
+		expect(mockOtpService.generateAndStoreOtp).toHaveBeenCalledWith(
+			"admin@test.com",
+		);
+
+		expect(mockEmailQueueProducer.queueVerificationEmail).toHaveBeenCalledTimes(
+			1,
+		);
+
+		expect(mockEmailQueueProducer.queueVerificationEmail).toHaveBeenCalledWith({
 			email: "admin@test.com",
 			otp: "123456",
 		});
 	});
 
-	it("should throw USER_NOT_FOUND when admin does not exist", async () => {
-		adminRepository.findByEmail.mockResolvedValue(null);
+	it("should throw when admin does not exist", async () => {
+		mockAdminRepository.findByEmail.mockResolvedValue(null);
 
-		await expect(useCase.execute("unknown@test.com")).rejects.toThrow();
+		await expect(useCase.execute("unknown@test.com")).rejects.toThrow(
+			"Invalid credentials",
+		);
 
-		expect(adminRepository.findByEmail).toHaveBeenCalledWith(
+		expect(mockAdminRepository.findByEmail).toHaveBeenCalledWith(
 			"unknown@test.com",
 		);
 
-		expect(otpService.generateAndStoreOtp).not.toHaveBeenCalled();
+		expect(mockOtpService.generateAndStoreOtp).not.toHaveBeenCalled();
 
-		expect(emailQueueProducer.queueVerificationEmail).not.toHaveBeenCalled();
+		expect(
+			mockEmailQueueProducer.queueVerificationEmail,
+		).not.toHaveBeenCalled();
 	});
 
 	it("should not queue email when OTP generation fails", async () => {
@@ -73,13 +98,13 @@ describe("AdminForgotPasswordUseCase", () => {
 			name: "Test Admin",
 			email: "admin@test.com",
 			passwordHash: "hashed-password",
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: new Date("2026-01-01"),
+			updatedAt: new Date("2026-01-01"),
 		};
 
-		adminRepository.findByEmail.mockResolvedValue(admin);
+		mockAdminRepository.findByEmail.mockResolvedValue(admin);
 
-		otpService.generateAndStoreOtp.mockRejectedValue(
+		mockOtpService.generateAndStoreOtp.mockRejectedValue(
 			new Error("OTP generation failed"),
 		);
 
@@ -87,7 +112,9 @@ describe("AdminForgotPasswordUseCase", () => {
 			"OTP generation failed",
 		);
 
-		expect(emailQueueProducer.queueVerificationEmail).not.toHaveBeenCalled();
+		expect(
+			mockEmailQueueProducer.queueVerificationEmail,
+		).not.toHaveBeenCalled();
 	});
 
 	it("should propagate email queue errors", async () => {
@@ -96,19 +123,25 @@ describe("AdminForgotPasswordUseCase", () => {
 			name: "Test Admin",
 			email: "admin@test.com",
 			passwordHash: "hashed-password",
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: new Date("2026-01-01"),
+			updatedAt: new Date("2026-01-01"),
 		};
 
-		adminRepository.findByEmail.mockResolvedValue(admin);
-		otpService.generateAndStoreOtp.mockResolvedValue("123456");
+		mockAdminRepository.findByEmail.mockResolvedValue(admin);
 
-		emailQueueProducer.queueVerificationEmail.mockRejectedValue(
+		mockOtpService.generateAndStoreOtp.mockResolvedValue("123456");
+
+		mockEmailQueueProducer.queueVerificationEmail.mockRejectedValue(
 			new Error("Email queue failed"),
 		);
 
 		await expect(useCase.execute("admin@test.com")).rejects.toThrow(
 			"Email queue failed",
 		);
+
+		expect(mockEmailQueueProducer.queueVerificationEmail).toHaveBeenCalledWith({
+			email: "admin@test.com",
+			otp: "123456",
+		});
 	});
 });

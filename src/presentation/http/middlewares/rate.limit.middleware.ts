@@ -1,9 +1,9 @@
 import { redisClient } from "@infrastructure/redis";
 import type { Request } from "express";
 import { rateLimit } from "express-rate-limit";
-import { RedisStore } from "rate-limit-redis";
+import { RedisStore, type SendCommandFn } from "rate-limit-redis";
 
-const redisSendCommand = async (...args: string[]): Promise<any> => {
+const redisSendCommand: SendCommandFn = async (...args) => {
 	return redisClient.sendCommand(args);
 };
 

@@ -1,29 +1,43 @@
-import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
-import { generateTempToken } from "@infrastructure/services/token.ts";
-
-jest.mock("@infrastructure/services/token.ts", () => ({
-	generateTempToken: jest.fn(),
-}));
+import type { ITokenService } from "@application/ports/service/IToken.service";
+import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import type { IOtpService } from "@domain/repository/shared/IOtp.service";
 
 describe("VerifyForgotPasswordEmailUseCase", () => {
-	let useCase: VerifyForgotPasswordEmailUseCase;
-
-	const mockAdminAuthRepository = {
+	const mockAdminAuthRepository: jest.Mocked<IAdminAuthRepository> = {
+		find: jest.fn(),
+		findById: jest.fn(),
+		create: jest.fn(),
+		update: jest.fn(),
 		findByEmail: jest.fn(),
 	};
 
-	const mockOtpService = {
+	const mockOtpService: jest.Mocked<IOtpService> = {
 		generateAndStoreOtp: jest.fn(),
 		verifyOtp: jest.fn(),
 		invalidateOtp: jest.fn(),
 	};
 
+	const mockTokenService: jest.Mocked<ITokenService> = {
+		generateAccessToken: jest.fn(),
+		generateRefreshToken: jest.fn(),
+		generateTempToken: jest.fn(),
+		verifyAccessToken: jest.fn(),
+		verifyRefreshToken: jest.fn(),
+		verifyTempToken: jest.fn(),
+		getTokenTTL: jest.fn(),
+		hashToken: jest.fn(),
+	};
+
+	let useCase: VerifyForgotPasswordEmailUseCase;
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 
 		useCase = new VerifyForgotPasswordEmailUseCase(
-			mockAdminAuthRepository as any,
-			mockOtpService as any,
+			mockAdminAuthRepository,
+			mockOtpService,
+			mockTokenService,
 		);
 	});
 
@@ -33,15 +47,15 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 			name: "Test Admin",
 			email: "admin@test.com",
 			passwordHash: "hashed-password",
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: new Date("2026-01-01"),
+			updatedAt: new Date("2026-01-01"),
 		};
 
 		mockAdminAuthRepository.findByEmail.mockResolvedValue(admin);
 
 		mockOtpService.verifyOtp.mockResolvedValue(true);
 
-		(generateTempToken as jest.Mock).mockReturnValue("temporary-token-123");
+		mockTokenService.generateTempToken.mockReturnValue("temporary-token-123");
 
 		const result = await useCase.execute("admin@test.com", "123456");
 
@@ -60,20 +74,20 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 			"123456",
 		);
 
-		expect(generateTempToken).toHaveBeenCalledTimes(1);
+		expect(mockTokenService.generateTempToken).toHaveBeenCalledTimes(1);
 
-		expect(generateTempToken).toHaveBeenCalledWith({
+		expect(mockTokenService.generateTempToken).toHaveBeenCalledWith({
 			userId: "admin-123",
 			role: "admin",
 		});
 	});
 
-	it("should throw USER_NOT_FOUND when admin does not exist", async () => {
+	it("should throw when admin does not exist", async () => {
 		mockAdminAuthRepository.findByEmail.mockResolvedValue(null);
 
-		await expect(
-			useCase.execute("unknown@test.com", "123456"),
-		).rejects.toThrow();
+		await expect(useCase.execute("unknown@test.com", "123456")).rejects.toThrow(
+			"Invalid credentials",
+		);
 
 		expect(mockAdminAuthRepository.findByEmail).toHaveBeenCalledWith(
 			"unknown@test.com",
@@ -81,17 +95,17 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 
 		expect(mockOtpService.verifyOtp).not.toHaveBeenCalled();
 
-		expect(generateTempToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateTempToken).not.toHaveBeenCalled();
 	});
 
-	it("should propagate OTP verification error", async () => {
+	it("should propagate OTP verification errors", async () => {
 		const admin = {
 			id: "admin-123",
 			name: "Test Admin",
 			email: "admin@test.com",
 			passwordHash: "hashed-password",
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: new Date("2026-01-01"),
+			updatedAt: new Date("2026-01-01"),
 		};
 
 		mockAdminAuthRepository.findByEmail.mockResolvedValue(admin);
@@ -111,27 +125,30 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 			"999999",
 		);
 
-		expect(generateTempToken).not.toHaveBeenCalled();
+		expect(mockTokenService.generateTempToken).not.toHaveBeenCalled();
 	});
 
-	it("should not generate token when OTP verification fails", async () => {
+	it("should generate token after successful OTP verification", async () => {
 		const admin = {
 			id: "admin-123",
 			name: "Test Admin",
 			email: "admin@test.com",
 			passwordHash: "hashed-password",
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: new Date("2026-01-01"),
+			updatedAt: new Date("2026-01-01"),
 		};
 
 		mockAdminAuthRepository.findByEmail.mockResolvedValue(admin);
 
-		mockOtpService.verifyOtp.mockRejectedValue(new Error("OTP is invalid"));
+		mockOtpService.verifyOtp.mockResolvedValue(true);
 
-		await expect(useCase.execute("admin@test.com", "999999")).rejects.toThrow(
-			"OTP is invalid",
-		);
+		mockTokenService.generateTempToken.mockReturnValue("temporary-token-123");
 
-		expect(generateTempToken).not.toHaveBeenCalled();
+		await useCase.execute("admin@test.com", "123456");
+
+		expect(mockTokenService.generateTempToken).toHaveBeenCalledWith({
+			userId: "admin-123",
+			role: "admin",
+		});
 	});
 });
