@@ -2,6 +2,11 @@ import { container, TYPES } from "@config/di";
 import type { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller";
 import { adminTempTokenCheck } from "@presentation/http/middlewares/admin.auth.middleware";
 import {
+	forgotPasswordRateLimit,
+	forgotPasswordResendRateLimit,
+	forgotPasswordVerifyRateLimit,
+} from "@presentation/http/middlewares/rate.limit.middleware";
+import {
 	forgotPasswordValidate,
 	forgotPasswordVerifyValidate,
 } from "@presentation/http/validators/forgot-password.validate";
@@ -9,7 +14,6 @@ import { passwordValidate } from "@presentation/http/validators/reset.password.v
 import { Router } from "express";
 import { validate } from "../../middlewares/validate.middleware";
 import { loginValidator } from "../../validators/login.validate";
-import { forgotPasswordRateLimit, forgotPasswordResendRateLimit, forgotPasswordVerifyRateLimit } from "@presentation/http/middlewares/rate.limit.middleware";
 
 const router = Router();
 

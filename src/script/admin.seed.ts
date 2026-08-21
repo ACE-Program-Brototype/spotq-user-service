@@ -1,10 +1,11 @@
 import { container, TYPES } from "@config/di";
 import { config } from "@config/env.ts";
 import { prisma } from "@infrastructure/database/prisma/prisma.ts";
-import { BcryptPasswordHasher } from "@infrastructure/services/password";
+import type { BcryptPasswordHasher } from "@infrastructure/services/password";
 
-
-const passwordService = container.get<BcryptPasswordHasher>(TYPES.PasswordService)
+const passwordService = container.get<BcryptPasswordHasher>(
+	TYPES.PasswordService,
+);
 
 async function main() {
 	const name = config.admin.name;

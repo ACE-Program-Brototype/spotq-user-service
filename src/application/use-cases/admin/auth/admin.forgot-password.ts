@@ -1,4 +1,4 @@
-import { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
+import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
 import { TYPES } from "@config/di/types.ts";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer";

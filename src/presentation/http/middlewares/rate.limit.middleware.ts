@@ -1,8 +1,7 @@
+import { redisClient } from "@infrastructure/redis";
+import type { Request } from "express";
 import { rateLimit } from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
-import { redisClient } from "@infrastructure/redis";
-import { Request } from "express";
-
 
 const redisSendCommand = async (...args: string[]): Promise<any> => {
 	return redisClient.sendCommand(args);
@@ -47,21 +46,18 @@ const createEmailRateLimiter = ({
 	});
 };
 
-
 export const forgotPasswordRateLimit = createEmailRateLimiter({
 	prefix: "admin:forgot-password",
 	windowMs: 24 * 60 * 60 * 1000,
 	limit: 3,
-	message:
-		"Too many password reset requests. Please try again after 24 hours.",
+	message: "Too many password reset requests. Please try again after 24 hours.",
 });
 
 export const forgotPasswordResendRateLimit = createEmailRateLimiter({
 	prefix: "admin:forgot-password:resend",
 	windowMs: 5 * 60 * 1000,
 	limit: 5,
-	message:
-		"Too many OTP resend requests. Please try again after 5 minutes.",
+	message: "Too many OTP resend requests. Please try again after 5 minutes.",
 });
 
 export const forgotPasswordVerifyRateLimit = createEmailRateLimiter({

@@ -1,4 +1,3 @@
-
 import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
 import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
 import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
@@ -25,7 +24,7 @@ export class AdminAuthController {
 		private readonly _adminForgotPasswordVerifyEmailUseCase: IAdminVerifyEmailForgotPasswordUseCase,
 		@inject(TYPES.AdminResetPasswordUseCase)
 		private readonly _adminResetPasswordUseCase: IAdminResetPasswordUseCase,
-	) { }
+	) {}
 
 	login = async (req: Request, res: Response): Promise<void> => {
 		const { email, password } = req.body;
@@ -46,8 +45,7 @@ export class AdminAuthController {
 			authConstants.ADMIN_LOGIN_SUCCESS,
 			HttpStatus.OK,
 		);
-	}
-
+	};
 
 	logout = async (req: Request, res: Response): Promise<void> => {
 		const refreshToken = req.cookies.refreshToken;
@@ -62,13 +60,8 @@ export class AdminAuthController {
 			sameSite: config.cookie.sameSite,
 		});
 
-		successResponse(
-			res,
-			{},
-			authConstants.ADMIN_LOGOUT_SUCCESS,
-			HttpStatus.OK,
-		);
-	}
+		successResponse(res, {}, authConstants.ADMIN_LOGOUT_SUCCESS, HttpStatus.OK);
+	};
 
 	forgotPassword = async (req: Request, res: Response): Promise<void> => {
 		const { email } = req.body;
@@ -80,13 +73,18 @@ export class AdminAuthController {
 			{},
 			authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS,
 		);
-	}
+	};
 
-	forgotPasswordEmailVerify = async (req: Request, res: Response): Promise<void> => {
+	forgotPasswordEmailVerify = async (
+		req: Request,
+		res: Response,
+	): Promise<void> => {
 		const { email, otp } = req.body;
 
-		const tempToken =
-			await this._adminForgotPasswordVerifyEmailUseCase.execute(email, otp);
+		const tempToken = await this._adminForgotPasswordVerifyEmailUseCase.execute(
+			email,
+			otp,
+		);
 
 		res.cookie("tempToken", tempToken, {
 			httpOnly: config.cookie.httpOnly,
@@ -97,7 +95,7 @@ export class AdminAuthController {
 		});
 
 		successResponse(res, {}, authConstants.EMAIL_VERIFIED_SUCCESS);
-	}
+	};
 
 	verifyOtpResend = async (req: Request, res: Response): Promise<void> => {
 		const { email } = req.body;
@@ -109,17 +107,14 @@ export class AdminAuthController {
 			{},
 			authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS,
 		);
-	}
+	};
 
 	resetPassword = async (req: Request, res: Response): Promise<void> => {
 		const userId = req.userId;
 		const { password } = req.body;
 
 		if (!userId) {
-			throw new AppError(
-				authConstants.USER_NOT_FOUND,
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
 		}
 
 		const user = await this._adminResetPasswordUseCase.execute(
@@ -134,5 +129,5 @@ export class AdminAuthController {
 		});
 
 		successResponse(res, user, authConstants.PASSWORD_RESET_SUCCESS);
-	}
+	};
 }

@@ -6,10 +6,10 @@ import { inject, injectable } from "inversify";
 
 @injectable()
 export class RefreshTokenRepository implements IRefreshTokenRepository {
-	private readonly _redis = redisClient
+	private readonly _redis = redisClient;
 	constructor(
 		@inject(TYPES.TokenService)
-		private readonly _tokenService: ITokenService
+		private readonly _tokenService: ITokenService,
 	) {}
 
 	async revoke(token: string, ttlSeconds: number): Promise<void> {

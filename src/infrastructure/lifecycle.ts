@@ -1,3 +1,4 @@
+import type { IEmailService } from "@application/ports/service/IEmail.service.ts";
 import { container, TYPES } from "@config/di/index.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import type { PrismaService } from "./database/prisma/database.service.ts";
@@ -5,7 +6,6 @@ import type { BullMQService } from "./queue/bullmq.service.ts";
 import type { EmailQueueProducer } from "./queue/email.queue.producer.ts";
 import type { EmailQueueWorker } from "./queue/email.queue.worker.ts";
 import type { RedisService } from "./redis/redis.service.ts";
-import { IEmailService } from "@application/ports/service/IEmail.service.ts";
 
 export async function initInfrastructure(): Promise<void> {
 	const prismaService = container.get<PrismaService>(TYPES.PrismaService);

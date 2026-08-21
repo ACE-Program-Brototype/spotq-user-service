@@ -1,5 +1,5 @@
 import { container, TYPES } from "@config/di";
-import { JwtTokenService } from "@infrastructure/services/token";
+import type { JwtTokenService } from "@infrastructure/services/token";
 import { HttpStatus, ResponseMessage } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
@@ -16,10 +16,7 @@ export const adminTempTokenCheck = async (
 		const { tempToken } = req.cookies;
 
 		if (!tempToken) {
-			throw new AppError(
-				authConstants.MISSING_TOKEN,
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new AppError(authConstants.MISSING_TOKEN, HttpStatus.BAD_REQUEST);
 		}
 
 		let decoded: { userId: string; role: string };
@@ -30,17 +27,11 @@ export const adminTempTokenCheck = async (
 				role: string;
 			};
 		} catch {
-			throw new AppError(
-				authConstants.INVALID_TOKEN,
-				HttpStatus.UNAUTHORIZED,
-			);
+			throw new AppError(authConstants.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
 		}
 
 		if (decoded.role !== "admin") {
-			throw new AppError(
-				authConstants.INVALID_USER,
-				HttpStatus.UNAUTHORIZED,
-			);
+			throw new AppError(authConstants.INVALID_USER, HttpStatus.UNAUTHORIZED);
 		}
 
 		req.userId = decoded.userId;

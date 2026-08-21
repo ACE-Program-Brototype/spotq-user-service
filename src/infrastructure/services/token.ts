@@ -16,15 +16,16 @@ export class JwtTokenService implements ITokenService {
 
 	constructor() {
 		this.accessSecret = config.jwt.access.secret;
-		this.accessExpiresIn = config.jwt.access.expiresIn as jwt.SignOptions["expiresIn"];
+		this.accessExpiresIn = config.jwt.access
+			.expiresIn as jwt.SignOptions["expiresIn"];
 
 		this.refreshSecret = config.jwt.refresh.secret;
-		this.refreshExpiresIn =
-			config.jwt.refresh.expiresIn as jwt.SignOptions["expiresIn"];
+		this.refreshExpiresIn = config.jwt.refresh
+			.expiresIn as jwt.SignOptions["expiresIn"];
 
 		this.tempSecret = config.jwt.temp.secret;
-		this.tempExpiresIn =
-			config.jwt.temp.expiresIn as jwt.SignOptions["expiresIn"];
+		this.tempExpiresIn = config.jwt.temp
+			.expiresIn as jwt.SignOptions["expiresIn"];
 	}
 
 	generateAccessToken(payload: object): string {
@@ -74,9 +75,6 @@ export class JwtTokenService implements ITokenService {
 	}
 
 	hashToken(token: string): string {
-		return crypto
-			.createHash("sha256")
-			.update(token)
-			.digest("hex");
+		return crypto.createHash("sha256").update(token).digest("hex");
 	}
 }

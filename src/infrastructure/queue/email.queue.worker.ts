@@ -1,10 +1,10 @@
+import type { IEmailService } from "@application/ports/service/IEmail.service";
 import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { type Job, Worker } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
 import { EMAIL_QUEUE_NAME } from "./email.queue.producer";
-import { IEmailService } from "@application/ports/service/IEmail.service";
 
 export interface EmailJobData {
 	email: string;
