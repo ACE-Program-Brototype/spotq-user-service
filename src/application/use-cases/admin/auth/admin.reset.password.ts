@@ -25,7 +25,7 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 		const user = await this._adminAuthRepository.findById(userId);
 
 		if (!user) {
-			throw new UserNotFoundError()
+			throw new UserNotFoundError();
 		}
 
 		const passwordHash = await this._passwordService.hashPassword(password);
@@ -35,7 +35,7 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 		});
 
 		if (!updatedUser) {
-			throw new ResetPasswordFailedError()
+			throw new ResetPasswordFailedError();
 		}
 
 		const updatedDomainUser = new Admin(

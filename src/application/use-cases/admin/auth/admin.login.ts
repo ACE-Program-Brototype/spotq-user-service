@@ -24,7 +24,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		const user = await this._adminRepository.findByEmail(email);
 
 		if (!user) {
-			throw new InvalidCredentialsError()
+			throw new InvalidCredentialsError();
 		}
 
 		const isPasswordValid = await this._passwordService.verifyPassword(
@@ -33,7 +33,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		);
 
 		if (!isPasswordValid) {
-			throw new InvalidCredentialsError()
+			throw new InvalidCredentialsError();
 		}
 
 		const role = "admin";

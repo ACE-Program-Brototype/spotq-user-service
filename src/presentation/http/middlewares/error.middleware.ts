@@ -24,8 +24,7 @@ export function errorMiddleware(
 		"Unhandled error occurred",
 	);
 
-	const isProduction =
-		config.server.nodeEnv === "production";
+	const isProduction = config.server.nodeEnv === "production";
 
 	// --------------------------------------------------
 	// 2. Zod validation error
@@ -48,8 +47,7 @@ export function errorMiddleware(
 	const mappedError = mapErrorToHttp(err);
 
 	const isServerError =
-		mappedError.statusCode >=
-		HttpStatus.INTERNAL_SERVER_ERROR;
+		mappedError.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
 
 	// Never expose internal 5xx error details in production.
 	const message =
