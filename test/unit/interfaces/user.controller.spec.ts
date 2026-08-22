@@ -4,6 +4,7 @@ import type {
 	IGoogleAuthUseCase,
 	ILoginUseCase,
 	ILogoutUseCase,
+	IRefreshTokenUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
@@ -17,6 +18,7 @@ describe("UserAuthController", () => {
 	let mockLogoutUseCase: jest.Mocked<Partial<ILogoutUseCase>>;
 	let mockGoogleAuthUseCase: jest.Mocked<Partial<IGoogleAuthUseCase>>;
 	let mockLoginUseCase: jest.Mocked<Partial<ILoginUseCase>>;
+	let mockRefreshTokenUseCase: jest.Mocked<Partial<IRefreshTokenUseCase>>;
 	let controller: UserAuthController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
@@ -40,6 +42,9 @@ describe("UserAuthController", () => {
 		mockLoginUseCase = {
 			execute: jest.fn(),
 		};
+		mockRefreshTokenUseCase = {
+			execute: jest.fn(),
+		};
 
 		controller = new UserAuthController(
 			mockRegisterUseCase as IRegisterUserUseCase,
@@ -48,6 +53,7 @@ describe("UserAuthController", () => {
 			mockLogoutUseCase as ILogoutUseCase,
 			mockGoogleAuthUseCase as IGoogleAuthUseCase,
 			mockLoginUseCase as ILoginUseCase,
+			mockRefreshTokenUseCase as IRefreshTokenUseCase,
 		);
 
 		mockReq = {
@@ -181,6 +187,37 @@ describe("UserAuthController", () => {
 		);
 	});
 
+	it("should return 200 on successful logout with cookie-based refreshToken", async () => {
+		(mockLogoutUseCase.execute as jest.Mock).mockResolvedValue({
+			success: true,
+			message: "Logged out successfully.",
+		});
+
+		mockReq.user = {
+			userId: "usr-1",
+			email: "john@example.com",
+		};
+		mockReq.body = {};
+		mockReq.cookies = {
+			refreshToken: "cookie-refresh-token",
+		};
+
+		await controller.logout(
+			mockReq as AuthenticatedRequest,
+			mockRes as Response,
+		);
+
+		expect(mockLogoutUseCase.execute).toHaveBeenCalledWith({
+			userId: "usr-1",
+			refreshToken: "cookie-refresh-token",
+		});
+		expect(mockRes.status).toHaveBeenCalledWith(200);
+		expect(mockRes.clearCookie).toHaveBeenCalledWith(
+			"refreshToken",
+			expect.any(Object),
+		);
+	});
+
 	it("should return 200 and set cookie on successful Google authentication", async () => {
 		const googleAuthResult = {
 			user: {
@@ -266,5 +303,75 @@ describe("UserAuthController", () => {
 				data: expectedResponseBody,
 			}),
 		);
+	});
+
+	it("should return 200 and set cookie on successful token refresh", async () => {
+		const refreshResult = {
+			user: {
+				id: "u-1",
+				fullName: "John Doe",
+				email: "john.doe@example.com",
+				status: "ACTIVE",
+			},
+			accessToken: "new_access_token",
+			refreshToken: "new_refresh_token",
+		};
+
+		(mockRefreshTokenUseCase.execute as jest.Mock).mockResolvedValue(
+			refreshResult,
+		);
+
+		mockReq.cookies = {
+			refreshToken: "old_refresh_token",
+		};
+
+		const nextFn = jest.fn();
+
+		await controller.refresh(mockReq as Request, mockRes as Response, nextFn);
+
+		expect(mockRefreshTokenUseCase.execute).toHaveBeenCalledWith({
+			refreshToken: "old_refresh_token",
+		});
+		expect(mockRes.status).toHaveBeenCalledWith(200);
+		expect(mockRes.cookie).toHaveBeenCalledWith(
+			"refreshToken",
+			"new_refresh_token",
+			expect.any(Object),
+		);
+		expect(mockRes.json).toHaveBeenCalledWith(
+			expect.objectContaining({
+				success: true,
+				statusCode: 200,
+				message: "Token refreshed successfully.",
+				data: {
+					user: {
+						id: "u-1",
+						full_name: "John Doe",
+						email: "john.doe@example.com",
+						status: "ACTIVE",
+					},
+					access_token: "new_access_token",
+				},
+			}),
+		);
+	});
+
+	it("should clear cookie and call next when refresh token fails", async () => {
+		const error = new Error("Invalid token");
+		(mockRefreshTokenUseCase.execute as jest.Mock).mockRejectedValue(error);
+
+		mockReq.cookies = {
+			refreshToken: "invalid_refresh_token",
+		};
+
+		const nextFn = jest.fn();
+
+		await controller.refresh(mockReq as Request, mockRes as Response, nextFn);
+
+		expect(mockRes.clearCookie).toHaveBeenCalledWith(
+			"refreshToken",
+			expect.any(Object),
+		);
+		expect(nextFn).toHaveBeenCalledWith(error);
 	});
 });

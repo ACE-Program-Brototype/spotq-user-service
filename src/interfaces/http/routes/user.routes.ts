@@ -4,7 +4,6 @@ import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts"
 import {
 	googleAuthSchema,
 	loginSchema,
-	logoutSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
 	validateRequestBody,
@@ -44,12 +43,7 @@ export class UserRouter {
 			this.userController.resendEmailOtp,
 		);
 
-		this.router.post(
-			"/logout",
-			authMiddleware,
-			validateRequestBody(logoutSchema),
-			this.userController.logout,
-		);
+		this.router.post("/logout", authMiddleware, this.userController.logout);
 
 		this.router.post(
 			"/google",
