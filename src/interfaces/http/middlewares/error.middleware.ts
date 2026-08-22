@@ -1,5 +1,5 @@
 import { config } from "@config/env.ts";
-import { DomainError } from "@domain/errors/domain.error.ts";
+import { DomainError } from "@domain/errors";
 import { logger } from "@infrastructure/logger/index.ts";
 import {
 	DOMAIN_ERRORS,
@@ -8,6 +8,8 @@ import {
 } from "@shared/constants/index.ts";
 import { ApiResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
+import { mapErrorToHttp } from "../errors/error.mapper";
 
 const DOMAIN_ERROR_STATUS_MAP: Record<string, number> = {
 	[DOMAIN_ERRORS.CODES.INVALID_NAME]: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -34,11 +36,40 @@ const DOMAIN_ERROR_STATUS_MAP: Record<string, number> = {
 };
 
 export function errorMiddleware(
-	err: Error,
+	err: unknown,
 	req: Request,
 	res: Response,
 	_next: NextFunction,
 ): void {
+	// --------------------------------------------------
+	// 1. Always log the original error
+	// --------------------------------------------------
+
+	logger.error(
+		{
+			err,
+			method: req.method,
+			url: req.url,
+		},
+		"Unhandled error occurred",
+	);
+
+	const isProduction = config.server.nodeEnv === "production";
+
+	// --------------------------------------------------
+	// 2. Zod validation error
+	// --------------------------------------------------
+
+	if (err instanceof ZodError) {
+		res.status(HttpStatus.BAD_REQUEST).json({
+			success: false,
+			message: "Validation failed",
+			errors: err.issues,
+		});
+
+		return;
+	}
+
 	if (err instanceof DomainError) {
 		const statusCode =
 			DOMAIN_ERROR_STATUS_MAP[err.code] || HttpStatus.INTERNAL_SERVER_ERROR;
@@ -60,24 +91,28 @@ export function errorMiddleware(
 		return;
 	}
 
-	logger.error(
-		{ err, method: req.method, url: req.url },
-		"Unhandled error occurred",
+	// --------------------------------------------------
+	// 3. Domain / Application / Unknown error
+	// --------------------------------------------------
+
+	const mappedError = mapErrorToHttp(err);
+
+	const isServerError =
+		mappedError.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
+
+	// Never expose internal 5xx error details in production.
+	const message =
+		isProduction && isServerError
+			? ResponseMessage.UNEXPECTED_ERROR
+			: mappedError.message;
+
+	const response = ApiResponse.fail(
+		message,
+		mappedError.statusCode,
+		mappedError.code,
 	);
 
-	const statusCode =
-		res.statusCode === HttpStatus.OK ||
-		res.statusCode === HttpStatus.NOT_MODIFIED
-			? HttpStatus.INTERNAL_SERVER_ERROR
-			: res.statusCode;
+	res.status(mappedError.statusCode).json(response);
 
-	const isProduction = config.server.nodeEnv === "production";
-	const message = isProduction ? ResponseMessage.UNEXPECTED_ERROR : err.message;
-	const errorLabel =
-		isProduction && statusCode >= 500
-			? undefined
-			: ResponseMessage.INTERNAL_SERVER_ERROR;
-
-	const response = ApiResponse.fail(message, statusCode, errorLabel);
-	res.status(response.statusCode).json(response);
+	return;
 }

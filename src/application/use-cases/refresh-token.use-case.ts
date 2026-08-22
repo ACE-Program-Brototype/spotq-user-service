@@ -5,7 +5,8 @@ import type {
 } from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
-import { InvalidTokenError } from "@domain/errors/domain.error.ts";
+import { UserStatus } from "@domain/entities/user.entity.ts";
+import { InvalidTokenError } from "@domain/errors/index.ts";
 import type {
 	IRefreshTokenRepository,
 	IUserRepository,
@@ -54,6 +55,22 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 			throw new InvalidTokenError("User not found.");
 		}
 
+		if (user.status === UserStatus.BLOCKED) {
+			this.logger.warn(
+				{ event: "TOKEN_REFRESH_BLOCKED_ACCOUNT", userId: user.id },
+				"Refresh token failed: Account is blocked",
+			);
+			throw new InvalidTokenError("Account is blocked.");
+		}
+
+		if (user.status === UserStatus.INACTIVE) {
+			this.logger.warn(
+				{ event: "TOKEN_REFRESH_INACTIVE_ACCOUNT", userId: user.id },
+				"Refresh token failed: Account is inactive",
+			);
+			throw new InvalidTokenError("Account is inactive.");
+		}
+
 		// Perform refresh token rotation: revoke the old one
 		await this.refreshTokenRepository.revoke(tokenHash, new Date());
 
@@ -89,7 +106,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 			user: {
 				id: user.id,
 				email: user.email.getValue(),
-				fullName: user.fullName,
+				fullName: user.fullName.getValue(),
 				status: user.status,
 			},
 		};

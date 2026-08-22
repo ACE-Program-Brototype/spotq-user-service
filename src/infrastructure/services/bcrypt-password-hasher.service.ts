@@ -1,7 +1,7 @@
 import type { IPasswordHasher } from "@application/ports/services/password-hasher.interface.ts";
 import { config } from "@config/env.ts";
 import type { PlainPassword } from "@domain/value-objects/password.vo.ts";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { injectable } from "inversify";
 
 @injectable()

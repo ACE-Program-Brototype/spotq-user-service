@@ -32,28 +32,41 @@ const envSchema = z.object({
 		? z.string().default("redis://localhost:6379")
 		: z.string().min(1, "REDIS_URL is required"),
 
+	ADMIN_NAME: isTest
+		? z.string().default("Test Admin")
+		: z.string().min(1, "ADMIN_NAME is required"),
+	ADMIN_EMAIL: isTest
+		? z.string().default("admin@example.com")
+		: z.string().email("ADMIN_EMAIL must be a valid email"),
+	ADMIN_PASSWORD: isTest
+		? z.string().default("password123")
+		: z.string().min(8, "ADMIN_PASSWORD must be at least 8 characters"),
+
 	BCRYPT_SALT_ROUNDS: z.coerce.number().min(4).max(16).default(10),
 
 	JWT_ACCESS_SECRET: isTest
 		? z.string().default("test_jwt_access_secret_min_16_chars")
 		: z.string().min(1, "JWT_ACCESS_SECRET is required"),
+	JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 
 	JWT_REFRESH_SECRET: isTest
 		? z.string().default("test_jwt_refresh_secret_min_16_chars")
 		: z.string().min(1, "JWT_REFRESH_SECRET is required"),
-
-	JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 	JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+
+	JWT_TEMP_SECRET: isTest
+		? z.string().default("test_jwt_temp_secret_min_16_chars")
+		: z.string().min(1, "JWT_TEMP_SECRET is required"),
+	JWT_TEMP_EXPIRES_IN: z.string().default("10m"),
 
 	BREVO_API_KEY: isTest
 		? z.string().default("test_brevo_api_key")
 		: z.string().min(1, "BREVO_API_KEY is required"),
-
 	BREVO_SENDER_EMAIL: isTest
 		? z.string().default("no-reply@spotq.com")
 		: z.string().email("BREVO_SENDER_EMAIL must be a valid email"),
-
 	BREVO_SENDER_NAME: z.string().default("SpotQ"),
+
 	GOOGLE_CLIENT_ID: isTest
 		? z.string().default("test_google_client_id")
 		: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
@@ -75,7 +88,13 @@ const envSchema = z.object({
 });
 
 export const validateEnv = () => {
-	const result = envSchema.safeParse(process.env);
+	const normalizedEnv = {
+		...process.env,
+		NODE_ENV:
+			process.env.NODE_ENV === "test" ? "testing" : process.env.NODE_ENV,
+	};
+
+	const result = envSchema.safeParse(normalizedEnv);
 
 	if (!result.success) {
 		console.error("Invalid environment configuration\n");

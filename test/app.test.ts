@@ -1,6 +1,7 @@
 import { HealthStatus } from "@shared/constants/health-status.constants.js";
 import request from "supertest";
 import app from "../src/app.js";
+import { validateEnv } from "../src/config/validate-env.ts";
 import { PrismaService } from "../src/infrastructure/database/prisma/database.service.js";
 import { prisma } from "../src/infrastructure/database/prisma/prisma.js";
 import { BullMQService } from "../src/infrastructure/queue/bullmq.service.js";
@@ -8,6 +9,22 @@ import { redisClient } from "../src/infrastructure/redis/redis.client.js";
 import { RedisService } from "../src/infrastructure/redis/redis.service.js";
 
 describe("User Service Integration & Unit Tests", () => {
+	it("should accept Jest's default NODE_ENV=test when validating env", () => {
+		const originalNodeEnv = process.env.NODE_ENV;
+		process.env.NODE_ENV = "test";
+
+		try {
+			const env = validateEnv();
+			expect(env.NODE_ENV).toBe("testing");
+		} finally {
+			if (originalNodeEnv === undefined) {
+				delete process.env.NODE_ENV;
+			} else {
+				process.env.NODE_ENV = originalNodeEnv;
+			}
+		}
+	});
+
 	let dbSpy: jest.SpyInstance;
 	let redisSpy: jest.SpyInstance;
 	let bullmqSpy: jest.SpyInstance;

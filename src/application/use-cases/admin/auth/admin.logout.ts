@@ -1,0 +1,25 @@
+import type { IAdminTokenService } from "@application/ports/services/index.ts";
+import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
+import { TYPES } from "@config/di/types";
+import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";
+import { inject, injectable } from "inversify";
+
+@injectable()
+export class AdminLogoutUseCase implements IAdminLogoutUseCase {
+	constructor(
+		@inject(TYPES.AdminRefreshTokenRepository)
+		private readonly _refreshTokenRepository: IRefreshTokenRepository,
+		@inject(TYPES.AdminTokenService)
+		private readonly _tokenService: IAdminTokenService,
+	) {}
+
+	async execute(refreshToken: string): Promise<void> {
+		const ttlSeconds = this._tokenService.getTokenTTL(refreshToken);
+
+		if (ttlSeconds <= 0) {
+			return;
+		}
+
+		await this._refreshTokenRepository.revoke(refreshToken, ttlSeconds);
+	}
+}

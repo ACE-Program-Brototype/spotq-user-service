@@ -21,17 +21,17 @@ export class JwtTokenService implements ITokenService {
 		};
 
 		const signOptions: SignOptions = {
-			expiresIn: config.jwt.accessExpiresIn as unknown as number,
+			expiresIn: config.jwt.access.expiresIn as unknown as number,
 		};
 
-		return jwt.sign(claims, config.jwt.accessSecret, signOptions);
+		return jwt.sign(claims, config.jwt.access.secret, signOptions);
 	}
 
 	public generateRefreshToken(): GeneratedRefreshToken {
 		// Generate 256-bit cryptographically secure random opaque token
 		const token = crypto.randomBytes(32).toString("hex");
 		const tokenHash = this.hashToken(token);
-		const expiresAt = this.calculateExpiry(config.jwt.refreshExpiresIn);
+		const expiresAt = this.calculateExpiry(config.jwt.refresh.expiresIn);
 
 		return {
 			token,
@@ -46,7 +46,7 @@ export class JwtTokenService implements ITokenService {
 
 	public verifyAccessToken(token: string): AccessTokenPayload {
 		try {
-			const decoded = jwt.verify(token, config.jwt.accessSecret);
+			const decoded = jwt.verify(token, config.jwt.access.secret);
 			if (typeof decoded === "string" || !decoded.sub) {
 				throw new InvalidTokenError("Invalid token payload.");
 			}

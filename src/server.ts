@@ -5,12 +5,12 @@ import {
 	shutdownInfrastructure,
 } from "@infrastructure/index.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
-import app from "./app.ts";
 
 const PORT = config.server.port;
 
 async function bootstrap() {
 	await initInfrastructure();
+	const { default: app } = await import("./app.ts");
 
 	const server = app.listen(PORT, () => {
 		logger.info(`${config.service.name} running on port ${PORT}`);

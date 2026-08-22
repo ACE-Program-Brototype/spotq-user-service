@@ -4,7 +4,10 @@ import { prisma } from "@infrastructure/database/prisma/prisma.ts";
 import type { RefreshToken as PrismaRefreshTokenModel } from "@prisma/client";
 import { injectable } from "inversify";
 import { RefreshTokenMapper } from "../mappers/refresh-token.mapper.ts";
-import { PrismaBaseRepository } from "./prisma-base.repository.ts";
+import {
+	type IPrismaModelDelegate,
+	PrismaBaseRepository,
+} from "./prisma-base.repository.ts";
 
 @injectable()
 export class PrismaRefreshTokenRepository
@@ -12,7 +15,10 @@ export class PrismaRefreshTokenRepository
 	implements IRefreshTokenRepository
 {
 	constructor() {
-		super(prisma.refreshToken, RefreshTokenMapper);
+		super(
+			prisma.refreshToken as unknown as IPrismaModelDelegate<PrismaRefreshTokenModel>,
+			RefreshTokenMapper,
+		);
 	}
 
 	public async save(refreshToken: RefreshTokenEntity): Promise<void> {

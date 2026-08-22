@@ -1,0 +1,51 @@
+import { container, TYPES } from "@config/di";
+import type { AdminAuthController } from "@interfaces/http/controllers/admin/auth.controller";
+import { adminTempTokenCheck } from "@interfaces/http/middlewares/admin.auth.middleware";
+import {
+	forgotPasswordRateLimit,
+	forgotPasswordResendRateLimit,
+	forgotPasswordVerifyRateLimit,
+} from "@interfaces/http/middlewares/rate.limit.middleware";
+import {
+	forgotPasswordValidate,
+	forgotPasswordVerifyValidate,
+} from "@interfaces/http/validators/forgot-password.validate";
+import { passwordValidate } from "@interfaces/http/validators/reset.password.validate";
+import { Router } from "express";
+import { validate } from "../../middlewares/validate.middleware";
+import { loginValidator } from "../../validators/login.validate";
+
+const router = Router();
+
+const adminAuthController = container.get<AdminAuthController>(
+	TYPES.AdminAuthController,
+);
+
+router.post("/login", validate(loginValidator), adminAuthController.login);
+router.post("/logout", adminAuthController.logout);
+router.post(
+	"/forgot-password",
+	validate(forgotPasswordValidate),
+	forgotPasswordRateLimit,
+	adminAuthController.forgotPassword,
+);
+router.post(
+	"/forgot-password/verify",
+	validate(forgotPasswordVerifyValidate),
+	forgotPasswordVerifyRateLimit,
+	adminAuthController.forgotPasswordEmailVerify,
+);
+router.post(
+	"/forgot-password/resend-otp",
+	validate(forgotPasswordValidate),
+	forgotPasswordResendRateLimit,
+	adminAuthController.verifyOtpResend,
+);
+router.post(
+	"/reset-password",
+	adminTempTokenCheck,
+	validate(passwordValidate),
+	adminAuthController.resetPassword,
+);
+
+export default router;

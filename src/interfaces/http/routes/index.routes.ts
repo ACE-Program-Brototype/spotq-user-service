@@ -1,4 +1,5 @@
 import { container, TYPES } from "@config/di/index.ts";
+import adminRoutes from "@interfaces/http/routes/admin.routes.ts";
 import type { HealthRouter } from "@modules/health/health.routes.ts";
 import { Router } from "express";
 import { metricsRouter } from "./metrics.routes.ts";
@@ -11,4 +12,5 @@ const userRouter = container.get<UserRouter>(TYPES.UserRouter);
 
 router.use("/", healthRouter.router);
 router.use("/", metricsRouter);
+router.use("/admin", adminRoutes);
 router.use("/", userRouter.router);
