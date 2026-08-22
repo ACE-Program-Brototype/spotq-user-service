@@ -7,7 +7,7 @@ import type {
 } from "@application/dtos/index.ts";
 
 import { TYPES } from "@config/di/types.ts";
-
+import { config } from "@config/env.ts";
 import type {
 	IGoogleAuthUseCase,
 	ILoginUseCase,
@@ -17,14 +17,12 @@ import type {
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
-
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
-import { config } from "@config/env.ts";
 
 @injectable()
 export class UserAuthController {
@@ -118,7 +116,7 @@ export class UserAuthController {
 		res.clearCookie("refreshToken", {
 			httpOnly: config.cookie.httpOnly,
 			secure: config.cookie.secure,
-			sameSite: config.cookie.sameSite
+			sameSite: config.cookie.sameSite,
 		});
 
 		sendSuccessResponse(res, undefined, result.message);
@@ -133,7 +131,7 @@ export class UserAuthController {
 			httpOnly: config.cookie.httpOnly,
 			secure: config.cookie.secure,
 			sameSite: config.cookie.sameSite,
-			maxAge: Number(config.cookie.refreshMaxAge)
+			maxAge: Number(config.cookie.refreshMaxAge),
 		});
 
 		// Exclude refreshToken from body payload and use snake_case for response mapping

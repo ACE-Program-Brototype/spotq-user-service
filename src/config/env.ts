@@ -56,6 +56,5 @@ export const config = {
 		sameSite: env.COOKIE_SAME_SITE,
 		refreshMaxAge: env.COOKIE_REFRESH_MAX_AGE,
 		tempMaxAge: env.COOKIE_TEMP_MAX_AGE,
-	}
-
+	},
 } as const;

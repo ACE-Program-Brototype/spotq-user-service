@@ -71,7 +71,7 @@ const envSchema = z.object({
 		.default(true),
 	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
 	COOKIE_REFRESH_MAX_AGE: z.string(),
-	COOKIE_TEMP_MAX_AGE: z.string()
+	COOKIE_TEMP_MAX_AGE: z.string(),
 });
 
 export const validateEnv = () => {
