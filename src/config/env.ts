@@ -45,6 +45,7 @@ export const config = {
 			expiresIn: env.JWT_TEMP_EXPIRES_IN,
 		},
 	},
+
 	cookie: {
 		httpOnly: env.COOKIE_HTTPONLY,
 		secure: env.COOKIE_SECURE,
@@ -53,9 +54,19 @@ export const config = {
 		tempMaxAge: env.COOKIE_TEMP_MAX_AGE,
 	},
 
+	auth: {
+		bcryptSaltRounds: env.BCRYPT_SALT_ROUNDS,
+	},
+
 	brevo: {
 		apiKey: env.BREVO_API_KEY,
 		senderName: env.BREVO_SENDER_NAME,
 		senderEmail: env.BREVO_SENDER_EMAIL,
 	},
-} as const;
+
+	otp: {
+		ttlSeconds: env.OTP_TTL_SECONDS,
+		maxAttempts: env.OTP_MAX_ATTEMPTS,
+	},
+
+}

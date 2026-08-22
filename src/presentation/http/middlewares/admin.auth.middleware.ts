@@ -5,7 +5,7 @@ import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
 
-const tokenService = container.get<JwtTokenService>(TYPES.TokenService);
+const tokenService = container.get<JwtTokenService>(TYPES.AdminTokenService);
 
 export const adminTempTokenCheck = async (
 	req: Request,

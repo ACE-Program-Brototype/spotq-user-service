@@ -13,9 +13,9 @@ export class VerifyForgotPasswordEmailUseCase
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminAuthRepository: IAdminAuthRepository,
-		@inject(TYPES.OtpService)
+		@inject(TYPES.AdminOtpService)
 		private readonly _otpService: IOtpService,
-		@inject(TYPES.TokenService)
+		@inject(TYPES.AdminTokenService)
 		private readonly _tokenService: ITokenService,
 	) {}
 

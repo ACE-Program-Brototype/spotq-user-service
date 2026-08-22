@@ -7,9 +7,9 @@ import { inject, injectable } from "inversify";
 @injectable()
 export class AdminLogoutUseCase implements IAdminLogoutUseCase {
 	constructor(
-		@inject(TYPES.RefreshTokenRepository)
+		@inject(TYPES.AdminRefreshTokenRepository)
 		private readonly _refreshTokenRepository: IRefreshTokenRepository,
-		@inject(TYPES.TokenService)
+		@inject(TYPES.AdminTokenService)
 		private readonly _tokenService: ITokenService,
 	) {}
 

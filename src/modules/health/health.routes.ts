@@ -7,18 +7,18 @@ import type { HealthController } from "./health.controller.ts";
 @injectable()
 export class HealthRouter {
 	public router: Router;
-	private readonly healthController: HealthController;
+	private readonly _healthController: HealthController;
 
 	constructor(
 		@inject(TYPES.HealthController)
 		healthController: HealthController,
 	) {
 		this.router = Router();
-		this.healthController = healthController;
+		this._healthController = healthController;
 		this.init();
 	}
 
 	private init() {
-		this.router.get(Routes.HEALTH, this.healthController.check);
+		this.router.get(Routes.HEALTH, this._healthController.check);
 	}
 }

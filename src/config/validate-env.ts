@@ -1,15 +1,27 @@
 import { z } from "zod";
 
+const isTest =
+	process.env.NODE_ENV === "test" || process.env.NODE_ENV === "testing";
+
 const envSchema = z.object({
-	NODE_ENV: z.enum(["development", "testing", "production"]),
+	NODE_ENV: z
+		.enum(["development", "testing", "test", "production"])
+		.default("development"),
 
-	PORT: z.coerce.number().positive(),
+	PORT: z.coerce.number().positive().default(3000),
 
-	SERVICE_NAME: z.string().min(1),
+	SERVICE_NAME: z.string().min(1).default("spotq-user-service"),
 
-	LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]),
+	LOG_LEVEL: z
+		.enum(["trace", "debug", "info", "warn", "error", "fatal"])
+		.default("info"),
 
-	DATABASE_URL: z.url(),
+	DATABASE_URL: isTest
+		? z
+				.string()
+				.default("postgresql://postgres:password@localhost:5432/user_db")
+		: z.string().min(1, "DATABASE_URL is required"),
+
 	DATABASE_SSL_ENABLED: z
 		.string()
 		.transform((val) => val === "true")
@@ -44,6 +56,9 @@ const envSchema = z.object({
 		.string()
 		.email("BREVO_SENDER_EMAIL must be a valid email"),
 	BREVO_SENDER_NAME: z.string().default("SpotQ"),
+	BCRYPT_SALT_ROUNDS: z.coerce.number().min(4).max(16).default(10),
+	OTP_TTL_SECONDS: z.coerce.number().positive().default(300),
+	OTP_MAX_ATTEMPTS: z.coerce.number().positive().default(5),
 });
 
 export const validateEnv = () => {

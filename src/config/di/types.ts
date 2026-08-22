@@ -1,29 +1,24 @@
-export const TYPES = {
-	DatabaseHealthCheckable: Symbol.for("DatabaseHealthCheckable"),
-	RedisHealthCheckable: Symbol.for("RedisHealthCheckable"),
-	BullMQHealthCheckable: Symbol.for("BullMQHealthCheckable"),
-	PrismaService: Symbol.for("PrismaService"),
-	RedisService: Symbol.for("RedisService"),
-	BullMQService: Symbol.for("BullMQService"),
-	HealthService: Symbol.for("HealthService"),
-	HealthController: Symbol.for("HealthController"),
-	HealthRouter: Symbol.for("HealthRouter"),
+import { HEALTH_TYPES } from "./health/health.types.ts";
+import { INFRASTRUCTURE_TYPES } from "./infrastructure/infrastructure.types.ts";
+import { USER_TYPES } from "./user/user.types.ts";
 
+export const TYPES = {
 	// AUTH
 	AdminAuthRepository: Symbol.for("AdminAuthRepository"),
 	AdminLoginUseCase: Symbol.for("AdminLoginUseCase"),
 	AdminAuthController: Symbol.for("AdminAuthController"),
-	RefreshTokenRepository: Symbol.for("RefreshTokenRepository"),
 	AdminLogoutUseCase: Symbol.for("AdminLogoutUseCase"),
-	OtpService: Symbol.for("OtpService"),
-	EmailQueueProducer: Symbol.for("EmailQueueProducer"),
 	AdminForgotPasswordUseCase: Symbol.for("AdminForgotPasswordUseCase"),
-	EmailService: Symbol.for("EmailService"),
-	EmailQueueWorker: Symbol.for("EmailQueueWorker"),
 	AdminForgotPasswordEmailVerifyUseCase: Symbol.for(
 		"AdminForgotPasswordEmailVerifyUseCase",
 	),
 	AdminResetPasswordUseCase: Symbol.for("AdminResetPasswordUseCase"),
+	AdminTokenService: Symbol.for("AdminTokenService"),
+	AdminOtpService: Symbol.for("AdminOtpService"),
+	AdminEmailQueueProducer: Symbol.for("AdminEmailQueueProducer"),
+	AdminRefreshTokenRepository: Symbol.for("AdminRefreshTokenRepository"),
 	PasswordService: Symbol.for("PasswordService"),
-	TokenService: Symbol.for("TokenService"),
+	...INFRASTRUCTURE_TYPES,
+	...USER_TYPES,
+	...HEALTH_TYPES,
 } as const;

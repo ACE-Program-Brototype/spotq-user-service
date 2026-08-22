@@ -16,6 +16,7 @@ export async function initInfrastructure(): Promise<void> {
 	await redisService.connect();
 	await bullmqService.connect();
 
+	// Start BullMQ background worker for email delivery
 	try {
 		const emailWorker = container.get<EmailQueueWorker>(TYPES.EmailQueueWorker);
 		const emailService = container.get<IEmailService>(TYPES.EmailService);

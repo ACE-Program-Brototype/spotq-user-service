@@ -4,10 +4,10 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest",
-		"test:infisical": "infisical run -- jest",
+		"test": "pnpm lint && jest --forceExit",
+		"test:infisical": "infisical run -- pnpm test",
 		"test:watch": "jest --watch",
-		"test:coverage": "jest --coverage",
+		"test:coverage": "jest --coverage --forceExit",
 		"build": "tsup",
 		"dev": "tsx watch src/server.ts",
 		"dev:infisical": "infisical run -- tsx watch src/server.ts",

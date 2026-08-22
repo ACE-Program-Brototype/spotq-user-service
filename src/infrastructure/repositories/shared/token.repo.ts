@@ -8,7 +8,7 @@ import { inject, injectable } from "inversify";
 export class RefreshTokenRepository implements IRefreshTokenRepository {
 	private readonly _redis = redisClient;
 	constructor(
-		@inject(TYPES.TokenService)
+		@inject(TYPES.AdminTokenService)
 		private readonly _tokenService: ITokenService,
 	) {}
 
