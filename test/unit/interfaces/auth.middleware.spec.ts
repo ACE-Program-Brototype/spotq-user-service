@@ -3,7 +3,7 @@ import { container } from "@config/di/container.ts";
 import {
 	type AuthenticatedRequest,
 	authMiddleware,
-} from "@interfaces/http/middlewares/auth.middleware.ts";
+} from "@presentation/http/middlewares/auth.middleware.ts";
 import type { NextFunction, Response } from "express";
 
 describe("authMiddleware", () => {

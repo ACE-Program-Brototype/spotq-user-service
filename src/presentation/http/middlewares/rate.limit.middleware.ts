@@ -7,6 +7,9 @@ const redisSendCommand: SendCommandFn = async (...args) => {
 	return redisClient.sendCommand(args);
 };
 
+const isTestEnvironment =
+	process.env.NODE_ENV === "test" || process.env.NODE_ENV === "testing";
+
 const createEmailRateLimiter = ({
 	prefix,
 	windowMs,
@@ -35,9 +38,11 @@ const createEmailRateLimiter = ({
 			return `${prefix}:${email}`;
 		},
 
-		store: new RedisStore({
-			sendCommand: redisSendCommand,
-		}),
+		...(isTestEnvironment
+			? {}
+			: {
+					store: new RedisStore({ sendCommand: redisSendCommand }),
+				}),
 
 		message: {
 			success: false,

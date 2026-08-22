@@ -6,6 +6,7 @@ export interface ApiResponseBody<T> {
 	message?: string;
 	data?: T;
 	code?: string;
+	error?: string;
 	statusCode: number;
 }
 
@@ -23,7 +24,7 @@ export const ApiResponse = {
 		statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
 		code?: string,
 	): ApiResponseBody<never> {
-		return { success: false, message, code, statusCode };
+		return { success: false, message, code, error: code, statusCode };
 	},
 };
 export const successResponse = <T>(
