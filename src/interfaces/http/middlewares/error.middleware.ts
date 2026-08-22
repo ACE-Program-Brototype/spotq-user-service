@@ -75,11 +75,13 @@ export function errorMiddleware(
 			? ResponseMessage.UNEXPECTED_ERROR
 			: mappedError.message;
 
-	res.status(mappedError.statusCode).json({
-		success: false,
-		code: mappedError.code,
+	const response = ApiResponse.fail(
 		message,
-	});
+		mappedError.statusCode,
+		mappedError.code,
+	);
+
+	res.status(mappedError.statusCode).json(response);
 
 	return;
 }
