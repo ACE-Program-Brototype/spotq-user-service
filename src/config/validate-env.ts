@@ -60,6 +60,18 @@ const envSchema = z.object({
 
 	OTP_TTL_SECONDS: z.coerce.number().positive().default(300),
 	OTP_MAX_ATTEMPTS: z.coerce.number().positive().default(5),
+
+	COOKIE_HTTPONLY: z
+		.string()
+		.transform((val) => val === "true")
+		.default(true),
+	COOKIE_SECURE: z
+		.string()
+		.transform((val) => val === "true")
+		.default(true),
+	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
+	COOKIE_REFRESH_MAX_AGE: z.string(),
+	COOKIE_TEMP_MAX_AGE: z.string()
 });
 
 export const validateEnv = () => {

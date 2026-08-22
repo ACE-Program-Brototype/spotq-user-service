@@ -24,6 +24,7 @@ import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
+import { config } from "@config/env.ts";
 
 @injectable()
 export class UserAuthController {
@@ -64,12 +65,10 @@ export class UserAuthController {
 		);
 
 		res.cookie("refreshToken", result.refreshToken, {
-			httpOnly: true,
-			secure:
-				process.env.NODE_ENV === "production" ||
-				process.env.NODE_ENV === "staging",
-			sameSite: "strict",
-			maxAge: 7 * 24 * 60 * 60 * 1000,
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.refreshMaxAge),
 		});
 
 		const { refreshToken, ...responseBody } = result;
@@ -117,11 +116,9 @@ export class UserAuthController {
 		});
 
 		res.clearCookie("refreshToken", {
-			httpOnly: true,
-			secure:
-				process.env.NODE_ENV === "production" ||
-				process.env.NODE_ENV === "staging",
-			sameSite: "strict",
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite
 		});
 
 		sendSuccessResponse(res, undefined, result.message);
@@ -133,12 +130,10 @@ export class UserAuthController {
 		);
 
 		res.cookie("refreshToken", result.refreshToken, {
-			httpOnly: true,
-			secure:
-				process.env.NODE_ENV === "production" ||
-				process.env.NODE_ENV === "staging",
-			sameSite: "strict",
-			maxAge: 7 * 24 * 60 * 60 * 1000,
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.refreshMaxAge)
 		});
 
 		// Exclude refreshToken from body payload and use snake_case for response mapping
@@ -164,12 +159,10 @@ export class UserAuthController {
 		const result = await this.loginUseCase.execute(req.body as LoginDto);
 
 		res.cookie("refreshToken", result.refresh_token, {
-			httpOnly: true,
-			secure:
-				process.env.NODE_ENV === "production" ||
-				process.env.NODE_ENV === "staging",
-			sameSite: "strict",
-			maxAge: 7 * 24 * 60 * 60 * 1000,
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.refreshMaxAge),
 		});
 
 		const { refresh_token, ...responseBody } = result;
@@ -195,12 +188,10 @@ export class UserAuthController {
 			});
 
 			res.cookie("refreshToken", result.refreshToken, {
-				httpOnly: true,
-				secure:
-					process.env.NODE_ENV === "production" ||
-					process.env.NODE_ENV === "staging",
-				sameSite: "strict",
-				maxAge: 7 * 24 * 60 * 60 * 1000,
+				httpOnly: config.cookie.httpOnly,
+				secure: config.cookie.secure,
+				sameSite: config.cookie.sameSite,
+				maxAge: Number(config.cookie.refreshMaxAge),
 			});
 
 			const responseBody = {
@@ -221,11 +212,9 @@ export class UserAuthController {
 			);
 		} catch (error) {
 			res.clearCookie("refreshToken", {
-				httpOnly: true,
-				secure:
-					process.env.NODE_ENV === "production" ||
-					process.env.NODE_ENV === "staging",
-				sameSite: "strict",
+				httpOnly: config.cookie.httpOnly,
+				secure: config.cookie.secure,
+				sameSite: config.cookie.sameSite,
 			});
 			next(error);
 		}

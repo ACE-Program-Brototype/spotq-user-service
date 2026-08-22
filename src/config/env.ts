@@ -49,4 +49,13 @@ export const config = {
 		ttlSeconds: env.OTP_TTL_SECONDS,
 		maxAttempts: env.OTP_MAX_ATTEMPTS,
 	},
+
+	cookie: {
+		httpOnly: env.COOKIE_HTTPONLY,
+		secure: env.COOKIE_SECURE,
+		sameSite: env.COOKIE_SAME_SITE,
+		refreshMaxAge: env.COOKIE_REFRESH_MAX_AGE,
+		tempMaxAge: env.COOKIE_TEMP_MAX_AGE,
+	}
+
 } as const;
