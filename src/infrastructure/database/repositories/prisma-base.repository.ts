@@ -1,7 +1,11 @@
 import type { IBaseRepository } from "@domain/repositories/base.repository.interface.ts";
 import { injectable } from "inversify";
 
-export interface IPrismaModelDelegate<TModel, TCreateInput, TUpdateInput> {
+export interface IPrismaModelDelegate<
+	TModel,
+	TCreateInput = unknown,
+	TUpdateInput = unknown,
+> {
 	findMany(): Promise<TModel[]>;
 	findUnique(args: { where: { id: string } }): Promise<TModel | null>;
 	create(args: { data: TCreateInput }): Promise<TModel>;

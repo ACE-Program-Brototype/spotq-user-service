@@ -1,5 +1,4 @@
 import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
-import { ApiResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 
 export function notFoundMiddleware(
@@ -7,10 +6,10 @@ export function notFoundMiddleware(
 	res: Response,
 	_next: NextFunction,
 ): void {
-	const response = ApiResponse.fail(
-		`Cannot ${req.method} ${req.path}`,
-		HttpStatus.NOT_FOUND,
-		ResponseMessage.REQ_ROUTE_NOT_FOUND,
-	);
-	res.status(response.statusCode).json(response);
+	res.status(HttpStatus.NOT_FOUND).json({
+		success: false,
+		statusCode: HttpStatus.NOT_FOUND,
+		message: `Cannot ${req.method} ${req.path}`,
+		error: ResponseMessage.REQ_ROUTE_NOT_FOUND,
+	});
 }

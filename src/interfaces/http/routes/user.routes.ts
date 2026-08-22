@@ -1,6 +1,6 @@
 import { TYPES } from "@config/di/types.ts";
 import type { UserController } from "@interfaces/http/controllers/user.controller.ts";
-import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
+import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware";
 import {
 	logoutSchema,
 	registerUserSchema,
@@ -27,26 +27,26 @@ export class UserRouter {
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),
-			this._userController.register,
+			this._userController.register.bind(this._userController),
 		);
 
 		this.router.post(
 			"/verify-email",
 			validateRequestBody(verifyEmailOtpSchema),
-			this._userController.verifyEmail,
+			this._userController.verifyEmail.bind(this._userController),
 		);
 
 		this.router.post(
 			"/resend-email-otp",
 			validateRequestBody(resendEmailOtpSchema),
-			this._userController.resendEmailOtp,
+			this._userController.resendEmailOtp.bind(this._userController),
 		);
 
 		this.router.post(
 			"/logout",
 			authMiddleware,
 			validateRequestBody(logoutSchema),
-			this._userController.logout,
+			this._userController.logout.bind(this._userController),
 		);
 	}
 

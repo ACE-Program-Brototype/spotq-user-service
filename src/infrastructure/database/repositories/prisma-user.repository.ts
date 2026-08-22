@@ -13,7 +13,10 @@ import { prisma } from "@infrastructure/database/prisma/prisma.ts";
 import { Prisma, type User as PrismaUserModel } from "@prisma/client";
 import { injectable } from "inversify";
 import { UserMapper } from "../mappers/user.mapper.ts";
-import { PrismaBaseRepository } from "./prisma-base.repository.ts";
+import {
+	type IPrismaModelDelegate,
+	PrismaBaseRepository,
+} from "./prisma-base.repository.ts";
 
 @injectable()
 export class PrismaUserRepository
@@ -21,7 +24,10 @@ export class PrismaUserRepository
 	implements IUserRepository
 {
 	constructor() {
-		super(prisma.user, UserMapper);
+		super(
+			prisma.user as unknown as IPrismaModelDelegate<PrismaUserModel>,
+			UserMapper,
+		);
 	}
 
 	public async findByEmail(email: Email | string): Promise<UserEntity | null> {

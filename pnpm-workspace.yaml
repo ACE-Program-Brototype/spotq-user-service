@@ -1,7 +1,7 @@
 allowBuilds:
   '@prisma/engines': true
   '@swc/core': true
-  bcrypt: set this to true or false
+  bcrypt: true
   esbuild: true
   msgpackr-extract: true
   prisma: true

@@ -7,7 +7,10 @@ import { prisma } from "@infrastructure/database/prisma/prisma.ts";
 import type { Device as PrismaDeviceModel } from "@prisma/client";
 import { injectable } from "inversify";
 import { DeviceMapper } from "../mappers/device.mapper.ts";
-import { PrismaBaseRepository } from "./prisma-base.repository.ts";
+import {
+	type IPrismaModelDelegate,
+	PrismaBaseRepository,
+} from "./prisma-base.repository.ts";
 
 @injectable()
 export class PrismaDeviceRepository
@@ -15,7 +18,10 @@ export class PrismaDeviceRepository
 	implements IDeviceRepository
 {
 	constructor() {
-		super(prisma.device, DeviceMapper);
+		super(
+			prisma.device as unknown as IPrismaModelDelegate<PrismaDeviceModel>,
+			DeviceMapper,
+		);
 	}
 
 	public async save(device: DeviceEntity): Promise<void> {

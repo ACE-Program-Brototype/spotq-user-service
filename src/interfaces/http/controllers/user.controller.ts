@@ -4,6 +4,7 @@ import type {
 	VerifyEmailOtpDto,
 } from "@application/dtos/index.ts";
 import { TYPES } from "@config/di/types.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware";
 import type {
 	ILogoutUseCase,
 	IRegisterUserUseCase,
@@ -15,7 +16,6 @@ import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import type { AuthenticatedRequest } from "../middlewares/auth.middleware.ts";
 
 @injectable()
 export class UserController {

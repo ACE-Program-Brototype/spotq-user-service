@@ -1,24 +1,20 @@
-import {
-	InjectBullMQHealth,
-	InjectDatabaseHealth,
-	InjectRedisHealth,
-} from "@config/di/decorators.ts";
+import { TYPES } from "@config/di/types";
 import type {
 	HealthCheckResult,
 	IHealthCheckable,
 	IHealthService,
 } from "@infrastructure/health/health.interface.ts";
 import { HealthStatus } from "@shared/constants/health-status.constants.ts";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 @injectable()
 export class HealthService implements IHealthService {
 	constructor(
-		@InjectDatabaseHealth()
+		@inject(TYPES.DatabaseHealthCheckable)
 		private readonly _databaseHealth: IHealthCheckable,
-		@InjectRedisHealth()
+		@inject(TYPES.RedisHealthCheckable)
 		private readonly _redisHealth: IHealthCheckable,
-		@InjectBullMQHealth()
+		@inject(TYPES.BullMQHealthCheckable)
 		private readonly _bullmqHealth: IHealthCheckable,
 	) {}
 
