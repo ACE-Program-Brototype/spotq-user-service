@@ -13,13 +13,13 @@ import {
 	PrismaUserRepository,
 } from "@infrastructure/database/repositories/index.ts";
 import { UserController } from "@interfaces/http/controllers/user.controller.ts";
-import { UserRouter } from "@presentation/http/routes/user.routes.ts";
 import type {
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
+import { UserRouter } from "@presentation/http/routes/user.routes.ts";
 import { ContainerModule } from "inversify";
 import { USER_TYPES } from "./user.types.ts";
 

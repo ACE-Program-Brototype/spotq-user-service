@@ -68,5 +68,4 @@ export const config = {
 		ttlSeconds: env.OTP_TTL_SECONDS,
 		maxAttempts: env.OTP_MAX_ATTEMPTS,
 	},
-
-}
+};

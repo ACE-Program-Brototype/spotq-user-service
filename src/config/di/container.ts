@@ -12,9 +12,9 @@ import { RedisOtpService } from "@infrastructure/services/redis.otp.ts";
 import { JwtTokenService } from "@infrastructure/services/token.ts";
 import { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller.ts";
 import { Container } from "inversify";
-import { TYPES } from "./types.ts";
 import { healthModule } from "./health/health.module.ts";
 import { infrastructureModule } from "./infrastructure/infrastructure.module.ts";
+import { TYPES } from "./types.ts";
 import { userModule } from "./user/user.module.ts";
 
 const container = new Container({ defaultScope: "Singleton" });

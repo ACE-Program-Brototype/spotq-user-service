@@ -10,12 +10,12 @@ import type {
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
+import type { AuthenticatedRequest } from "@presentation/http/middlewares/auth.middleware.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import type { AuthenticatedRequest } from "@presentation/http/middlewares/auth.middleware.ts";
 
 @injectable()
 export class UserController {

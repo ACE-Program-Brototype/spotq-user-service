@@ -1,6 +1,5 @@
 import { TYPES } from "@config/di/types.ts";
 import type { UserController } from "@interfaces/http/controllers/user.controller.ts";
-import { authMiddleware } from "@presentation/http/middlewares/auth.middleware.ts";
 import {
 	logoutSchema,
 	registerUserSchema,
@@ -8,6 +7,7 @@ import {
 	validateRequestBody,
 	verifyEmailOtpSchema,
 } from "@interfaces/http/validators/index.ts";
+import { authMiddleware } from "@presentation/http/middlewares/auth.middleware.ts";
 import { Router } from "express";
 import { inject, injectable } from "inversify";
 
