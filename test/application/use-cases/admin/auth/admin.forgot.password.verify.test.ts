@@ -55,9 +55,14 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 
 		mockOtpService.verifyOtp.mockResolvedValue(true);
 
-		mockTokenService.generateTempToken.mockReturnValue("temporary-token-123");
+		mockTokenService.generateTempToken.mockReturnValue(
+			"temporary-token-123",
+		);
 
-		const result = await useCase.execute("admin@test.com", "123456");
+		const result = await useCase.execute(
+			"admin@test.com",
+			"123456",
+		);
 
 		expect(result).toBe("temporary-token-123");
 
@@ -82,12 +87,16 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 		});
 	});
 
-	it("should throw when admin does not exist", async () => {
+	it("should throw UserNotFoundError when admin does not exist", async () => {
 		mockAdminAuthRepository.findByEmail.mockResolvedValue(null);
 
-		await expect(useCase.execute("unknown@test.com", "123456")).rejects.toThrow(
-			"Invalid credentials",
-		);
+		await expect(
+			useCase.execute("unknown@test.com", "123456"),
+		).rejects.toThrow("User not found.");
+
+		expect(
+			mockAdminAuthRepository.findByEmail,
+		).toHaveBeenCalledTimes(1);
 
 		expect(mockAdminAuthRepository.findByEmail).toHaveBeenCalledWith(
 			"unknown@test.com",
@@ -110,11 +119,13 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 
 		mockAdminAuthRepository.findByEmail.mockResolvedValue(admin);
 
-		mockOtpService.verifyOtp.mockRejectedValue(new Error("OTP is invalid"));
-
-		await expect(useCase.execute("admin@test.com", "999999")).rejects.toThrow(
-			"OTP is invalid",
+		mockOtpService.verifyOtp.mockRejectedValue(
+			new Error("OTP is invalid"),
 		);
+
+		await expect(
+			useCase.execute("admin@test.com", "999999"),
+		).rejects.toThrow("OTP is invalid");
 
 		expect(mockAdminAuthRepository.findByEmail).toHaveBeenCalledWith(
 			"admin@test.com",
@@ -142,9 +153,13 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 
 		mockOtpService.verifyOtp.mockResolvedValue(true);
 
-		mockTokenService.generateTempToken.mockReturnValue("temporary-token-123");
+		mockTokenService.generateTempToken.mockReturnValue(
+			"temporary-token-123",
+		);
 
 		await useCase.execute("admin@test.com", "123456");
+
+		expect(mockTokenService.generateTempToken).toHaveBeenCalledTimes(1);
 
 		expect(mockTokenService.generateTempToken).toHaveBeenCalledWith({
 			userId: "admin-123",
