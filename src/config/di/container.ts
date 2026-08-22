@@ -10,7 +10,7 @@ import { RefreshTokenRepository } from "@infrastructure/repositories/shared/toke
 import { BcryptPasswordHasher } from "@infrastructure/services/password.ts";
 import { RedisOtpService } from "@infrastructure/services/redis.otp.ts";
 import { JwtTokenService } from "@infrastructure/services/token.ts";
-import { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller.ts";
+import { AdminAuthController } from "@interfaces/http/controllers/admin/auth.controller.ts";
 import { Container } from "inversify";
 import { healthModule } from "./health/health.module.ts";
 import { infrastructureModule } from "./infrastructure/infrastructure.module.ts";

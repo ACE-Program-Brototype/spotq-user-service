@@ -1,16 +1,16 @@
 import { container, TYPES } from "@config/di";
-import type { AdminAuthController } from "@presentation/http/controllers/admin/auth.controller";
-import { adminTempTokenCheck } from "@presentation/http/middlewares/admin.auth.middleware";
+import type { AdminAuthController } from "@interfaces/http/controllers/admin/auth.controller";
+import { adminTempTokenCheck } from "@interfaces/http/middlewares/admin.auth.middleware";
 import {
 	forgotPasswordRateLimit,
 	forgotPasswordResendRateLimit,
 	forgotPasswordVerifyRateLimit,
-} from "@presentation/http/middlewares/rate.limit.middleware";
+} from "@interfaces/http/middlewares/rate.limit.middleware";
 import {
 	forgotPasswordValidate,
 	forgotPasswordVerifyValidate,
-} from "@presentation/http/validators/forgot-password.validate";
-import { passwordValidate } from "@presentation/http/validators/reset.password.validate";
+} from "@interfaces/http/validators/forgot-password.validate";
+import { passwordValidate } from "@interfaces/http/validators/reset.password.validate";
 import { Router } from "express";
 import { validate } from "../../middlewares/validate.middleware";
 import { loginValidator } from "../../validators/login.validate";

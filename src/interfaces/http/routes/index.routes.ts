@@ -1,6 +1,6 @@
 import { container, TYPES } from "@config/di/index.ts";
+import adminRoutes from "@interfaces/http/routes/admin.routes.ts";
 import type { HealthRouter } from "@modules/health/health.routes.ts";
-import adminRoutes from "@presentation/http/routes/admin.routes.ts";
 import { Router } from "express";
 import { metricsRouter } from "./metrics.routes.ts";
 import type { UserRouter } from "./user.routes.ts";

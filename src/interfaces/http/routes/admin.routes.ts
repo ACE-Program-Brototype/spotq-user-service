@@ -1,4 +1,4 @@
-import adminAuthRoutes from "@presentation/http/routes/admin/auth.router.ts";
+import adminAuthRoutes from "@interfaces/http/routes/admin/auth.router";
 import { Router } from "express";
 
 const router = Router();

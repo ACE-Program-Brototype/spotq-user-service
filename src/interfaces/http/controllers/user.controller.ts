@@ -4,13 +4,13 @@ import type {
 	VerifyEmailOtpDto,
 } from "@application/dtos/index.ts";
 import { TYPES } from "@config/di/types.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware";
 import type {
 	ILogoutUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
-import type { AuthenticatedRequest } from "@presentation/http/middlewares/auth.middleware.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";

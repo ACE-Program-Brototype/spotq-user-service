@@ -1,16 +1,47 @@
 import { config } from "@config/env.ts";
-import { DomainError } from "@domain/errors/domain.error.ts";
+import { DomainError } from "@domain/errors";
 import { logger } from "@infrastructure/logger/index.ts";
 import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
-import { ApiResponse } from "@shared/response/index.ts";
+import { ApiResponse } from "@shared/response";
 import type { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
+import { mapErrorToHttp } from "../errors/error.mapper";
 
 export function errorMiddleware(
-	err: Error,
+	err: unknown,
 	req: Request,
 	res: Response,
 	_next: NextFunction,
 ): void {
+	// --------------------------------------------------
+	// 1. Always log the original error
+	// --------------------------------------------------
+
+	logger.error(
+		{
+			err,
+			method: req.method,
+			url: req.url,
+		},
+		"Unhandled error occurred",
+	);
+
+	const isProduction = config.server.nodeEnv === "production";
+
+	// --------------------------------------------------
+	// 2. Zod validation error
+	// --------------------------------------------------
+
+	if (err instanceof ZodError) {
+		res.status(HttpStatus.BAD_REQUEST).json({
+			success: false,
+			message: "Validation failed",
+			errors: err.issues,
+		});
+
+		return;
+	}
+
 	if (err instanceof DomainError) {
 		logger.warn(
 			{
@@ -29,24 +60,26 @@ export function errorMiddleware(
 		return;
 	}
 
-	logger.error(
-		{ err, method: req.method, url: req.url },
-		"Unhandled error occurred",
-	);
+	// --------------------------------------------------
+	// 3. Domain / Application / Unknown error
+	// --------------------------------------------------
 
-	const statusCode =
-		res.statusCode === HttpStatus.OK ||
-		res.statusCode === HttpStatus.NOT_MODIFIED
-			? HttpStatus.INTERNAL_SERVER_ERROR
-			: res.statusCode;
+	const mappedError = mapErrorToHttp(err);
 
-	const isProduction = config.server.nodeEnv === "production";
-	const message = isProduction ? ResponseMessage.UNEXPECTED_ERROR : err.message;
-	const errorLabel =
-		isProduction && statusCode >= 500
-			? undefined
-			: ResponseMessage.INTERNAL_SERVER_ERROR;
+	const isServerError =
+		mappedError.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
 
-	const response = ApiResponse.fail(message, statusCode, errorLabel);
-	res.status(response.statusCode).json(response);
+	// Never expose internal 5xx error details in production.
+	const message =
+		isProduction && isServerError
+			? ResponseMessage.UNEXPECTED_ERROR
+			: mappedError.message;
+
+	res.status(mappedError.statusCode).json({
+		success: false,
+		code: mappedError.code,
+		message,
+	});
+
+	return;
 }

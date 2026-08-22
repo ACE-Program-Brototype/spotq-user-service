@@ -6,8 +6,8 @@ import {
 	loggerMiddleware,
 	metricsMiddleware,
 	notFoundMiddleware,
-} from "./presentation/http/middlewares";
-import { router } from "./presentation/http/routes/index.routes";
+} from "./interfaces/http/middlewares";
+import { router } from "./interfaces/http/routes/index.routes";
 
 const app = express();
 
