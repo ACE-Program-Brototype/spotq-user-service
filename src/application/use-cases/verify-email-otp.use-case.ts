@@ -17,9 +17,9 @@ import type {
 export class VerifyEmailOtpUseCase implements IVerifyEmailOtpUseCase {
 	constructor(
 		@inject(TYPES.OtpService)
-		private readonly _otpService: IOtpService,
+		private readonly otpService: IOtpService,
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {}
 
 	public async execute(
@@ -31,9 +31,9 @@ export class VerifyEmailOtpUseCase implements IVerifyEmailOtpUseCase {
 			throw new InvalidOtpError("OTP must be exactly 6 digits.");
 		}
 
-		await this._otpService.verifyOtp(email.getValue(), dto.otp.trim());
+		await this.otpService.verifyOtp(email.getValue(), dto.otp.trim());
 
-		this._logger.info(
+		this.logger.info(
 			{
 				email: email.getValue(),
 				event: "EMAIL_OTP_VERIFICATION_SUCCESS",

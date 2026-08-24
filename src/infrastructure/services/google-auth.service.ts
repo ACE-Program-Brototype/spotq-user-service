@@ -15,7 +15,7 @@ export class GoogleAuthService implements IGoogleAuthService {
 
 	constructor(
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {
 		this.client = new OAuth2Client(config.google.clientId);
 	}
@@ -70,7 +70,7 @@ export class GoogleAuthService implements IGoogleAuthService {
 				picture: payload.picture ?? null,
 			};
 		} catch (error) {
-			this._logger.warn({ err: error }, "Google ID Token verification failed");
+			this.logger.warn({ err: error }, "Google ID Token verification failed");
 			throw new InvalidGoogleTokenError(
 				error instanceof InvalidGoogleTokenError
 					? error.message

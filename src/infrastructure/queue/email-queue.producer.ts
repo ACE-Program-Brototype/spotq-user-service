@@ -14,22 +14,22 @@ export const EMAIL_QUEUE_NAME = "email-verification-queue";
 
 @injectable()
 export class EmailQueueProducer implements IEmailQueueProducer {
-	private _queue: Queue | null = null;
+	private queue: Queue | null = null;
 
 	constructor(
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {}
 
 	private getQueue(): Queue {
-		if (!this._queue) {
+		if (!this.queue) {
 			const connection = new Redis(config.redis.url, {
 				maxRetriesPerRequest: null,
 				enableOfflineQueue: false,
 				tls: config.redis.url.startsWith("rediss://") ? {} : undefined,
 			});
 
-			this._queue = new Queue(EMAIL_QUEUE_NAME, {
+			this.queue = new Queue(EMAIL_QUEUE_NAME, {
 				connection,
 				defaultJobOptions: {
 					attempts: QUEUE_LIMITS.EMAIL.ATTEMPTS,
@@ -42,7 +42,7 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 				},
 			});
 		}
-		return this._queue;
+		return this.queue;
 	}
 
 	public async queueVerificationEmail(
@@ -53,12 +53,12 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 				email: params.email,
 				otp: params.otp,
 			});
-			this._logger.info(
+			this.logger.info(
 				{ email: params.email, event: "EMAIL_OTP_QUEUED" },
 				"Verification email job successfully queued in BullMQ",
 			);
 		} catch (error) {
-			this._logger.error(
+			this.logger.error(
 				{ err: error, email: params.email, event: "EMAIL_OTP_QUEUE_FAILED" },
 				"Failed to queue verification email in BullMQ",
 			);
@@ -67,9 +67,9 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 	}
 
 	public async close(): Promise<void> {
-		if (this._queue) {
-			await this._queue.close();
-			this._queue = null;
+		if (this.queue) {
+			await this.queue.close();
+			this.queue = null;
 		}
 	}
 }

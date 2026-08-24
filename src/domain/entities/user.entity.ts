@@ -109,4 +109,9 @@ export class UserEntity {
 	public get profile(): UserProfileEntity | null | undefined {
 		return this._props.profile;
 	}
+
+	public linkGoogleAccount(googleId: string): void {
+		this._props.googleId = googleId;
+		this._props.updatedAt = new Date();
+	}
 }

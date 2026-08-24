@@ -9,57 +9,57 @@ import { bullmqConnection } from "./bullmq.client.ts";
 
 @injectable()
 export class BullMQService implements IHealthCheckable {
-	private _client: Redis | null = null;
+	private client: Redis | null = null;
 
 	async connect(): Promise<void> {
-		if (this._client) {
+		if (this.client) {
 			return;
 		}
 
 		try {
 			// Instantiate dedicated ioredis client using the url and connection options
-			this._client = new Redis(
+			this.client = new Redis(
 				config.redis.url,
 				bullmqConnection as RedisOptions,
 			);
 
-			this._client.on(BullMQEvent.ERROR, (err) => {
+			this.client.on(BullMQEvent.ERROR, (err) => {
 				logger.error({ err }, "BullMQ Redis Connection Error");
 			});
 
 			// Validate connection
-			await this._client.ping();
+			await this.client.ping();
 			logger.info("BullMQ Connected");
 		} catch (error) {
 			logger.error({ err: error }, "BullMQ Connection Failed");
-			if (this._client) {
-				this._client.disconnect();
-				this._client = null;
+			if (this.client) {
+				this.client.disconnect();
+				this.client = null;
 			}
 			throw error;
 		}
 	}
 
 	async disconnect(): Promise<void> {
-		if (this._client) {
+		if (this.client) {
 			try {
-				await this._client.quit();
+				await this.client.quit();
 				logger.info("BullMQ Disconnected");
 			} catch (error) {
 				logger.error({ err: error }, "BullMQ Disconnect Error");
 			} finally {
-				this._client = null;
+				this.client = null;
 			}
 		}
 	}
 
 	async isHealthy(): Promise<boolean> {
-		if (!this._client) {
+		if (!this.client) {
 			return false;
 		}
 
 		try {
-			const status = await this._client.ping();
+			const status = await this.client.ping();
 			return status === HealthStatus.PONG;
 		} catch {
 			return false;

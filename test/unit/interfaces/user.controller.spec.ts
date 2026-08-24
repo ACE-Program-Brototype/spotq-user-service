@@ -68,6 +68,7 @@ describe("UserAuthController", () => {
 	});
 
 	it("should return 201 on successful registration", async () => {
+		const createdAt = new Date().toISOString();
 		const registrationResult = {
 			user: {
 				id: "u-1",
@@ -75,7 +76,7 @@ describe("UserAuthController", () => {
 				email: "john@example.com",
 				phoneNumber: "+919876543210",
 				status: "ACTIVE" as const,
-				createdAt: new Date(),
+				createdAt,
 			},
 			accessToken: "access_token_123",
 			refreshToken: "refresh_token_123",
@@ -105,8 +106,15 @@ describe("UserAuthController", () => {
 				success: true,
 				statusCode: 201,
 				data: {
-					user: registrationResult.user,
-					accessToken: registrationResult.accessToken,
+					user: {
+						id: "u-1",
+						full_name: "John",
+						email: "john@example.com",
+						phone: "+919876543210",
+						status: "ACTIVE",
+						created_at: createdAt,
+					},
+					access_token: "access_token_123",
 				},
 			}),
 		);

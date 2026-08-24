@@ -46,7 +46,7 @@ export class UserRouter {
 		this.router.post("/logout", authMiddleware, this.userController.logout);
 
 		this.router.post(
-			"/google",
+			"/oauth/google",
 			validateRequestBody(googleAuthSchema),
 			this.userController.googleAuth,
 		);

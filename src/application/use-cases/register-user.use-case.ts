@@ -28,19 +28,19 @@ import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 export class RegisterUserUseCase implements IRegisterUserUseCase {
 	constructor(
 		@inject(TYPES.UserRepository)
-		private readonly _userRepository: IUserRepository,
+		private readonly userRepository: IUserRepository,
 		@inject(TYPES.PasswordHasher)
-		private readonly _passwordHasher: IPasswordHasher,
+		private readonly passwordHasher: IPasswordHasher,
 		@inject(TYPES.TokenService)
-		private readonly _tokenService: ITokenService,
+		private readonly tokenService: ITokenService,
 		@inject(TYPES.OtpService)
-		private readonly _otpService: IOtpService,
+		private readonly otpService: IOtpService,
 		@inject(TYPES.EmailQueueProducer)
-		private readonly _emailQueueProducer: IEmailQueueProducer,
+		private readonly emailQueueProducer: IEmailQueueProducer,
 		@inject(TYPES.IdGenerator)
-		private readonly _idGenerator: IIdGenerator,
+		private readonly idGenerator: IIdGenerator,
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {}
 
 	public async execute(dto: RegisterUserDto): Promise<RegisterUserResultDto> {
@@ -48,12 +48,12 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		const plainPassword = PlainPassword.create(dto.password);
 
 		// 2. Application-level uniqueness checks
-		const existingEmail = await this._userRepository.findByEmail(dto.email);
+		const existingEmail = await this.userRepository.findByEmail(dto.email);
 		if (existingEmail) {
 			throw new EmailAlreadyExistsError();
 		}
 
-		const existingPhone = await this._userRepository.findByPhone(
+		const existingPhone = await this.userRepository.findByPhone(
 			dto.phoneNumber,
 		);
 		if (existingPhone) {
@@ -61,17 +61,17 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		}
 
 		// 3. Hash password
-		const passwordHash = await this._passwordHasher.hash(plainPassword);
+		const passwordHash = await this.passwordHasher.hash(plainPassword);
 
 		// 4. Generate identifiers and tokens
-		const userId = this._idGenerator.generateUuid();
-		const refreshTokenData = this._tokenService.generateRefreshToken();
+		const userId = this.idGenerator.generateUuid();
+		const refreshTokenData = this.tokenService.generateRefreshToken();
 
 		let deviceEntity: DeviceEntity | null = null;
 		let deviceId: string | null = null;
 
 		if (dto.device) {
-			deviceId = this._idGenerator.generateUuid();
+			deviceId = this.idGenerator.generateUuid();
 			deviceEntity = DeviceEntity.create({
 				id: deviceId,
 				userId,
@@ -82,7 +82,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		}
 
 		const refreshTokenEntity = RefreshTokenEntity.create({
-			id: this._idGenerator.generateUuid(),
+			id: this.idGenerator.generateUuid(),
 			userId,
 			deviceId,
 			tokenHash: refreshTokenData.tokenHash,
@@ -98,37 +98,37 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 		});
 
 		// 5. Database-level atomic transaction for User + Device + Session
-		const createdUser = await this._userRepository.createWithSession({
+		const createdUser = await this.userRepository.createWithSession({
 			user: userEntity,
 			device: deviceEntity,
 			refreshToken: refreshTokenEntity,
 		});
 
 		// 6. Generate 6-digit OTP and store SHA-256 hash in Redis
-		const otp = await this._otpService.generateAndStoreOtp(dto.email);
+		const otp = await this.otpService.generateAndStoreOtp(dto.email);
 
 		// 7. Queue email delivery job in BullMQ
 		try {
-			await this._emailQueueProducer.queueVerificationEmail({
+			await this.emailQueueProducer.queueVerificationEmail({
 				email: dto.email,
 				otp,
 			});
 		} catch (error) {
 			// As per story: registration must not be rolled back solely because email queueing fails
-			this._logger.error(
+			this.logger.error(
 				{ err: error, userId: createdUser.id },
 				"Verification email queuing failed after user registration",
 			);
 		}
 
 		// 8. Generate JWT access token
-		const accessToken = this._tokenService.generateAccessToken({
+		const accessToken = this.tokenService.generateAccessToken({
 			userId: createdUser.id,
 			email: createdUser.email.getValue(),
 		});
 
 		// 9. Structured audit logging without logging sensitive credentials
-		this._logger.info(
+		this.logger.info(
 			{
 				userId: createdUser.id,
 				event: "USER_REGISTRATION_SUCCESS",
@@ -136,7 +136,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 			"User registration successful",
 		);
 
-		this._logger.info(
+		this.logger.info(
 			{
 				userId: createdUser.id,
 				event: "REFRESH_TOKEN_CREATED",
