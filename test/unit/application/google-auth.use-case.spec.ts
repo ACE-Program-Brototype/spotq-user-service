@@ -7,10 +7,7 @@ import type {
 import { GoogleAuthUseCase } from "@application/use-cases/google-auth.use-case.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
-import {
-	EmailAlreadyRegisteredError,
-	UserBlockedError,
-} from "@domain/errors/domain.error.ts";
+import { UserBlockedError } from "@domain/errors/index.ts";
 import type {
 	IDeviceRepository,
 	IRefreshTokenRepository,
@@ -35,6 +32,7 @@ describe("GoogleAuthUseCase", () => {
 			findById: jest.fn(),
 			findByGoogleId: jest.fn(),
 			createWithSession: jest.fn(),
+			update: jest.fn(),
 		} as unknown as jest.Mocked<IUserRepository>;
 		mockTokenService = {
 			generateAccessToken: jest.fn().mockReturnValue("access-token-abc"),
@@ -140,7 +138,7 @@ describe("GoogleAuthUseCase", () => {
 		expect(result.user.id).toBe("existing-user-uuid");
 	});
 
-	it("should throw EmailAlreadyRegisteredError when email belongs to a password-based account", async () => {
+	it("should link Google ID and log in when email belongs to a password-based account", async () => {
 		const payload = {
 			sub: "google-sub-123",
 			email: "john@gmail.com",
@@ -161,9 +159,16 @@ describe("GoogleAuthUseCase", () => {
 
 		mockUserRepository.findByEmail.mockResolvedValue(passwordUser);
 
-		await expect(useCase.execute({ idToken: "valid-token" })).rejects.toThrow(
-			EmailAlreadyRegisteredError,
+		const result = await useCase.execute({ idToken: "valid-token" });
+
+		expect(mockUserRepository.update).toHaveBeenCalledWith(
+			"existing-user-uuid",
+			expect.objectContaining({
+				googleId: "google-sub-123",
+			}),
 		);
+		expect(mockRefreshTokenRepository.save).toHaveBeenCalled();
+		expect(result.user.id).toBe("existing-user-uuid");
 	});
 
 	it("should throw UserBlockedError when existing account status is not ACTIVE", async () => {

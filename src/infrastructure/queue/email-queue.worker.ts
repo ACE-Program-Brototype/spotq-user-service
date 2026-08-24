@@ -15,16 +15,16 @@ export interface EmailJobData {
 
 @injectable()
 export class EmailQueueWorker {
-	private _worker: Worker<EmailJobData> | null = null;
+	private worker: Worker<EmailJobData> | null = null;
 
 	constructor(
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {}
 
 	public start(emailService: IEmailService): void {
 		if (
-			this._worker ||
+			this.worker ||
 			process.env.NODE_ENV === "test" ||
 			process.env.NODE_ENV === "testing"
 		) {
@@ -37,10 +37,10 @@ export class EmailQueueWorker {
 			tls: config.redis.url.startsWith("rediss://") ? {} : undefined,
 		});
 
-		this._worker = new Worker<EmailJobData>(
+		this.worker = new Worker<EmailJobData>(
 			EMAIL_QUEUE_NAME,
 			async (job: Job<EmailJobData>) => {
-				this._logger.info(
+				this.logger.info(
 					{ jobId: job.id, email: job.data.email },
 					"Processing email verification BullMQ job",
 				);
@@ -52,15 +52,15 @@ export class EmailQueueWorker {
 			},
 		);
 
-		this._worker.on("completed", (job) => {
-			this._logger.info(
+		this.worker.on("completed", (job) => {
+			this.logger.info(
 				{ jobId: job.id, email: job.data.email },
 				"Email verification job completed",
 			);
 		});
 
-		this._worker.on("failed", (job, err) => {
-			this._logger.error(
+		this.worker.on("failed", (job, err) => {
+			this.logger.error(
 				{ jobId: job?.id, email: job?.data?.email, err },
 				"Email verification job failed",
 			);
@@ -68,9 +68,9 @@ export class EmailQueueWorker {
 	}
 
 	public async close(): Promise<void> {
-		if (this._worker) {
-			await this._worker.close();
-			this._worker = null;
+		if (this.worker) {
+			await this.worker.close();
+			this.worker = null;
 		}
 	}
 }

@@ -69,7 +69,17 @@ export class UserAuthController {
 			maxAge: Number(config.cookie.refreshMaxAge),
 		});
 
-		const { refreshToken, ...responseBody } = result;
+		const responseBody = {
+			user: {
+				id: result.user.id,
+				full_name: result.user.fullName,
+				email: result.user.email,
+				phone: result.user.phoneNumber,
+				status: result.user.status,
+				created_at: result.user.createdAt,
+			},
+			access_token: result.accessToken,
+		};
 
 		sendSuccessResponse(
 			res,

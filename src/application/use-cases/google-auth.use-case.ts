@@ -9,10 +9,7 @@ import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { UserProfileEntity } from "@domain/entities/user-profile.entity.ts";
-import {
-	EmailAlreadyRegisteredError,
-	UserBlockedError,
-} from "@domain/errors/domain.error.ts";
+import { UserBlockedError } from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
 	IRefreshTokenRepository,
@@ -87,16 +84,29 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			if (existingUserByEmail) {
 				// Email exists, but googleId is not mapped and user has password-based account
 				if (existingUserByEmail.passwordHash !== null) {
-					this.logger.warn(
+					this.logger.info(
 						{
 							email: normalizedEmailString,
-							event: "GOOGLE_EMAIL_ALREADY_REGISTERED",
+							userId: existingUserByEmail.id,
+							event: "GOOGLE_ACCOUNT_LINK_START",
 						},
-						"Google login conflict: email already registered with password",
+						"Linking Google ID to existing password-based account",
 					);
-					throw new EmailAlreadyRegisteredError();
+					existingUserByEmail.linkGoogleAccount(googlePayload.sub);
+					await this.userRepository.update(
+						existingUserByEmail.id,
+						existingUserByEmail,
+					);
+					this.logger.info(
+						{
+							email: normalizedEmailString,
+							userId: existingUserByEmail.id,
+							event: "GOOGLE_ACCOUNT_LINK_SUCCESS",
+						},
+						"Google account linked successfully to existing password-based account",
+					);
 				}
-				// Re-assign to finalUser if they exist without password (e.g. registered via alternative OAuth method or manually created without password)
+				// Re-assign to finalUser
 				finalUser = existingUserByEmail;
 			} else {
 				isNewUser = true;

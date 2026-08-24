@@ -8,13 +8,13 @@ import { inject, injectable } from "inversify";
 
 @injectable()
 export class BrevoEmailService implements IEmailService {
-	private readonly _client: BrevoClient;
+	private readonly client: BrevoClient;
 
 	constructor(
 		@inject(TYPES.Logger)
-		private readonly _logger: ILogger,
+		private readonly logger: ILogger,
 	) {
-		this._client = new BrevoClient({
+		this.client = new BrevoClient({
 			apiKey: config.brevo.apiKey,
 		});
 	}
@@ -29,7 +29,7 @@ export class BrevoEmailService implements IEmailService {
 				validityMinutes: Math.floor(config.otp.ttlSeconds / 60),
 			});
 
-			await this._client.transactionalEmails.sendTransacEmail({
+			await this.client.transactionalEmails.sendTransacEmail({
 				sender: {
 					name: config.brevo.senderName,
 					email: config.brevo.senderEmail,
@@ -39,12 +39,12 @@ export class BrevoEmailService implements IEmailService {
 				htmlContent,
 			});
 
-			this._logger.info(
+			this.logger.info(
 				{ toEmail, event: "EMAIL_VERIFICATION_SENT" },
 				"Verification email sent successfully via Brevo",
 			);
 		} catch (error) {
-			this._logger.error(
+			this.logger.error(
 				{ err: error, toEmail, event: "EMAIL_DELIVERY_FAILED" },
 				"Failed to deliver verification email via Brevo",
 			);
