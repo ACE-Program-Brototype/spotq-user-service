@@ -1,7 +1,9 @@
 import type { AdminLoginDTO } from "@application/dtos/admin/auth/admin.login.dto";
 import { toAdminLoginResponse } from "@application/mappers/admin/auth/admin.login.mapper";
-import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
-import type { ITokenService } from "@application/ports/service/IToken.service";
+import type {
+	IAdminPasswordHasher,
+	IAdminTokenService,
+} from "@application/ports/services/index.ts";
 import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
@@ -13,21 +15,21 @@ import { inject, injectable } from "inversify";
 export class AdminLoginUseCase implements IAdminLoginUseCase {
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
-		private readonly _adminRepository: IAdminAuthRepository,
+		private readonly _adminAuthRepo: IAdminAuthRepository,
 		@inject(TYPES.PasswordService)
-		private readonly _passwordService: IPasswordHasher,
+		private readonly _passwordHasher: IAdminPasswordHasher,
 		@inject(TYPES.AdminTokenService)
-		private readonly _tokenService: ITokenService,
+		private readonly _tokenService: IAdminTokenService,
 	) {}
 
 	async execute(email: string, password: string): Promise<AdminLoginDTO> {
-		const user = await this._adminRepository.findByEmail(email);
+		const user = await this._adminAuthRepo.findByEmail(email);
 
 		if (!user) {
 			throw new InvalidCredentialsError();
 		}
 
-		const isPasswordValid = await this._passwordService.verifyPassword(
+		const isPasswordValid = await this._passwordHasher.verifyPassword(
 			password,
 			user.passwordHash,
 		);

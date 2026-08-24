@@ -1,4 +1,4 @@
-import type { ITokenService } from "@application/ports/service/IToken.service";
+import type { IAdminTokenService } from "@application/ports/services/index.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import type { IOtpService } from "@domain/repository/shared/IOtp.service";
@@ -18,7 +18,7 @@ describe("VerifyForgotPasswordEmailUseCase", () => {
 		invalidateOtp: jest.fn(),
 	};
 
-	const mockTokenService: jest.Mocked<ITokenService> = {
+	const mockTokenService: jest.Mocked<IAdminTokenService> = {
 		generateAccessToken: jest.fn(),
 		generateRefreshToken: jest.fn(),
 		generateTempToken: jest.fn(),

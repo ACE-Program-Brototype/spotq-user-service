@@ -1,9 +1,10 @@
 import type { IEmailService } from "@application/ports/services/email-service.interface.ts";
+import type { ILogger } from "@application/ports/services/logger.interface.ts";
+import { TYPES } from "@config/di/types.ts";
 import { config } from "@config/env.ts";
-import { logger } from "@infrastructure/logger/logger.ts";
 import { QUEUE_LIMITS } from "@shared/constants/index.ts";
 import { type Job, Worker } from "bullmq";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { Redis } from "ioredis";
 import { EMAIL_QUEUE_NAME } from "./email-queue.producer.ts";
 
@@ -15,6 +16,11 @@ export interface EmailJobData {
 @injectable()
 export class EmailQueueWorker {
 	private _worker: Worker<EmailJobData> | null = null;
+
+	constructor(
+		@inject(TYPES.Logger)
+		private readonly _logger: ILogger,
+	) {}
 
 	public start(emailService: IEmailService): void {
 		if (
@@ -34,7 +40,7 @@ export class EmailQueueWorker {
 		this._worker = new Worker<EmailJobData>(
 			EMAIL_QUEUE_NAME,
 			async (job: Job<EmailJobData>) => {
-				logger.info(
+				this._logger.info(
 					{ jobId: job.id, email: job.data.email },
 					"Processing email verification BullMQ job",
 				);
@@ -47,14 +53,14 @@ export class EmailQueueWorker {
 		);
 
 		this._worker.on("completed", (job) => {
-			logger.info(
+			this._logger.info(
 				{ jobId: job.id, email: job.data.email },
 				"Email verification job completed",
 			);
 		});
 
 		this._worker.on("failed", (job, err) => {
-			logger.error(
+			this._logger.error(
 				{ jobId: job?.id, email: job?.data?.email, err },
 				"Email verification job failed",
 			);

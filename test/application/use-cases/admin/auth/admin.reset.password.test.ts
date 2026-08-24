@@ -1,4 +1,4 @@
-import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
+import type { IAdminPasswordHasher } from "@application/ports/services/index.ts";
 import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admin.reset.password";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 
@@ -11,7 +11,7 @@ describe("AdminResetPasswordUseCase", () => {
 		findByEmail: jest.fn(),
 	};
 
-	const mockPasswordHasher: jest.Mocked<IPasswordHasher> = {
+	const mockPasswordHasher: jest.Mocked<IAdminPasswordHasher> = {
 		hashPassword: jest.fn(),
 		verifyPassword: jest.fn(),
 	};

@@ -1,8 +1,9 @@
 import { TYPES } from "@config/di/types.ts";
-import type { UserController } from "@interfaces/http/controllers/user.controller.ts";
-import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware";
+import type { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
+import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
-	logoutSchema,
+	googleAuthSchema,
+	loginSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
 	validateRequestBody,
@@ -16,8 +17,8 @@ export class UserRouter {
 	public router: Router;
 
 	constructor(
-		@inject(TYPES.UserController)
-		private readonly _userController: UserController,
+		@inject(TYPES.UserAuthController)
+		private readonly userController: UserAuthController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
@@ -27,27 +28,36 @@ export class UserRouter {
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),
-			this._userController.register.bind(this._userController),
+			this.userController.register,
 		);
 
 		this.router.post(
 			"/verify-email",
 			validateRequestBody(verifyEmailOtpSchema),
-			this._userController.verifyEmail.bind(this._userController),
+			this.userController.verifyEmail,
 		);
 
 		this.router.post(
 			"/resend-email-otp",
 			validateRequestBody(resendEmailOtpSchema),
-			this._userController.resendEmailOtp.bind(this._userController),
+			this.userController.resendEmailOtp,
+		);
+
+		this.router.post("/logout", authMiddleware, this.userController.logout);
+
+		this.router.post(
+			"/google",
+			validateRequestBody(googleAuthSchema),
+			this.userController.googleAuth,
 		);
 
 		this.router.post(
-			"/logout",
-			authMiddleware,
-			validateRequestBody(logoutSchema),
-			this._userController.logout.bind(this._userController),
+			"/login",
+			validateRequestBody(loginSchema),
+			this.userController.login,
 		);
+
+		this.router.post("/refresh-token", this.userController.refresh);
 	}
 
 	public getRouter(): Router {

@@ -1,5 +1,7 @@
-import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
-import type { ITokenService } from "@application/ports/service/IToken.service";
+import type {
+	IAdminPasswordHasher,
+	IAdminTokenService,
+} from "@application/ports/services/index.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 
@@ -12,12 +14,12 @@ describe("AdminLoginUseCase", () => {
 		update: jest.fn(),
 	};
 
-	const mockPasswordHasher: jest.Mocked<IPasswordHasher> = {
+	const mockPasswordHasher: jest.Mocked<IAdminPasswordHasher> = {
 		hashPassword: jest.fn(),
 		verifyPassword: jest.fn(),
 	};
 
-	const mockTokenService: jest.Mocked<ITokenService> = {
+	const mockTokenService: jest.Mocked<IAdminTokenService> = {
 		generateAccessToken: jest.fn(),
 		generateRefreshToken: jest.fn(),
 		generateTempToken: jest.fn(),

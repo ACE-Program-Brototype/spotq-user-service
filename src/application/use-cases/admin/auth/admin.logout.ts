@@ -1,4 +1,4 @@
-import type { ITokenService } from "@application/ports/service/IToken.service";
+import type { IAdminTokenService } from "@application/ports/services/index.ts";
 import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
 import { TYPES } from "@config/di/types";
 import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";
@@ -10,7 +10,7 @@ export class AdminLogoutUseCase implements IAdminLogoutUseCase {
 		@inject(TYPES.AdminRefreshTokenRepository)
 		private readonly _refreshTokenRepository: IRefreshTokenRepository,
 		@inject(TYPES.AdminTokenService)
-		private readonly _tokenService: ITokenService,
+		private readonly _tokenService: IAdminTokenService,
 	) {}
 
 	async execute(refreshToken: string): Promise<void> {

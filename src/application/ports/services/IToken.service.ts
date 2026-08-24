@@ -1,4 +1,4 @@
-export interface ITokenService {
+export interface IAdminTokenService {
 	generateAccessToken(payload: object): string;
 
 	generateRefreshToken(payload: object): string;

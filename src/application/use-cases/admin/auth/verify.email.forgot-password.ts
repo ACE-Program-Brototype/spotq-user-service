@@ -1,4 +1,4 @@
-import type { ITokenService } from "@application/ports/service/IToken.service";
+import type { IAdminTokenService } from "@application/ports/services/index.ts";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types.ts";
 import { UserNotFoundError } from "@domain/errors/user.not-found.error";
@@ -16,7 +16,7 @@ export class VerifyForgotPasswordEmailUseCase
 		@inject(TYPES.AdminOtpService)
 		private readonly _otpService: IOtpService,
 		@inject(TYPES.AdminTokenService)
-		private readonly _tokenService: ITokenService,
+		private readonly _tokenService: IAdminTokenService,
 	) {}
 
 	public async execute(email: string, otp: string): Promise<string> {

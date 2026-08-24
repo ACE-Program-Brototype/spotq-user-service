@@ -30,8 +30,9 @@ describe("RegisterUserUseCase", () => {
 			findByEmail: jest.fn(),
 			findByPhone: jest.fn(),
 			findById: jest.fn(),
+			findByGoogleId: jest.fn(),
 			createWithSession: jest.fn(),
-		};
+		} as unknown as jest.Mocked<IUserRepository>;
 
 		mockPasswordHasher = {
 			hash: jest.fn().mockResolvedValue("bcrypt_hashed_password"),
@@ -67,7 +68,7 @@ describe("RegisterUserUseCase", () => {
 			info: jest.fn(),
 			error: jest.fn(),
 			warn: jest.fn(),
-		};
+		} as unknown as jest.Mocked<ILogger>;
 
 		useCase = new RegisterUserUseCase(
 			mockUserRepository,

@@ -1,10 +1,10 @@
 import crypto from "node:crypto";
 
-import type { ITokenService } from "@application/ports/service/IToken.service";
+import type { IAdminTokenService } from "@application/ports/services/IToken.service";
 import { config } from "@config/env.ts";
 import jwt from "jsonwebtoken";
 
-export class JwtTokenService implements ITokenService {
+export class JwtTokenService implements IAdminTokenService {
 	private readonly accessSecret: string;
 	private readonly accessExpiresIn: jwt.SignOptions["expiresIn"];
 

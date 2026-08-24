@@ -14,5 +14,6 @@ export interface CreateUserWithSessionParams {
 export interface IUserRepository extends IBaseRepository<UserEntity> {
 	findByEmail(email: Email | string): Promise<UserEntity | null>;
 	findByPhone(phone: PhoneNumber | string): Promise<UserEntity | null>;
+	findByGoogleId(googleId: string): Promise<UserEntity | null>;
 	createWithSession(params: CreateUserWithSessionParams): Promise<UserEntity>;
 }

@@ -1,6 +1,7 @@
 import type {
 	IEmailQueueProducer,
 	IEmailService,
+	IGoogleAuthService,
 	IIdGenerator,
 	ILogger,
 	IOtpService,
@@ -17,6 +18,7 @@ import {
 	BcryptPasswordHasher,
 	BrevoEmailService,
 	CryptoIdGenerator,
+	GoogleAuthService,
 	JwtTokenService,
 	PinoLoggerService,
 	RedisOtpService,
@@ -58,4 +60,7 @@ export const infrastructureModule = new ContainerModule(({ bind }) => {
 	bind<ILogger>(INFRASTRUCTURE_TYPES.Logger)
 		.to(PinoLoggerService)
 		.inSingletonScope();
+	bind<IGoogleAuthService>(INFRASTRUCTURE_TYPES.GoogleAuthService).to(
+		GoogleAuthService,
+	);
 });

@@ -1,5 +1,8 @@
 import {
+	GoogleAuthUseCase,
+	LoginUseCase,
 	LogoutUseCase,
+	RefreshTokenUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
 	VerifyEmailOtpUseCase,
@@ -12,10 +15,13 @@ import {
 	PrismaRefreshTokenRepository,
 	PrismaUserRepository,
 } from "@infrastructure/database/repositories/index.ts";
-import { UserController } from "@interfaces/http/controllers/user.controller.ts";
+import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
 import type {
+	IGoogleAuthUseCase,
+	ILoginUseCase,
 	ILogoutUseCase,
+	IRefreshTokenUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
@@ -44,8 +50,15 @@ export const userModule = new ContainerModule(({ bind }) => {
 		ResendEmailOtpUseCase,
 	);
 	bind<ILogoutUseCase>(USER_TYPES.LogoutUseCase).to(LogoutUseCase);
+	bind<IGoogleAuthUseCase>(USER_TYPES.GoogleAuthUseCase).to(GoogleAuthUseCase);
+	bind<ILoginUseCase>(USER_TYPES.LoginUseCase).to(LoginUseCase);
+	bind<IRefreshTokenUseCase>(USER_TYPES.RefreshTokenUseCase).to(
+		RefreshTokenUseCase,
+	);
 
 	// HTTP Controllers & Routers
-	bind<UserController>(USER_TYPES.UserController).to(UserController);
+	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
+		UserAuthController,
+	);
 	bind<UserRouter>(USER_TYPES.UserRouter).to(UserRouter);
 });

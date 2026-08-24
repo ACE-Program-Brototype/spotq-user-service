@@ -1,7 +1,7 @@
-import type { IPasswordHasher } from "@application/ports/service/IPassword.service";
+import type { IAdminPasswordHasher } from "@application/ports/services/IPassword.service";
 import bcrypt from "bcrypt";
 
-export class BcryptPasswordHasher implements IPasswordHasher {
+export class BcryptPasswordHasher implements IAdminPasswordHasher {
 	private readonly saltRounds: number;
 
 	constructor() {

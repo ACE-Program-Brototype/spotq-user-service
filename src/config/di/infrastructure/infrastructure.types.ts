@@ -15,4 +15,5 @@ export const INFRASTRUCTURE_TYPES = {
 	EmailQueueProducer: Symbol.for("EmailQueueProducer"),
 	EmailQueueWorker: Symbol.for("EmailQueueWorker"),
 	Logger: Symbol.for("Logger"),
+	GoogleAuthService: Symbol.for("GoogleAuthService"),
 } as const;

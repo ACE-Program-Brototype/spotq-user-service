@@ -1,11 +1,12 @@
+import { VALIDATION_MESSAGES } from "@shared/constants/index.ts";
 import { z } from "zod";
 
 export const resendEmailOtpSchema = z.object({
 	email: z
-		.string({ message: "Email is required." })
+		.string({ message: VALIDATION_MESSAGES.EMAIL.REQUIRED })
 		.trim()
-		.email("Invalid email address format.")
-		.max(254, "Email must not exceed 254 characters.")
+		.email(VALIDATION_MESSAGES.EMAIL.FORMAT)
+		.max(254, VALIDATION_MESSAGES.EMAIL.MAX)
 		.toLowerCase(),
 });
 

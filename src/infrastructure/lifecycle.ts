@@ -1,4 +1,4 @@
-import type { IEmailService } from "@application/ports/service/IEmail.service.ts";
+import type { IEmailService } from "@application/ports/services/email-service.interface.ts";
 import { container, TYPES } from "@config/di/index.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import type { PrismaService } from "./database/prisma/database.service.ts";

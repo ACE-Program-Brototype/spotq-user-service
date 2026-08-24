@@ -9,8 +9,11 @@ export const USER_TYPES = {
 	VerifyEmailOtpUseCase: Symbol.for("VerifyEmailOtpUseCase"),
 	ResendEmailOtpUseCase: Symbol.for("ResendEmailOtpUseCase"),
 	LogoutUseCase: Symbol.for("LogoutUseCase"),
+	GoogleAuthUseCase: Symbol.for("GoogleAuthUseCase"),
+	LoginUseCase: Symbol.for("LoginUseCase"),
+	RefreshTokenUseCase: Symbol.for("RefreshTokenUseCase"),
 
 	// Presentation
-	UserController: Symbol.for("UserController"),
+	UserAuthController: Symbol.for("UserAuthController"),
 	UserRouter: Symbol.for("UserRouter"),
 } as const;

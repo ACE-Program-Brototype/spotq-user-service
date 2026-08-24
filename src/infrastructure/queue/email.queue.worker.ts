@@ -1,4 +1,4 @@
-import type { IEmailService } from "@application/ports/service/IEmail.service";
+import type { IEmailService } from "@application/ports/services/email-service.interface.ts";
 import { config } from "@config/env.ts";
 import { logger } from "@infrastructure/logger/logger.ts";
 import { type Job, Worker } from "bullmq";
