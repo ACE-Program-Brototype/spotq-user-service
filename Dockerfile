@@ -41,7 +41,7 @@ COPY prisma ./prisma
 COPY prisma.config.ts ./
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm dlx prisma generate
+    pnpm exec prisma generate
 
 COPY --from=builder /app/dist ./dist
 COPY .infisical.json .
