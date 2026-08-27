@@ -57,7 +57,7 @@ container
 	.to(AdminResetPasswordUseCase);
 
 container
-	.bind<BcryptPasswordHasher>(TYPES.PasswordServices)
+	.bind<BcryptPasswordHasher>(TYPES.PasswordService)
 	.to(BcryptPasswordHasher);
 container.bind<JwtTokenService>(TYPES.TokenServices).to(JwtTokenService);
 

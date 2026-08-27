@@ -9,7 +9,7 @@ export class AdminLogoutUseCase implements IAdminLogoutUseCase {
 	constructor(
 		@inject(TYPES.RefreshTokenRepositories)
 		private readonly _refreshTokenRepository: IRefreshTokenRepository,
-		@inject(TYPES.TokenService)
+		@inject(TYPES.TokenServices)
 		private readonly _tokenService: ITokenService,
 	) {}
 

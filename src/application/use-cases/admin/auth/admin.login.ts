@@ -16,7 +16,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminAuthRepo: IAdminAuthRepository,
-		@inject(TYPES.PasswordServices)
+		@inject(TYPES.PasswordService)
 		private readonly _passwordHasher: IPasswordHashService,
 		@inject(TYPES.TokenServices)
 		private readonly _tokenService: ITokenService,

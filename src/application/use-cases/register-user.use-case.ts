@@ -4,8 +4,8 @@ import type {
 	ILogger,
 	IOtpService,
 	IPasswordHasher,
-	ITokenService,
 } from "@application/ports/services/index.ts";
+import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";

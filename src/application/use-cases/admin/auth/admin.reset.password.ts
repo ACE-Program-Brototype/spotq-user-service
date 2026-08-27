@@ -14,7 +14,7 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminAuthRepository: IAdminAuthRepository,
-		@inject(TYPES.PasswordServices)
+		@inject(TYPES.PasswordService)
 		private readonly _passwordService: IPasswordHashService,
 	) {}
 

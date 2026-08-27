@@ -13,7 +13,7 @@ export class CustomerResetPasswordUseCase
 	constructor(
 		@inject(TYPES.UserRepository)
 		private readonly _userRepository: IUserRepository,
-		@inject(TYPES.PasswordServices)
+		@inject(TYPES.PasswordService)
 		private readonly _passwordService: IPasswordHashService,
 	) {}
 
