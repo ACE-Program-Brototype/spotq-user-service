@@ -1,6 +1,6 @@
 import type { AdminResetPasswordDto } from "@application/dtos/admin/auth/admin.forgot-password";
 import { toAdminResetPasswordResponse } from "@application/mappers/admin/auth/admin.reset.password.mapper";
-import type { IAdminPasswordHasher } from "@application/ports/services/index.ts";
+import { IPasswordHashService } from "@application/ports/services";
 import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
 import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
@@ -14,8 +14,8 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminAuthRepository: IAdminAuthRepository,
-		@inject(TYPES.PasswordService)
-		private readonly _passwordService: IAdminPasswordHasher,
+		@inject(TYPES.PasswordServices)
+		private readonly _passwordService: IPasswordHashService,
 	) {}
 
 	async execute(

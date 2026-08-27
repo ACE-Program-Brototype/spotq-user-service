@@ -11,6 +11,14 @@ import {
 } from "@interfaces/http/validators/index.ts";
 import { Router } from "express";
 import { inject, injectable } from "inversify";
+import { forgotPasswordValidate, forgotPasswordVerifyValidate } from "../validators/forgot-password.validate";
+import {
+	forgotPasswordRateLimit,
+	forgotPasswordResendRateLimit,
+	forgotPasswordVerifyRateLimit,
+} from "../middlewares/rate.limit.middleware";
+import { customerTempTokenCheck } from "../middlewares/customer.auth.middleware";
+import { passwordValidate } from "../validators/reset.password.validate";
 
 @injectable()
 export class UserRouter {
@@ -58,6 +66,35 @@ export class UserRouter {
 		);
 
 		this.router.post("/refresh-token", this.userController.refresh);
+
+		this.router.post(
+			"/forgot-password",
+			validateRequestBody(forgotPasswordValidate),
+			forgotPasswordRateLimit,
+			this.userController.forgotPassword
+		)
+
+		this.router.post(
+			"/forgot-password/verify",
+			validateRequestBody(forgotPasswordVerifyValidate),
+			forgotPasswordVerifyRateLimit,
+			this.userController.forgotPasswordEmailVerify
+		)
+
+		this.router.post(
+			"/forgot-password/resend-otp",
+			validateRequestBody(forgotPasswordValidate),
+			forgotPasswordResendRateLimit,
+			this.userController.verifyOtpResend
+		)
+
+		this.router.post(
+			"/reset-password",
+			customerTempTokenCheck,
+			validateRequestBody(passwordValidate),
+			this.userController.resetPassword
+		)
+
 	}
 
 	public getRouter(): Router {

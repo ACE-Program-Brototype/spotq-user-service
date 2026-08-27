@@ -11,9 +11,9 @@ export class AdminForgotPasswordUseCase implements IAdminForgotPasswordUseCase {
 	constructor(
 		@inject(TYPES.AdminAuthRepository)
 		private readonly _adminAuthRepository: IAdminAuthRepository,
-		@inject(TYPES.AdminOtpService)
+		@inject(TYPES.OtpServices)
 		private readonly _otpService: IOtpService,
-		@inject(TYPES.AdminEmailQueueProducer)
+		@inject(TYPES.EmailQueueProducers)
 		private readonly _emailQueueProducer: IEmailQueueProducer,
 	) {}
 

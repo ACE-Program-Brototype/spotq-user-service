@@ -23,6 +23,12 @@ import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
+import { successResponse } from "@shared/response/api-response.model.ts";
+import { authConstants } from "@shared/constants/auth.constants.ts";
+import { ICustomerForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.forgot-password.ts";
+import { ICustomerVerifyForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.verify.forgot-password.ts";
+import { AppError } from "@shared/util/app.error.ts";
+import { ICustomerResetPasswordUseCase } from "@application/ports/use-cases/ICustomer.reset.password.ts";
 
 @injectable()
 export class UserAuthController {
@@ -41,7 +47,13 @@ export class UserAuthController {
 		private readonly loginUseCase: ILoginUseCase,
 		@inject(TYPES.RefreshTokenUseCase)
 		private readonly refreshTokenUseCase: IRefreshTokenUseCase,
-	) {}
+		@inject(TYPES.CustomerForgotPasswordUseCase)
+		private readonly forgotPasswordUseCase: ICustomerForgotPasswordUseCase,
+		@inject(TYPES.CustomerVerifyForgotPasswordUseCase)
+		private readonly forgotPasswordVerifyUseCase: ICustomerVerifyForgotPasswordUseCase,
+		@inject(TYPES.CustomerResetPasswordUseCase)
+		private readonly customerResetPasswordUseCase: ICustomerResetPasswordUseCase
+	) { }
 
 	private getCookie(req: Request, name: string): string | undefined {
 		const rc = req.headers.cookie;
@@ -227,4 +239,73 @@ export class UserAuthController {
 			next(error);
 		}
 	};
+
+	forgotPassword = async (req: Request, res: Response): Promise<void> => {
+		const { email } = req.body;
+
+		await this.forgotPasswordUseCase.execute(email);
+
+		successResponse(
+			res,
+			{},
+			authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS,
+		);
+	};
+
+	forgotPasswordEmailVerify = async (
+		req: Request,
+		res: Response,
+	): Promise<void> => {
+		const { email, otp } = req.body;
+
+		const tempToken = await this.forgotPasswordVerifyUseCase.execute(
+			email,
+			otp,
+		);
+
+		res.cookie("tempToken", tempToken, {
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.tempMaxAge),
+			path: "/",
+		});
+
+		successResponse(res, {}, authConstants.EMAIL_VERIFIED_SUCCESS);
+	};
+
+	verifyOtpResend = async (req: Request, res: Response): Promise<void> => {
+		const { email } = req.body;
+
+		await this.forgotPasswordUseCase.execute(email);
+
+		successResponse(
+			res,
+			{},
+			authConstants.FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS,
+		);
+	};
+
+	resetPassword = async (req: Request, res: Response): Promise<void> => {
+		const userId = req.userId;
+		const { password } = req.body;
+
+		if (!userId) {
+			throw new AppError(authConstants.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+		}
+
+		const user = await this.customerResetPasswordUseCase.execute(
+			userId,
+			password,
+		);
+
+		res.clearCookie("tempToken", {
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+		});
+
+		successResponse(res, user, authConstants.PASSWORD_RESET_SUCCESS);
+	};
+
 }

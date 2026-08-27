@@ -34,15 +34,15 @@ container
 	.to(AdminAuthController);
 
 container
-	.bind<RefreshTokenRepository>(TYPES.AdminRefreshTokenRepository)
+	.bind<RefreshTokenRepository>(TYPES.RefreshTokenRepositories)
 	.to(RefreshTokenRepository);
 
 container
 	.bind<AdminLogoutUseCase>(TYPES.AdminLogoutUseCase)
 	.to(AdminLogoutUseCase);
-container.bind<RedisOtpService>(TYPES.AdminOtpService).to(RedisOtpService);
+container.bind<RedisOtpService>(TYPES.OtpServices).to(RedisOtpService);
 container
-	.bind<EmailQueueProducer>(TYPES.AdminEmailQueueProducer)
+	.bind<EmailQueueProducer>(TYPES.EmailQueueProducers)
 	.to(EmailQueueProducer);
 container
 	.bind<AdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase)
@@ -57,8 +57,8 @@ container
 	.to(AdminResetPasswordUseCase);
 
 container
-	.bind<BcryptPasswordHasher>(TYPES.PasswordService)
+	.bind<BcryptPasswordHasher>(TYPES.PasswordServices)
 	.to(BcryptPasswordHasher);
-container.bind<JwtTokenService>(TYPES.AdminTokenService).to(JwtTokenService);
+container.bind<JwtTokenService>(TYPES.TokenServices).to(JwtTokenService);
 
 export { container };
