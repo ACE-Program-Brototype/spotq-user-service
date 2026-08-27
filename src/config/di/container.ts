@@ -1,9 +1,20 @@
 import "reflect-metadata";
+import type { IPasswordHashService } from "@application/ports/services/IPassword.service.ts";
+import type { ITokenService } from "@application/ports/services/IToken.service.ts";
+import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password.ts";
+import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login.ts";
+import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout.ts";
+import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password.ts";
+import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password.ts";
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
 import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
 import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admin.reset.password.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo.ts";
+import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer.ts";
+import type { IOtpService } from "@domain/repository/shared/IOtp.service.ts";
+import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo.ts";
 import { EmailQueueProducer } from "@infrastructure/queue/email.queue.producer.ts";
 import { AdminAuthRepository } from "@infrastructure/repositories/admin/admin.auth.repo.ts";
 import { RefreshTokenRepository } from "@infrastructure/repositories/shared/token.repo.ts";
@@ -16,17 +27,6 @@ import { healthModule } from "./health/health.module.ts";
 import { infrastructureModule } from "./infrastructure/infrastructure.module.ts";
 import { TYPES } from "./types.ts";
 import { userModule } from "./user/user.module.ts";
-import { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo.ts";
-import { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login.ts";
-import { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo.ts";
-import { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout.ts";
-import { IOtpService } from "@domain/repository/shared/IOtp.service.ts";
-import { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer.ts";
-import { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password.ts";
-import { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password.ts";
-import { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password.ts";
-import { IPasswordHashService } from "@application/ports/services/IPassword.service.ts";
-import { ITokenService } from "@application/ports/services/IToken.service.ts";
 
 const container = new Container({ defaultScope: "Singleton" });
 
