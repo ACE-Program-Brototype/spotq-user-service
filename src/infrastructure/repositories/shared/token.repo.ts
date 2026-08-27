@@ -1,4 +1,4 @@
-import type { IAdminTokenService } from "@application/ports/services/IToken.service";
+import type { ITokenService } from "@application/ports/services/IToken.service";
 import { TYPES } from "@config/di/types";
 import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";
 import { redisClient } from "@infrastructure/redis";
@@ -8,8 +8,8 @@ import { inject, injectable } from "inversify";
 export class RefreshTokenRepository implements IRefreshTokenRepository {
 	private readonly _redis = redisClient;
 	constructor(
-		@inject(TYPES.AdminTokenService)
-		private readonly _tokenService: IAdminTokenService,
+		@inject(TYPES.TokenServices)
+		private readonly _tokenService: ITokenService,
 	) {}
 
 	async revoke(token: string, ttlSeconds: number): Promise<void> {
