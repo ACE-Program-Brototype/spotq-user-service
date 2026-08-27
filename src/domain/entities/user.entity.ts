@@ -114,4 +114,9 @@ export class UserEntity {
 		this._props.googleId = googleId;
 		this._props.updatedAt = new Date();
 	}
+
+	public changePassword(passwordHash: string): void {
+		this._props.passwordHash = passwordHash;
+		this._props.updatedAt = new Date();
+	}
 }

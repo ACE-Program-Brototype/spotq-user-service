@@ -16,4 +16,10 @@ export const USER_TYPES = {
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),
 	UserRouter: Symbol.for("UserRouter"),
+
+	CustomerForgotPasswordUseCase: Symbol.for("CustomerForgotPasswordUseCase"),
+	CustomerVerifyForgotPasswordUseCase: Symbol.for(
+		"CustomerVerifyForgotPasswordUseCase",
+	),
+	CustomerResetPasswordUseCase: Symbol.for("CustomerResetPasswordUseCase"),
 } as const;

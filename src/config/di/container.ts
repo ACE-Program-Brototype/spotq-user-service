@@ -1,9 +1,20 @@
 import "reflect-metadata";
+import type { IPasswordHashService } from "@application/ports/services/IPassword.service.ts";
+import type { ITokenService } from "@application/ports/services/IToken.service.ts";
+import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password.ts";
+import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login.ts";
+import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout.ts";
+import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password.ts";
+import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password.ts";
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
 import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
 import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admin.reset.password.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
+import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo.ts";
+import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer.ts";
+import type { IOtpService } from "@domain/repository/shared/IOtp.service.ts";
+import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo.ts";
 import { EmailQueueProducer } from "@infrastructure/queue/email.queue.producer.ts";
 import { AdminAuthRepository } from "@infrastructure/repositories/admin/admin.auth.repo.ts";
 import { RefreshTokenRepository } from "@infrastructure/repositories/shared/token.repo.ts";
@@ -24,41 +35,41 @@ container.load(userModule);
 container.load(healthModule);
 
 container
-	.bind<AdminAuthRepository>(TYPES.AdminAuthRepository)
+	.bind<IAdminAuthRepository>(TYPES.AdminAuthRepository)
 	.to(AdminAuthRepository);
 container
-	.bind<AdminLoginUseCase>(TYPES.AdminLoginUseCase)
+	.bind<IAdminLoginUseCase>(TYPES.AdminLoginUseCase)
 	.to(AdminLoginUseCase);
 container
 	.bind<AdminAuthController>(TYPES.AdminAuthController)
 	.to(AdminAuthController);
 
 container
-	.bind<RefreshTokenRepository>(TYPES.AdminRefreshTokenRepository)
+	.bind<IRefreshTokenRepository>(TYPES.RefreshTokenRepositories)
 	.to(RefreshTokenRepository);
 
 container
-	.bind<AdminLogoutUseCase>(TYPES.AdminLogoutUseCase)
+	.bind<IAdminLogoutUseCase>(TYPES.AdminLogoutUseCase)
 	.to(AdminLogoutUseCase);
-container.bind<RedisOtpService>(TYPES.AdminOtpService).to(RedisOtpService);
+container.bind<IOtpService>(TYPES.OtpServices).to(RedisOtpService);
 container
-	.bind<EmailQueueProducer>(TYPES.AdminEmailQueueProducer)
+	.bind<IEmailQueueProducer>(TYPES.EmailQueueProducers)
 	.to(EmailQueueProducer);
 container
-	.bind<AdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase)
+	.bind<IAdminForgotPasswordUseCase>(TYPES.AdminForgotPasswordUseCase)
 	.to(AdminForgotPasswordUseCase);
 container
-	.bind<VerifyForgotPasswordEmailUseCase>(
+	.bind<IAdminVerifyEmailForgotPasswordUseCase>(
 		TYPES.AdminForgotPasswordEmailVerifyUseCase,
 	)
 	.to(VerifyForgotPasswordEmailUseCase);
 container
-	.bind<AdminResetPasswordUseCase>(TYPES.AdminResetPasswordUseCase)
+	.bind<IAdminResetPasswordUseCase>(TYPES.AdminResetPasswordUseCase)
 	.to(AdminResetPasswordUseCase);
 
 container
-	.bind<BcryptPasswordHasher>(TYPES.PasswordService)
+	.bind<IPasswordHashService>(TYPES.PasswordService)
 	.to(BcryptPasswordHasher);
-container.bind<JwtTokenService>(TYPES.AdminTokenService).to(JwtTokenService);
+container.bind<ITokenService>(TYPES.TokenServices).to(JwtTokenService);
 
 export { container };

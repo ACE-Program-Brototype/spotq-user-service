@@ -5,14 +5,14 @@ import { authConstants } from "@shared/constants/auth.constants";
 import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
 
-const tokenService = container.get<JwtTokenService>(TYPES.TokenServices);
-
-export const adminTempTokenCheck = async (
+export const customerTempTokenCheck = async (
 	req: Request,
 	_res: Response,
 	next: NextFunction,
 ) => {
 	try {
+		const tokenService = container.get<JwtTokenService>(TYPES.TokenServices);
+
 		const { tempToken } = req.cookies;
 
 		if (!tempToken) {
@@ -30,7 +30,7 @@ export const adminTempTokenCheck = async (
 			throw new AppError(authConstants.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
 		}
 
-		if (decoded.role !== "admin") {
+		if (decoded.role !== "customer") {
 			throw new AppError(authConstants.INVALID_USER, HttpStatus.UNAUTHORIZED);
 		}
 

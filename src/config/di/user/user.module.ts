@@ -1,3 +1,6 @@
+import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.forgot-password.ts";
+import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
+import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
 import {
 	GoogleAuthUseCase,
 	LoginUseCase,
@@ -61,4 +64,14 @@ export const userModule = new ContainerModule(({ bind }) => {
 		UserAuthController,
 	);
 	bind<UserRouter>(USER_TYPES.UserRouter).to(UserRouter);
+
+	bind<CustomerForgotPasswordUseCase>(
+		USER_TYPES.CustomerForgotPasswordUseCase,
+	).to(CustomerForgotPasswordUseCase);
+	bind<CustomerVerifyForgotPasswordUseCase>(
+		USER_TYPES.CustomerVerifyForgotPasswordUseCase,
+	).to(CustomerVerifyForgotPasswordUseCase);
+	bind<CustomerResetPasswordUseCase>(
+		USER_TYPES.CustomerResetPasswordUseCase,
+	).to(CustomerResetPasswordUseCase);
 });
