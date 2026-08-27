@@ -18,6 +18,8 @@ export const USER_TYPES = {
 	UserRouter: Symbol.for("UserRouter"),
 
 	CustomerForgotPasswordUseCase: Symbol.for("CustomerForgotPasswordUseCase"),
-	CustomerVerifyForgotPasswordUseCase: Symbol.for("CustomerVerifyForgotPasswordUseCase"),
-	CustomerResetPasswordUseCase: Symbol.for("CustomerResetPasswordUseCase")
+	CustomerVerifyForgotPasswordUseCase: Symbol.for(
+		"CustomerVerifyForgotPasswordUseCase",
+	),
+	CustomerResetPasswordUseCase: Symbol.for("CustomerResetPasswordUseCase"),
 } as const;

@@ -76,8 +76,7 @@ export const createForgotPasswordResendRateLimit = () =>
 		prefix: "admin:forgot-password:resend",
 		windowMs: 5 * 60 * 1000,
 		limit: 5,
-		message:
-			"Too many OTP resend requests. Please try again after 5 minutes.",
+		message: "Too many OTP resend requests. Please try again after 5 minutes.",
 	});
 
 export const createForgotPasswordVerifyRateLimit = () =>

@@ -1,4 +1,4 @@
-import { IPasswordHashService } from "@application/ports/services";
+import type { IPasswordHashService } from "@application/ports/services";
 import bcrypt from "bcrypt";
 
 export class BcryptPasswordHasher implements IPasswordHashService {

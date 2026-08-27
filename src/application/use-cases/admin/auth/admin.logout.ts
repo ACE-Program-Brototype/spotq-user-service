@@ -1,4 +1,4 @@
-import { ITokenService } from "@application/ports/services";
+import type { ITokenService } from "@application/ports/services";
 import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
 import { TYPES } from "@config/di/types";
 import type { IRefreshTokenRepository } from "@domain/repository/shared/IToken.repo";

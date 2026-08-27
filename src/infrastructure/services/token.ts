@@ -1,8 +1,7 @@
 import crypto from "node:crypto";
-
+import type { ITokenService } from "@application/ports/services";
 import { config } from "@config/env.ts";
 import jwt from "jsonwebtoken";
-import { ITokenService } from "@application/ports/services";
 
 export class JwtTokenService implements ITokenService {
 	private readonly accessSecret: string;

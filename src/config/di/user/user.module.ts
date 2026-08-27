@@ -1,3 +1,6 @@
+import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.forgot-password.ts";
+import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
+import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
 import {
 	GoogleAuthUseCase,
 	LoginUseCase,
@@ -28,9 +31,6 @@ import type {
 } from "@ports/use-cases/index.ts";
 import { ContainerModule } from "inversify";
 import { USER_TYPES } from "./user.types.ts";
-import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.forgot-password.ts";
-import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
-import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
 
 export const userModule = new ContainerModule(({ bind }) => {
 	// Repositories
@@ -65,7 +65,13 @@ export const userModule = new ContainerModule(({ bind }) => {
 	);
 	bind<UserRouter>(USER_TYPES.UserRouter).to(UserRouter);
 
-	bind<CustomerForgotPasswordUseCase>(USER_TYPES.CustomerForgotPasswordUseCase).to(CustomerForgotPasswordUseCase)
-	bind<CustomerVerifyForgotPasswordUseCase>(USER_TYPES.CustomerVerifyForgotPasswordUseCase).to(CustomerVerifyForgotPasswordUseCase)
-	bind<CustomerResetPasswordUseCase>(USER_TYPES.CustomerResetPasswordUseCase).to(CustomerResetPasswordUseCase)
+	bind<CustomerForgotPasswordUseCase>(
+		USER_TYPES.CustomerForgotPasswordUseCase,
+	).to(CustomerForgotPasswordUseCase);
+	bind<CustomerVerifyForgotPasswordUseCase>(
+		USER_TYPES.CustomerVerifyForgotPasswordUseCase,
+	).to(CustomerVerifyForgotPasswordUseCase);
+	bind<CustomerResetPasswordUseCase>(
+		USER_TYPES.CustomerResetPasswordUseCase,
+	).to(CustomerResetPasswordUseCase);
 });

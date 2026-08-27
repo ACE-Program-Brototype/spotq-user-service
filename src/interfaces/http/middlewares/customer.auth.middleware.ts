@@ -6,47 +6,46 @@ import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
 
 export const customerTempTokenCheck = async (
-    req: Request,
-    _res: Response,
-    next: NextFunction,
+	req: Request,
+	_res: Response,
+	next: NextFunction,
 ) => {
-    try {
+	try {
+		const tokenService = container.get<JwtTokenService>(TYPES.TokenServices);
 
-        const tokenService = container.get<JwtTokenService>(TYPES.TokenServices);
+		const { tempToken } = req.cookies;
 
-        const { tempToken } = req.cookies;
+		if (!tempToken) {
+			throw new AppError(authConstants.MISSING_TOKEN, HttpStatus.BAD_REQUEST);
+		}
 
-        if (!tempToken) {
-            throw new AppError(authConstants.MISSING_TOKEN, HttpStatus.BAD_REQUEST);
-        }
+		let decoded: { userId: string; role: string };
 
-        let decoded: { userId: string; role: string };
+		try {
+			decoded = tokenService.verifyTempToken(tempToken) as {
+				userId: string;
+				role: string;
+			};
+		} catch {
+			throw new AppError(authConstants.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+		}
 
-        try {
-            decoded = tokenService.verifyTempToken(tempToken) as {
-                userId: string;
-                role: string;
-            };
-        } catch {
-            throw new AppError(authConstants.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
-        }
+		if (decoded.role !== "customer") {
+			throw new AppError(authConstants.INVALID_USER, HttpStatus.UNAUTHORIZED);
+		}
 
-        if (decoded.role !== "customer") {
-            throw new AppError(authConstants.INVALID_USER, HttpStatus.UNAUTHORIZED);
-        }
+		req.userId = decoded.userId;
 
-        req.userId = decoded.userId;
+		next();
+	} catch (error: unknown) {
+		if (error instanceof AppError) {
+			throw error;
+		}
 
-        next();
-    } catch (error: unknown) {
-        if (error instanceof AppError) {
-            throw error;
-        }
-
-        // Unexpected errors should remain internal server errors.
-        throw new AppError(
-            ResponseMessage.INTERNAL_SERVER_ERROR,
-            HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-    }
+		// Unexpected errors should remain internal server errors.
+		throw new AppError(
+			ResponseMessage.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR,
+		);
+	}
 };

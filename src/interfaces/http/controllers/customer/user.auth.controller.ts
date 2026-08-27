@@ -5,7 +5,9 @@ import type {
 	ResendEmailOtpDto,
 	VerifyEmailOtpDto,
 } from "@application/dtos/index.ts";
-
+import type { ICustomerForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.forgot-password.ts";
+import type { ICustomerResetPasswordUseCase } from "@application/ports/use-cases/ICustomer.reset.password.ts";
+import type { ICustomerVerifyForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.verify.forgot-password.ts";
 import { TYPES } from "@config/di/types.ts";
 import { config } from "@config/env.ts";
 import type {
@@ -17,18 +19,15 @@ import type {
 	IResendEmailOtpUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
+import { authConstants } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
+import { successResponse } from "@shared/response/api-response.model.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
+import { AppError } from "@shared/util/app.error.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
-import { successResponse } from "@shared/response/api-response.model.ts";
-import { authConstants } from "@shared/constants/auth.constants.ts";
-import { ICustomerForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.forgot-password.ts";
-import { ICustomerVerifyForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.verify.forgot-password.ts";
-import { AppError } from "@shared/util/app.error.ts";
-import { ICustomerResetPasswordUseCase } from "@application/ports/use-cases/ICustomer.reset.password.ts";
 
 @injectable()
 export class UserAuthController {
@@ -52,8 +51,8 @@ export class UserAuthController {
 		@inject(TYPES.CustomerVerifyForgotPasswordUseCase)
 		private readonly forgotPasswordVerifyUseCase: ICustomerVerifyForgotPasswordUseCase,
 		@inject(TYPES.CustomerResetPasswordUseCase)
-		private readonly customerResetPasswordUseCase: ICustomerResetPasswordUseCase
-	) { }
+		private readonly customerResetPasswordUseCase: ICustomerResetPasswordUseCase,
+	) {}
 
 	private getCookie(req: Request, name: string): string | undefined {
 		const rc = req.headers.cookie;
@@ -307,5 +306,4 @@ export class UserAuthController {
 
 		successResponse(res, user, authConstants.PASSWORD_RESET_SUCCESS);
 	};
-
 }

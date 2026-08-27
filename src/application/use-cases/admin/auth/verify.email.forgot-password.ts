@@ -1,4 +1,4 @@
-import { ITokenService } from "@application/ports/services";
+import type { ITokenService } from "@application/ports/services";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types.ts";
 import { UserNotFoundError } from "@domain/errors/user.not-found.error";
