@@ -1,6 +1,6 @@
 import type { IPasswordHashService } from "@application/ports/services";
 import type { ICustomerResetPasswordUseCase } from "@application/ports/use-cases/ICustomer.reset.password";
-import { TYPES } from "@config/di";
+import { TYPES } from "@config/di/types.ts";
 import { UserNotFoundError } from "@domain/errors";
 import { ResetPasswordFailedError } from "@domain/errors/reset.password.error";
 import type { IUserRepository } from "@domain/repositories";

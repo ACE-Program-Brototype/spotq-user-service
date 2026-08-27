@@ -1,6 +1,6 @@
 import type { IOtpService, ITokenService } from "@application/ports/services";
 import type { ICustomerVerifyForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.verify.forgot-password";
-import { TYPES } from "@config/di";
+import { TYPES } from "@config/di/types.ts";
 import { UserNotFoundError } from "@domain/errors";
 import type { IUserRepository } from "@domain/repositories";
 import { inject, injectable } from "inversify";

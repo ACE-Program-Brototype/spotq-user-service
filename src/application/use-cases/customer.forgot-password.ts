@@ -3,7 +3,7 @@ import type {
 	IOtpService,
 } from "@application/ports/services";
 import type { ICustomerForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.forgot-password";
-import { TYPES } from "@config/di";
+import { TYPES } from "@config/di/types.ts";
 import { InvalidCredentialsError } from "@domain/errors";
 import type { IUserRepository } from "@domain/repositories";
 import { inject, injectable } from "inversify";
