@@ -85,6 +85,31 @@ const envSchema = z.object({
 	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
 	COOKIE_REFRESH_MAX_AGE: z.string().default("604800000"),
 	COOKIE_TEMP_MAX_AGE: z.string().default("900000"),
+
+	// Rate Limiting Configuration
+	RATE_LIMIT_FORGOT_PASSWORD_WINDOW_MS: z.coerce
+		.number()
+		.positive()
+		.default(24 * 60 * 60 * 1000),
+	RATE_LIMIT_FORGOT_PASSWORD_MAX: z.coerce.number().positive().default(5),
+
+	RATE_LIMIT_FORGOT_PASSWORD_RESEND_WINDOW_MS: z.coerce
+		.number()
+		.positive()
+		.default(5 * 60 * 1000),
+	RATE_LIMIT_FORGOT_PASSWORD_RESEND_MAX: z.coerce
+		.number()
+		.positive()
+		.default(5),
+
+	RATE_LIMIT_FORGOT_PASSWORD_VERIFY_WINDOW_MS: z.coerce
+		.number()
+		.positive()
+		.default(5 * 60 * 1000),
+	RATE_LIMIT_FORGOT_PASSWORD_VERIFY_MAX: z.coerce
+		.number()
+		.positive()
+		.default(5),
 });
 
 export const validateEnv = () => {
