@@ -69,8 +69,19 @@ export class UserAuthController {
 	}
 
 	public register = async (req: Request, res: Response): Promise<void> => {
-		const result = await this.registerUserUseCase.execute(
-			req.body as RegisterUserDto,
+		await this.registerUserUseCase.execute(req.body as RegisterUserDto);
+
+		sendSuccessResponse(
+			res,
+			null,
+			ResponseMessage.REGISTRATION_SUCCESS,
+			HttpStatus.CREATED,
+		);
+	};
+
+	public verifyEmail = async (req: Request, res: Response): Promise<void> => {
+		const result = await this.verifyEmailOtpUseCase.execute(
+			req.body as VerifyEmailOtpDto,
 		);
 
 		res.cookie("refreshToken", result.refreshToken, {
@@ -95,16 +106,9 @@ export class UserAuthController {
 		sendSuccessResponse(
 			res,
 			responseBody,
-			ResponseMessage.REGISTRATION_SUCCESS,
-			HttpStatus.CREATED,
+			ResponseMessage.EMAIL_VERIFIED,
+			HttpStatus.OK,
 		);
-	};
-
-	public verifyEmail = async (req: Request, res: Response): Promise<void> => {
-		const result = await this.verifyEmailOtpUseCase.execute(
-			req.body as VerifyEmailOtpDto,
-		);
-		sendSuccessResponse(res, undefined, result.message);
 	};
 
 	public resendEmailOtp = async (
@@ -114,6 +118,7 @@ export class UserAuthController {
 		const result = await this.resendEmailOtpUseCase.execute(
 			req.body as ResendEmailOtpDto,
 		);
+
 		sendSuccessResponse(res, undefined, result.message);
 	};
 
