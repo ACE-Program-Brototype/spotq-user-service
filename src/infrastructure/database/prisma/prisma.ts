@@ -6,6 +6,15 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import pg from "pg";
 
+// Ensure all PostgreSQL timestamp types are parsed as UTC
+// OID 1114: TIMESTAMP (without time zone) -> parse as UTC ISO
+pg.types.setTypeParser(
+	1114,
+	(stringValue: string) => new Date(`${stringValue}Z`),
+);
+// OID 1184: TIMESTAMPTZ (with time zone) -> parse directly into Date
+pg.types.setTypeParser(1184, (stringValue: string) => new Date(stringValue));
+
 // Setup secure SSL/TLS configuration.
 // pg.Pool handles the actual connection — sslmode URL params are not needed
 // because we're using the PrismaPg driver adapter (no Prisma query engine).
