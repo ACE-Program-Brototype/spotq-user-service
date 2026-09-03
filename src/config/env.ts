@@ -72,4 +72,19 @@ export const config = {
 		ttlSeconds: env.OTP_TTL_SECONDS,
 		maxAttempts: env.OTP_MAX_ATTEMPTS,
 	},
+
+	rateLimit: {
+		forgotPassword: {
+			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_WINDOW_MS,
+			max: env.RATE_LIMIT_FORGOT_PASSWORD_MAX,
+		},
+		forgotPasswordResend: {
+			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_RESEND_WINDOW_MS,
+			max: env.RATE_LIMIT_FORGOT_PASSWORD_RESEND_MAX,
+		},
+		forgotPasswordVerify: {
+			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_WINDOW_MS,
+			max: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_MAX,
+		},
+	},
 } as const;

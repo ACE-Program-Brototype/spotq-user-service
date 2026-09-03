@@ -1,4 +1,6 @@
+import { config } from "@config/env.ts";
 import { redisClient } from "@infrastructure/redis";
+import { RATE_LIMIT_ERRORS } from "@shared/constants";
 import type { Request, RequestHandler } from "express";
 import { rateLimit } from "express-rate-limit";
 import { RedisStore, type SendCommandFn } from "rate-limit-redis";
@@ -65,27 +67,25 @@ const createEmailRateLimiter = ({
 export const createForgotPasswordRateLimit = () =>
 	createEmailRateLimiter({
 		prefix: "admin:forgot-password",
-		windowMs: 24 * 60 * 60 * 1000,
-		limit: 5,
-		message:
-			"Too many password reset requests. Please try again after 24 hours.",
+		windowMs: config.rateLimit.forgotPassword.windowMs,
+		limit: config.rateLimit.forgotPassword.max,
+		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD,
 	});
 
 export const createForgotPasswordResendRateLimit = () =>
 	createEmailRateLimiter({
 		prefix: "admin:forgot-password:resend",
-		windowMs: 5 * 60 * 1000,
-		limit: 5,
-		message: "Too many OTP resend requests. Please try again after 5 minutes.",
+		windowMs: config.rateLimit.forgotPasswordResend.windowMs,
+		limit: config.rateLimit.forgotPasswordResend.max,
+		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD_RESEND,
 	});
 
 export const createForgotPasswordVerifyRateLimit = () =>
 	createEmailRateLimiter({
 		prefix: "admin:forgot-password:verify",
-		windowMs: 5 * 60 * 1000,
-		limit: 5,
-		message:
-			"Too many OTP verification attempts. Please try again after 5 minutes.",
+		windowMs: config.rateLimit.forgotPasswordVerify.windowMs,
+		limit: config.rateLimit.forgotPasswordVerify.max,
+		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD_VERIFY,
 	});
 
 export const forgotPasswordRateLimit = createDeferredRateLimiter(
