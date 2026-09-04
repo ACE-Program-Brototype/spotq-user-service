@@ -24,7 +24,10 @@ export class JwtTokenService implements ITokenService {
 			expiresIn: config.jwt.access.expiresIn as unknown as number,
 		};
 
-		return jwt.sign(claims, config.jwt.access.secret, signOptions);
+		return jwt.sign(claims, config.jwt.access.privateKey, {
+			...signOptions,
+			algorithm: config.jwt.access.algorithm as jwt.Algorithm,
+		});
 	}
 
 	public generateRefreshToken(): GeneratedRefreshToken {
@@ -46,7 +49,9 @@ export class JwtTokenService implements ITokenService {
 
 	public verifyAccessToken(token: string): AccessTokenPayload {
 		try {
-			const decoded = jwt.verify(token, config.jwt.access.secret);
+			const decoded = jwt.verify(token, config.jwt.access.privateKey, {
+				algorithms: [config.jwt.access.algorithm as jwt.Algorithm],
+			});
 			if (typeof decoded === "string" || !decoded.sub) {
 				throw new InvalidTokenError("Invalid token payload.");
 			}

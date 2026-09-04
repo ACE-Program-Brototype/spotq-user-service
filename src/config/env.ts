@@ -33,8 +33,10 @@ export const config = {
 
 	jwt: {
 		access: {
-			secret: env.JWT_ACCESS_SECRET,
+			// secret: env.JWT_ACCESS_SECRET,
 			expiresIn: env.JWT_ACCESS_EXPIRES_IN,
+			privateKey: env.JWT_ACCESS_PRIVATE_KEY,
+			algorithm: env.JWT_ALGORITHM,
 		},
 		refresh: {
 			secret: env.JWT_REFRESH_SECRET,
