@@ -61,6 +61,9 @@ export class VerifyEmailOtpUseCase implements IVerifyEmailOtpUseCase {
 			throw new UserNotFoundError();
 		}
 
+		user.markEmailAsVerified();
+		await this.userRepository.update(user.id, user);
+
 		let deviceId: string | null = null;
 		if (dto.device?.platform) {
 			const existingDevice =

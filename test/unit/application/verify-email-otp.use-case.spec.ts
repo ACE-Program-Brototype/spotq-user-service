@@ -121,6 +121,8 @@ describe("VerifyEmailOtpUseCase", () => {
 		expect(result.accessToken).toBe("mock_access_token");
 		expect(result.refreshToken).toBe("mock_refresh_token");
 
+		expect(fakeUser.isEmailVerified).toBe(true);
+		expect(mockUserRepository.update).toHaveBeenCalledWith("usr-123", fakeUser);
 		expect(mockOtpService.verifyOtp).toHaveBeenCalledWith(
 			"john.doe@example.com",
 			"123456",

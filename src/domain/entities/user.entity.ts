@@ -15,6 +15,7 @@ export interface UserEntityProps {
 	passwordHash: string | null;
 	googleId?: string | null;
 	status: UserStatus;
+	isEmailVerified: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 	profile?: UserProfileEntity | null;
@@ -34,6 +35,7 @@ export class UserEntity {
 		email: string | Email;
 		passwordHash: string | null;
 		googleId?: string | null;
+		isEmailVerified?: boolean;
 		profile?: UserProfileEntity | null;
 	}): UserEntity {
 		const now = new Date();
@@ -60,6 +62,7 @@ export class UserEntity {
 			passwordHash: params.passwordHash,
 			googleId: params.googleId ?? null,
 			status: UserStatus.ACTIVE,
+			isEmailVerified: params.isEmailVerified ?? false,
 			createdAt: now,
 			updatedAt: now,
 			profile: params.profile ?? null,
@@ -98,6 +101,10 @@ export class UserEntity {
 		return this._props.status;
 	}
 
+	public get isEmailVerified(): boolean {
+		return this._props.isEmailVerified;
+	}
+
 	public get createdAt(): Date {
 		return this._props.createdAt;
 	}
@@ -110,8 +117,14 @@ export class UserEntity {
 		return this._props.profile;
 	}
 
+	public markEmailAsVerified(): void {
+		this._props.isEmailVerified = true;
+		this._props.updatedAt = new Date();
+	}
+
 	public linkGoogleAccount(googleId: string): void {
 		this._props.googleId = googleId;
+		this._props.isEmailVerified = true;
 		this._props.updatedAt = new Date();
 	}
 
