@@ -1,6 +1,7 @@
 export interface AccessTokenPayload {
 	sub: string;
 	email: string;
+	role?: string;
 	iat?: number;
 	exp?: number;
 }
@@ -12,7 +13,11 @@ export interface GeneratedRefreshToken {
 }
 
 export interface ITokenService {
-	generateAccessToken(payload: { userId: string; email: string }): string;
+	generateAccessToken(payload: {
+		userId: string;
+		email: string;
+		role?: string;
+	}): string;
 	generateRefreshToken(): GeneratedRefreshToken;
 	hashToken(token: string): string;
 	verifyAccessToken(token: string): AccessTokenPayload;

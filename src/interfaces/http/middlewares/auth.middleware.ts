@@ -7,7 +7,8 @@ import type { NextFunction, Request, Response } from "express";
 
 export interface AuthenticatedUser {
 	userId: string;
-	email: string;
+	email?: string;
+	role?: string;
 }
 
 export interface AuthenticatedRequest extends Request {
@@ -19,6 +20,19 @@ export function authMiddleware(
 	res: Response,
 	next: NextFunction,
 ): void {
+	// 1. Check if user context is forwarded by API Gateway via trusted headers
+	const gatewayUserId = req.headers["x-user-id"] as string | undefined;
+	if (gatewayUserId) {
+		req.user = {
+			userId: gatewayUserId,
+			email: (req.headers["x-user-email"] as string | undefined) ?? "",
+			role: (req.headers["x-user-role"] as string | undefined) ?? "customer",
+		};
+		next();
+		return;
+	}
+
+	// 2. Fallback to Bearer token verification (for direct/test calls)
 	const authHeader = req.headers.authorization;
 
 	if (!authHeader?.startsWith("Bearer ")) {
@@ -26,7 +40,7 @@ export function authMiddleware(
 			.status(HttpStatus.UNAUTHORIZED)
 			.json(
 				ApiResponse.fail(
-					"Authorization header with Bearer token is required.",
+					"Authorization header with Bearer token or Gateway X-User-Id is required.",
 					HttpStatus.UNAUTHORIZED,
 					"UNAUTHORIZED",
 				),
@@ -43,6 +57,7 @@ export function authMiddleware(
 		req.user = {
 			userId: payload.sub,
 			email: payload.email ?? "",
+			role: payload.role,
 		};
 
 		next();

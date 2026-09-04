@@ -72,4 +72,25 @@ describe("authMiddleware", () => {
 		});
 		expect(mockNext).toHaveBeenCalled();
 	});
+
+	it("should authenticate using Gateway X-User-Id and X-User-Role headers without Bearer token", () => {
+		mockReq.headers = {
+			"x-user-id": "gw-user-456",
+			"x-user-role": "customer",
+			"x-user-email": "customer@example.com",
+		};
+
+		authMiddleware(
+			mockReq as AuthenticatedRequest,
+			mockRes as Response,
+			mockNext,
+		);
+
+		expect(mockReq.user).toEqual({
+			userId: "gw-user-456",
+			email: "customer@example.com",
+			role: "customer",
+		});
+		expect(mockNext).toHaveBeenCalled();
+	});
 });

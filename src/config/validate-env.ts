@@ -44,14 +44,30 @@ const envSchema = z.object({
 
 	BCRYPT_SALT_ROUNDS: z.coerce.number().min(4).max(16).default(10),
 
+	JWT_PRIVATE_KEY: isTest
+		? z
+				.string()
+				.default(
+					"-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDNOobBMILddHw0\nMX514JuRJhQ6MxxqTGtvptpxpqhVVEUA9TbHK8qEpof3PxZdjAoffJ58R8ASFpol\n6vbAMwNnUQslwA4ZJDrAGoi9Wnhg6EQ1dWayZUCgyCBWzjtxDlz5eUfHSQwM8wgI\nzX1JOrkZDVM7iqpvVa6f9iZhfU3/0Llc2mcKqVz0hs9pNu5s8LpbppfwzYrZvk1X\n0MYRZ5Upd11hrHPBDYx/QnZlab0KgCD6E0Z07cUynIzz1PHtCYTnVhhufbWRdMJ1\nkYNdNXWiaI4/bwklb1WQWR/OaARUM91gcuCRmeyBaTVHTAvz4WJ6VHNjDXQsFS/E\nwjREZogHAgMBAAECggEAH4uK8f/8ZYDFpJok94Z2MwnY2xdHG1myu984PXbh8fe5\ngYuvh07GWrxkMs9aJzfiyHM1wyGeNsmNmR10HxfYQpW08nECWb/1XdjWQtC4pyCc\nd2Ebz3j7xZrtSZp6jYapKNmI/GtQdF8Y0Y2QX+SsVdrz+7d1Oha/+Ct0O9DwX80V\nB+RqL1o4TSJytxGjC5Uj0cFgi20yaLU8u5YWUX0vdvomntACHe5UXwh0gqTdOg25\n03yH6yu5BtpctzEkAJ+3j94Emksh6sl1ib9yFv/SJxAb7IeUqfnhIE5gTH+78Fp2\nk48TPLLl91bhXqW0gHjUak1EyNsvrxCerVvlLMErWQKBgQD/dVt1CyTD3/FRh/59\nVTxXb8FWrGv2SW3GEI4VOznARZJmlg8IJVSwyWqnMCVmkoh5q/45qCOEeoNw4obQ\nMqso56u2xBJvpCbjK5tz2/fIWGDJ//sLC9A1Br4JXKY/J88irlGQibHzI5pnefSE\nbDJZhbUz+yBBqIJS+oeWgqXbvwKBgQDNqeiJBaUcOp8GhrPOq9Iik+92o8044BH5\nrjBIBJVdv7p7vtquQYgvK7oC5WI6HAyL1zPt8XUtU7F8Sxk3bJX78oMebVhZAGsG\nj00xot1oZZwXVTTpfQ/4zJuRXwoMBfIeEtlVuqwFJvHRaPu1KurFh+zRvqmfYLY0\nwiINssAFuQKBgBGkWzKUGG/mkVXeHHcvYcFwGFwSAEq7+3bIQee5dV2P8HJhPpyD\nZ3vmDRWKv6p7yC0O8bmtoPZPN7CeFE1gkm16wmMW22cWYREjO9Meh9gwMk8A/Kdg\no3pmAs3Gtjx6VVXB0CQ5Pi7acJlg1MAocLm6AC+c0jd2mbl9T8vXLfklAoGBAMf/\n1zaI2svc5hD+pZTx2mPt4Q1KtaP9ov1fu2wNqQOGE9+K9jZHXBwjNbzjPOatqDXF\njaZzDTSLEyqADYGsgx6D86Z/R08l7O5wJO2EKDQBvA2kutPk3sdgkliIR8jxb0Z3\npgqMggRwnvC6Wy0PE0gMquw9sc5fylD8CQmxLrNhAoGAXHPVy5yt60Hbny8UI0Me\nq9Si0poBYhV82SRd7g7Iz4HWCXpp+0GGFloBBa2RltvvH7zPgrTS36ep2T1Eq1wv\nNk64I4lPu4jTgLgtx2PePp0x3eLZCfhuiYoAXatWYsdMxYjYd+h6wluH8juLgFeD\nt0cntl4hjTUk/D6COrY1e2Y=\n-----END PRIVATE KEY-----",
+				)
+		: z.string().min(1, "JWT_PRIVATE_KEY is required"),
+	JWT_PUBLIC_KEY: isTest
+		? z
+				.string()
+				.default(
+					"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzTqGwTCC3XR8NDF+deCb\nkSYUOjMcakxrb6bacaaoVVRFAPU2xyvKhKaH9z8WXYwKH3yefEfAEhaaJer2wDMD\nZ1ELJcAOGSQ6wBqIvVp4YOhENXVmsmVAoMggVs47cQ5c+XlHx0kMDPMICM19STq5\nGQ1TO4qqb1Wun/YmYX1N/9C5XNpnCqlc9IbPaTbubPC6W6aX8M2K2b5NV9DGEWeV\nKXddYaxzwQ2Mf0J2ZWm9CoAg+hNGdO3FMpyM89Tx7QmE51YYbn21kXTCdZGDXTV1\nomiOP28JJW9VkFkfzmgEVDPdYHLgkZnsgWk1R0wL8+FielRzYw10LBUvxMI0RGaI\nBwIDAQAB\n-----END PUBLIC KEY-----",
+				)
+		: z.string().min(1, "JWT_PUBLIC_KEY is required"),
+	JWT_KEY_ID: z.string().default("spotq-main-key"),
+
 	JWT_ACCESS_SECRET: isTest
 		? z.string().default("test_jwt_access_secret_min_16_chars")
-		: z.string().min(1, "JWT_ACCESS_SECRET is required"),
+		: z.string().optional(),
 	JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 
 	JWT_REFRESH_SECRET: isTest
 		? z.string().default("test_jwt_refresh_secret_min_16_chars")
-		: z.string().min(1, "JWT_REFRESH_SECRET is required"),
+		: z.string().default("spotq_refresh_secret_default_min_16_chars"),
 	JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 
 	JWT_TEMP_SECRET: isTest

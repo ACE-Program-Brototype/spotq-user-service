@@ -33,6 +33,9 @@ export const config = {
 
 	jwt: {
 		access: {
+			privateKey: env.JWT_PRIVATE_KEY.replace(/\\n/g, "\n"),
+			publicKey: env.JWT_PUBLIC_KEY.replace(/\\n/g, "\n"),
+			keyId: env.JWT_KEY_ID,
 			secret: env.JWT_ACCESS_SECRET,
 			expiresIn: env.JWT_ACCESS_EXPIRES_IN,
 		},
