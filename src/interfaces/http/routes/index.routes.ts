@@ -19,4 +19,5 @@ router.get("/.well-known/jwks.json", (_req, res) => {
 router.use("/", healthRouter.router);
 router.use("/", metricsRouter);
 router.use("/admin", adminRoutes);
+router.use("/auth", userRouter.router);
 router.use("/", userRouter.router);

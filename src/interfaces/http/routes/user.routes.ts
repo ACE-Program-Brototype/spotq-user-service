@@ -37,66 +37,62 @@ export class UserRouter {
 
 	private registerRoutes(): void {
 		this.router.post(
-			"/auth/register",
+			"/register",
 			validateRequestBody(registerUserSchema),
 			this.userController.register,
 		);
 
 		this.router.post(
-			"/auth/verify-email",
+			"/verify-email",
 			validateRequestBody(verifyEmailOtpSchema),
 			this.userController.verifyEmail,
 		);
 
 		this.router.post(
-			"/auth/resend-email-otp",
+			"/resend-email-otp",
 			validateRequestBody(resendEmailOtpSchema),
 			this.userController.resendEmailOtp,
 		);
 
-		this.router.post(
-			"/auth/logout",
-			authMiddleware,
-			this.userController.logout,
-		);
+		this.router.post("/logout", authMiddleware, this.userController.logout);
 
 		this.router.post(
-			"/auth/oauth/google",
+			"/oauth/google",
 			validateRequestBody(googleAuthSchema),
 			this.userController.googleAuth,
 		);
 
 		this.router.post(
-			"/auth/login",
+			"/login",
 			validateRequestBody(loginSchema),
 			this.userController.login,
 		);
 
-		this.router.post("/auth/refresh-token", this.userController.refresh);
+		this.router.post("/refresh-token", this.userController.refresh);
 
 		this.router.post(
-			"/auth/forgot-password",
+			"/forgot-password",
 			validateRequestBody(forgotPasswordValidate),
 			forgotPasswordRateLimit,
 			this.userController.forgotPassword,
 		);
 
 		this.router.post(
-			"/auth/forgot-password/verify",
+			"/forgot-password/verify",
 			validateRequestBody(forgotPasswordVerifyValidate),
 			forgotPasswordVerifyRateLimit,
 			this.userController.forgotPasswordEmailVerify,
 		);
 
 		this.router.post(
-			"/auth/forgot-password/resend-otp",
+			"/forgot-password/resend-otp",
 			validateRequestBody(forgotPasswordValidate),
 			forgotPasswordResendRateLimit,
 			this.userController.verifyOtpResend,
 		);
 
 		this.router.post(
-			"/auth/reset-password",
+			"/reset-password",
 			customerTempTokenCheck,
 			validateRequestBody(passwordValidate),
 			this.userController.resetPassword,
