@@ -112,6 +112,25 @@ describe("User Service Integration & Unit Tests", () => {
 	});
 
 	describe("Routing", () => {
+		it("should return JWKS keys with RS256 algorithm on GET /.well-known/jwks.json", async () => {
+			const res = await request(app).get("/.well-known/jwks.json");
+
+			expect(res.status).toBe(200);
+			expect(res.body).toHaveProperty("keys");
+			expect(Array.isArray(res.body.keys)).toBe(true);
+			expect(res.body.keys.length).toBeGreaterThan(0);
+			expect(res.body.keys[0]).toEqual(
+				expect.objectContaining({
+					kty: "RSA",
+					use: "sig",
+					alg: "RS256",
+					kid: "spotq-main-key",
+				}),
+			);
+			expect(res.body.keys[0].n).toBeDefined();
+			expect(res.body.keys[0].e).toBe("AQAB");
+		});
+
 		it("should return 404 not found for invalid routes", async () => {
 			const res = await request(app).get("/invalid-route-xyz");
 

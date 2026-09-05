@@ -4,7 +4,6 @@ import { config } from "@config/env.ts";
 import jwt from "jsonwebtoken";
 
 export class JwtTokenService implements ITokenService {
-	private readonly accessSecret: string;
 	private readonly accessExpiresIn: jwt.SignOptions["expiresIn"];
 
 	private readonly refreshSecret: string;
@@ -14,7 +13,6 @@ export class JwtTokenService implements ITokenService {
 	private readonly tempExpiresIn: jwt.SignOptions["expiresIn"];
 
 	constructor() {
-		this.accessSecret = config.jwt.access.secret;
 		this.accessExpiresIn = config.jwt.access
 			.expiresIn as jwt.SignOptions["expiresIn"];
 
@@ -28,7 +26,9 @@ export class JwtTokenService implements ITokenService {
 	}
 
 	generateAccessToken(payload: object): string {
-		return jwt.sign(payload, this.accessSecret, {
+		return jwt.sign(payload, config.jwt.access.privateKey, {
+			algorithm: config.jwt.access.algorithm,
+			keyid: config.jwt.access.keyId,
 			expiresIn: this.accessExpiresIn,
 		});
 	}
@@ -46,7 +46,9 @@ export class JwtTokenService implements ITokenService {
 	}
 
 	verifyAccessToken<T extends object>(token: string): T {
-		return jwt.verify(token, this.accessSecret) as T;
+		return jwt.verify(token, config.jwt.access.publicKey, {
+			algorithms: [config.jwt.access.algorithm],
+		}) as T;
 	}
 
 	verifyRefreshToken<T extends object>(token: string): T {
