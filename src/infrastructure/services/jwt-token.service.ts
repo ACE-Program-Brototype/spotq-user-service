@@ -23,7 +23,7 @@ export class JwtTokenService implements ITokenService {
 		};
 
 		const signOptions: SignOptions = {
-			algorithm: "RS256",
+			algorithm: config.jwt.access.algorithm,
 			keyid: config.jwt.access.keyId,
 			expiresIn: config.jwt.access.expiresIn as unknown as number,
 		};
@@ -51,7 +51,7 @@ export class JwtTokenService implements ITokenService {
 	public verifyAccessToken(token: string): AccessTokenPayload {
 		try {
 			const decoded = jwt.verify(token, config.jwt.access.publicKey, {
-				algorithms: ["RS256"],
+				algorithms: [config.jwt.access.algorithm],
 			});
 			if (typeof decoded === "string" || !decoded.sub) {
 				throw new InvalidTokenError("Invalid token payload.");

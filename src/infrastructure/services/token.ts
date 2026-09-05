@@ -27,7 +27,7 @@ export class JwtTokenService implements ITokenService {
 
 	generateAccessToken(payload: object): string {
 		return jwt.sign(payload, config.jwt.access.privateKey, {
-			algorithm: "RS256",
+			algorithm: config.jwt.access.algorithm,
 			keyid: config.jwt.access.keyId,
 			expiresIn: this.accessExpiresIn,
 		});
@@ -47,7 +47,7 @@ export class JwtTokenService implements ITokenService {
 
 	verifyAccessToken<T extends object>(token: string): T {
 		return jwt.verify(token, config.jwt.access.publicKey, {
-			algorithms: ["RS256"],
+			algorithms: [config.jwt.access.algorithm],
 		}) as T;
 	}
 

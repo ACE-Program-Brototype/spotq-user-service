@@ -30,7 +30,7 @@ export function getJwks(): JsonWebKeySet {
 			{
 				kty: jwk.kty ?? "RSA",
 				use: "sig",
-				alg: "RS256",
+				alg: config.jwt.access.algorithm,
 				kid: config.jwt.access.keyId,
 				n: jwk.n ?? "",
 				e: jwk.e ?? "",
