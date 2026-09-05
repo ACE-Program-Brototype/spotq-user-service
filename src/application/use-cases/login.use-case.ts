@@ -8,7 +8,10 @@ import { TYPES } from "@config/di/types.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
 import { UserStatus } from "@domain/entities/user.entity.ts";
-import { InvalidCredentialsError } from "@domain/errors/domain.error.ts";
+import {
+	EmailNotVerifiedError,
+	InvalidCredentialsError,
+} from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
 	IRefreshTokenRepository,
@@ -85,7 +88,15 @@ export class LoginUseCase implements ILoginUseCase {
 				throw new InvalidCredentialsError();
 			}
 
-			// 3. Validate Account Status (only after password verification)
+			// 3. Validate Email Verification & Account Status (only after password verification)
+			if (!user.isEmailVerified) {
+				this.logger.warn(
+					{ event: "LOGIN_FAILED", userId: user.id },
+					"Login failed: Email not verified",
+				);
+				throw new EmailNotVerifiedError();
+			}
+
 			if (user.status === UserStatus.BLOCKED) {
 				this.logger.warn(
 					{ event: "LOGIN_BLOCKED_ACCOUNT", userId: user.id },
@@ -164,7 +175,10 @@ export class LoginUseCase implements ILoginUseCase {
 				refresh_token: refreshTokenData.token,
 			};
 		} catch (error) {
-			if (error instanceof InvalidCredentialsError) {
+			if (
+				error instanceof InvalidCredentialsError ||
+				error instanceof EmailNotVerifiedError
+			) {
 				throw error;
 			}
 

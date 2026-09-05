@@ -7,7 +7,10 @@ import type {
 import { LoginUseCase } from "@application/use-cases/login.use-case.ts";
 import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
-import { InvalidCredentialsError } from "@domain/errors/domain.error.ts";
+import {
+	EmailNotVerifiedError,
+	InvalidCredentialsError,
+} from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
 	IRefreshTokenRepository,
@@ -82,6 +85,7 @@ describe("LoginUseCase", () => {
 	const createMockUser = (
 		status: UserStatus = UserStatus.ACTIVE,
 		hasPassword = true,
+		isEmailVerified = true,
 	) => {
 		return UserEntity.reconstitute({
 			id: "user-id-abc",
@@ -90,10 +94,29 @@ describe("LoginUseCase", () => {
 			email: Email.create("jane.doe@example.com"),
 			passwordHash: hasPassword ? "hashed-pass" : null,
 			status,
+			isEmailVerified,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 	};
+
+	it("should throw EmailNotVerifiedError if user email is not verified", async () => {
+		const user = createMockUser(UserStatus.ACTIVE, true, false);
+		mockUserRepository.findByEmail.mockResolvedValue(user);
+		mockPasswordHasher.compare.mockResolvedValue(true);
+
+		await expect(
+			useCase.execute({
+				email: "jane.doe@example.com",
+				password: "password123",
+			}),
+		).rejects.toThrow(EmailNotVerifiedError);
+
+		expect(mockLogger.warn).toHaveBeenCalledWith(
+			expect.objectContaining({ event: "LOGIN_FAILED" }),
+			expect.stringContaining("Email not verified"),
+		);
+	});
 
 	it("should login successfully and return tokens for active password-based user", async () => {
 		const user = createMockUser();
