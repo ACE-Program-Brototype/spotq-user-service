@@ -61,3 +61,12 @@ export const DOMAIN_ERRORS = {
 		INVALID_TOKEN: "Invalid or revoked token provided.",
 	},
 };
+
+export const RATE_LIMIT_ERRORS = {
+	FORGOT_PASSWORD:
+		"Too many password reset requests. Please try again after 24 hours.",
+	FORGOT_PASSWORD_RESEND:
+		"Too many OTP resend requests. Please try again after 5 minutes.",
+	FORGOT_PASSWORD_VERIFY:
+		"Too many OTP verification attempts. Please try again after 5 minutes.",
+} as const;
