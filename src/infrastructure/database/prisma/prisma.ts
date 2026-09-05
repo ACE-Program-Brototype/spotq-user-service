@@ -6,18 +6,18 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import pg from "pg";
 
-// Ensure all PostgreSQL timestamp types are parsed as UTC
-// OID 1114: TIMESTAMP (without time zone) -> parse as UTC ISO
+/**
+ * PostgreSQL Timestamp Type Parsers
+ * Standardize timestamp parsing to UTC Date objects:
+ * - OID 1114: TIMESTAMP (without time zone) -> parse as UTC ISO
+ * - OID 1184: TIMESTAMPTZ (with time zone) -> parse directly into Date
+ */
 pg.types.setTypeParser(
 	1114,
 	(stringValue: string) => new Date(`${stringValue}Z`),
 );
-// OID 1184: TIMESTAMPTZ (with time zone) -> parse directly into Date
 pg.types.setTypeParser(1184, (stringValue: string) => new Date(stringValue));
 
-// Setup secure SSL/TLS configuration.
-// pg.Pool handles the actual connection — sslmode URL params are not needed
-// because we're using the PrismaPg driver adapter (no Prisma query engine).
 let ssl:
 	| (pg.PoolConfig["ssl"] & { rejectUnauthorized?: boolean; ca?: string })
 	| undefined;
@@ -28,10 +28,8 @@ if (config.database.sslEnabled) {
 
 	if (envCaCert) {
 		if (envCaCert.includes("BEGIN CERTIFICATE")) {
-			// Direct PEM certificate content passed via environment variable / Infisical
 			caContent = envCaCert.replace(/\\n/g, "\n");
 		} else {
-			// File path to certificate
 			try {
 				caContent = fs.readFileSync(envCaCert, "utf8");
 			} catch (error) {
@@ -43,7 +41,6 @@ if (config.database.sslEnabled) {
 			}
 		}
 	} else {
-		// Fallback to .certs/ca.pem
 		const defaultCertPath = path.resolve(process.cwd(), ".certs", "ca.pem");
 		try {
 			if (fs.existsSync(defaultCertPath)) {
@@ -61,8 +58,6 @@ if (config.database.sslEnabled) {
 		ssl.ca = caContent;
 	}
 } else {
-	// Aiven (and most cloud DBs) mandate SSL even when strict verification is off.
-	// rejectUnauthorized:false allows SSL without CA cert verification (dev/test only).
 	ssl = { rejectUnauthorized: false };
 }
 
