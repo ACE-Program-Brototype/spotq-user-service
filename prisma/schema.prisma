@@ -23,8 +23,8 @@ model PlatformAdmin {
   name         String
   email        String   @unique
   passwordHash String   @map("password_hash")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   @@map("platform_admins")
 }
@@ -37,8 +37,8 @@ model User {
   passwordHash String?       @map("password_hash")
   googleId     String?       @map("google_id")
   status       UserStatus    @default(ACTIVE) @map("status")
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   refreshTokens RefreshToken[]
   devices       Device[]
@@ -54,8 +54,8 @@ model UserProfile {
   dob        DateTime? @map("dob") @db.Date
   gender     String?  @map("gender")
   location   String?  @map("location")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -67,9 +67,9 @@ model RefreshToken {
   userId     String    @map("user_id") @db.Uuid
   deviceId   String?   @map("device_id") @db.Uuid
   tokenHash  String    @map("token_hash")
-  expiresAt  DateTime  @map("expires_at")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  revokedAt  DateTime? @map("revoked_at")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   device Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
@@ -85,7 +85,7 @@ model Device {
   fcmToken    String?        @map("fcm_token")
   deviceName  String?        @map("device_name")
   platform    Platform       @map("platform")
-  lastLogin   DateTime       @default(now()) @map("last_login")
+  lastLogin   DateTime       @default(now()) @map("last_login") @db.Timestamptz(3)
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
