@@ -39,4 +39,16 @@ describe("JwtTokenService", () => {
 		const calculatedHash = service.hashToken(data.token);
 		expect(calculatedHash).toBe(data.tokenHash);
 	});
+
+	it("should reject tokens signed with unsupported or forged algorithms (e.g. HS256)", () => {
+		const forgedToken = jwt.sign(
+			{ sub: "usr-uuid-1234", email: "hacker@example.com" },
+			"secret",
+			{ algorithm: "HS256" },
+		);
+
+		expect(() => service.verifyAccessToken(forgedToken)).toThrow(
+			"Invalid or expired access token.",
+		);
+	});
 });
