@@ -83,7 +83,7 @@ const envSchema = z.object({
 
 	JWT_REFRESH_SECRET: isTest
 		? z.string().default("test_jwt_refresh_secret_min_16_chars")
-		: z.string().default("spotq_refresh_secret_default_min_16_chars"),
+		: z.string().min(1, "JWT_REFRESH_SECRET is required"),
 	JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 
 	JWT_TEMP_SECRET: isTest
