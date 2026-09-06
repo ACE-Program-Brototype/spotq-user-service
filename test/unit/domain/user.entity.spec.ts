@@ -35,7 +35,37 @@ describe("Domain Entities", () => {
 			expect(user.phone?.getValue()).toBe("+919876543210");
 			expect(user.email.getValue()).toBe("jane.doe@example.com");
 			expect(user.status).toBe(UserStatus.ACTIVE);
+			expect(user.isEmailVerified).toBe(false);
 			expect(user.createdAt).toBeInstanceOf(Date);
+		});
+
+		it("should mark email as verified", () => {
+			const user = UserEntity.create({
+				id: "123e4567-e89b-12d3-a456-426614174000",
+				fullName: "Jane Doe",
+				phone: "+919876543210",
+				email: "jane.doe@example.com",
+				passwordHash: "hashed_password",
+			});
+
+			expect(user.isEmailVerified).toBe(false);
+			user.markEmailAsVerified();
+			expect(user.isEmailVerified).toBe(true);
+		});
+
+		it("should mark email as verified when linking google account", () => {
+			const user = UserEntity.create({
+				id: "123e4567-e89b-12d3-a456-426614174000",
+				fullName: "Jane Doe",
+				phone: "+919876543210",
+				email: "jane.doe@example.com",
+				passwordHash: "hashed_password",
+			});
+
+			expect(user.isEmailVerified).toBe(false);
+			user.linkGoogleAccount("google-sub-123");
+			expect(user.isEmailVerified).toBe(true);
+			expect(user.googleId).toBe("google-sub-123");
 		});
 	});
 

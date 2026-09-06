@@ -42,6 +42,7 @@ export const DOMAIN_ERRORS = {
 		OTP_ALREADY_USED: "OTP_ALREADY_USED",
 		UNAUTHORIZED: "UNAUTHORIZED",
 		INVALID_TOKEN: "INVALID_TOKEN",
+		EMAIL_NOT_VERIFIED: "EMAIL_NOT_VERIFIED",
 	},
 	MESSAGES: {
 		INVALID_NAME: "Invalid full name provided.",
@@ -50,6 +51,8 @@ export const DOMAIN_ERRORS = {
 		INVALID_PASSWORD:
 			"Password must be 8-128 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
 		EMAIL_ALREADY_EXISTS: "An account with this email already exists.",
+		EMAIL_NOT_VERIFIED:
+			"Email is not verified. Please verify your email first.",
 		PHONE_ALREADY_EXISTS: "An account with this phone number already exists.",
 		USER_NOT_FOUND: "User not found.",
 		OTP_INVALID: "Invalid OTP provided.",

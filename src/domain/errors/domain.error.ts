@@ -3,6 +3,7 @@ export * from "./account-inactive.error.ts";
 export * from "./base.error.ts";
 export * from "./email-already-exists.error.ts";
 export * from "./email-already-registered.error.ts";
+export * from "./email-not-verified.error.ts";
 export * from "./invalid-credentials.error.ts";
 export * from "./invalid-email.error.ts";
 export * from "./invalid-google-token.error.ts";

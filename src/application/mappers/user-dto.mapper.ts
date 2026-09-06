@@ -1,9 +1,9 @@
 import type { UserEntity } from "@domain/entities/user.entity.ts";
 import type { LoginUserResponseDto } from "../dtos/login.dto.ts";
-import type { RegisteredUserResponseDto } from "../dtos/register-user.dto.ts";
+import type { VerifiedUserResponseDto } from "../dtos/verify-email-otp.dto.ts";
 
 export const UserDtoMapper = {
-	toRegisteredUserResponse(entity: UserEntity): RegisteredUserResponseDto {
+	toVerifiedUserResponse(entity: UserEntity): VerifiedUserResponseDto {
 		return {
 			id: entity.id,
 			fullName: entity.fullName.getValue(),
@@ -26,6 +26,7 @@ export const UserDtoMapper = {
 	toLoginResponse(entity: UserEntity): LoginUserResponseDto {
 		return {
 			id: entity.id,
+
 			full_name: entity.fullName.getValue(),
 			email: entity.email.getValue(),
 			phone: entity.phone ? entity.phone.getValue() : "",
