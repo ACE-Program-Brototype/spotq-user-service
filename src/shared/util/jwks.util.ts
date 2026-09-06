@@ -28,8 +28,8 @@ export function getJwks(): JsonWebKeySet {
 	cachedJwks = {
 		keys: [
 			{
-				kty: jwk.kty ?? "RSA",
-				use: "sig",
+				kty: jwk.kty ?? config.jwt.access.keyType,
+				use: config.jwt.access.keyUse,
 				alg: config.jwt.access.algorithm,
 				kid: config.jwt.access.keyId,
 				n: jwk.n ?? "",

@@ -66,6 +66,8 @@ const envSchema = z.object({
 		? z.string().default(() => getTestKeyPair().publicKey)
 		: z.string().min(1, "JWT_PUBLIC_KEY is required"),
 	JWT_KEY_ID: z.string().default("spotq-main-key"),
+	JWT_KEY_TYPE: z.string().default("RSA"),
+	JWT_KEY_USE: z.string().default("sig"),
 	JWT_ALGORITHM: z.enum(["RS256", "RS384", "RS512"]).default("RS256"),
 
 	JWT_ACCESS_SECRET: isTest
