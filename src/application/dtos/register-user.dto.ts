@@ -13,18 +13,3 @@ export interface RegisterUserDto {
 	password: string;
 	device?: RegisterDeviceDto;
 }
-
-export interface RegisteredUserResponseDto {
-	id: string;
-	fullName: string;
-	email: string;
-	phoneNumber: string;
-	status: string;
-	createdAt: string;
-}
-
-export interface RegisterUserResultDto {
-	user: RegisteredUserResponseDto;
-	accessToken: string;
-	refreshToken: string;
-}

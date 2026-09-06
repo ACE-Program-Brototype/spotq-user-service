@@ -146,6 +146,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 				email: emailObj,
 				passwordHash: null,
 				googleId: googlePayload.sub,
+				isEmailVerified: true,
 				profile: profileEntity,
 			});
 

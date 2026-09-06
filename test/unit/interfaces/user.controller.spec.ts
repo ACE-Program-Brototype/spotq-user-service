@@ -1,3 +1,7 @@
+import type { ICustomerForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.forgot-password.ts";
+import type { ICustomerResetPasswordUseCase } from "@application/ports/use-cases/ICustomer.reset.password.ts";
+import type { ICustomerVerifyForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.verify.forgot-password.ts";
+
 import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type {
@@ -19,6 +23,15 @@ describe("UserAuthController", () => {
 	let mockGoogleAuthUseCase: jest.Mocked<Partial<IGoogleAuthUseCase>>;
 	let mockLoginUseCase: jest.Mocked<Partial<ILoginUseCase>>;
 	let mockRefreshTokenUseCase: jest.Mocked<Partial<IRefreshTokenUseCase>>;
+	let mockForgotPasswordUseCase: jest.Mocked<
+		Partial<ICustomerForgotPasswordUseCase>
+	>;
+	let mockForgotPasswordVerifyUseCase: jest.Mocked<
+		Partial<ICustomerVerifyForgotPasswordUseCase>
+	>;
+	let mockCustomerResetPasswordUseCase: jest.Mocked<
+		Partial<ICustomerResetPasswordUseCase>
+	>;
 	let controller: UserAuthController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
@@ -45,6 +58,15 @@ describe("UserAuthController", () => {
 		mockRefreshTokenUseCase = {
 			execute: jest.fn(),
 		};
+		mockForgotPasswordUseCase = {
+			execute: jest.fn(),
+		};
+		mockForgotPasswordVerifyUseCase = {
+			execute: jest.fn(),
+		};
+		mockCustomerResetPasswordUseCase = {
+			execute: jest.fn(),
+		};
 
 		controller = new UserAuthController(
 			mockRegisterUseCase as IRegisterUserUseCase,
@@ -54,11 +76,15 @@ describe("UserAuthController", () => {
 			mockGoogleAuthUseCase as IGoogleAuthUseCase,
 			mockLoginUseCase as ILoginUseCase,
 			mockRefreshTokenUseCase as IRefreshTokenUseCase,
+			mockForgotPasswordUseCase as ICustomerForgotPasswordUseCase,
+			mockForgotPasswordVerifyUseCase as ICustomerVerifyForgotPasswordUseCase,
+			mockCustomerResetPasswordUseCase as ICustomerResetPasswordUseCase,
 		);
 
 		mockReq = {
 			body: {},
 		};
+
 		mockRes = {
 			status: jest.fn().mockReturnThis(),
 			json: jest.fn().mockReturnThis(),
@@ -67,24 +93,8 @@ describe("UserAuthController", () => {
 		};
 	});
 
-	it("should return 201 on successful registration", async () => {
-		const createdAt = new Date().toISOString();
-		const registrationResult = {
-			user: {
-				id: "u-1",
-				fullName: "John",
-				email: "john@example.com",
-				phoneNumber: "+919876543210",
-				status: "ACTIVE" as const,
-				createdAt,
-			},
-			accessToken: "access_token_123",
-			refreshToken: "refresh_token_123",
-		};
-
-		(mockRegisterUseCase.execute as jest.Mock).mockResolvedValue(
-			registrationResult,
-		);
+	it("should return 201 on successful registration without setting tokens or cookie and data: null", async () => {
+		(mockRegisterUseCase.execute as jest.Mock).mockResolvedValue(undefined);
 
 		mockReq.body = {
 			fullName: "John",
@@ -96,6 +106,42 @@ describe("UserAuthController", () => {
 		await controller.register(mockReq as Request, mockRes as Response);
 
 		expect(mockRes.status).toHaveBeenCalledWith(201);
+		expect(mockRes.cookie).not.toHaveBeenCalled();
+		expect(mockRes.json).toHaveBeenCalledWith(
+			expect.objectContaining({
+				success: true,
+				statusCode: 201,
+				message:
+					"Registration successful. A verification OTP has been queued for delivery to your email.",
+				data: null,
+			}),
+		);
+	});
+
+	it("should return 200 and set cookie on successful email OTP verification", async () => {
+		const createdAt = new Date().toISOString();
+
+		(mockVerifyEmailOtpUseCase.execute as jest.Mock).mockResolvedValue({
+			user: {
+				id: "u-1",
+				fullName: "John",
+				email: "john@example.com",
+				phoneNumber: "+919876543210",
+				status: "ACTIVE" as const,
+				createdAt,
+			},
+			accessToken: "access_token_123",
+			refreshToken: "refresh_token_123",
+		});
+
+		mockReq.body = {
+			email: "john@example.com",
+			otp: "123456",
+		};
+
+		await controller.verifyEmail(mockReq as Request, mockRes as Response);
+
+		expect(mockRes.status).toHaveBeenCalledWith(200);
 		expect(mockRes.cookie).toHaveBeenCalledWith(
 			"refreshToken",
 			"refresh_token_123",
@@ -104,7 +150,8 @@ describe("UserAuthController", () => {
 		expect(mockRes.json).toHaveBeenCalledWith(
 			expect.objectContaining({
 				success: true,
-				statusCode: 201,
+				statusCode: 200,
+				message: "Email verified successfully.",
 				data: {
 					user: {
 						id: "u-1",
@@ -116,28 +163,6 @@ describe("UserAuthController", () => {
 					},
 					access_token: "access_token_123",
 				},
-			}),
-		);
-	});
-
-	it("should return 200 on successful email OTP verification", async () => {
-		(mockVerifyEmailOtpUseCase.execute as jest.Mock).mockResolvedValue({
-			success: true,
-			message: "Email verified successfully.",
-		});
-
-		mockReq.body = {
-			email: "john@example.com",
-			otp: "123456",
-		};
-
-		await controller.verifyEmail(mockReq as Request, mockRes as Response);
-
-		expect(mockRes.status).toHaveBeenCalledWith(200);
-		expect(mockRes.json).toHaveBeenCalledWith(
-			expect.objectContaining({
-				success: true,
-				message: "Email verified successfully.",
 			}),
 		);
 	});

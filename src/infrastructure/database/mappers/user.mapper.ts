@@ -34,6 +34,7 @@ export const UserMapper = {
 			passwordHash: raw.passwordHash ?? "",
 			googleId: raw.googleId,
 			status: raw.status as UserStatus,
+			isEmailVerified: raw.isEmailVerified,
 			createdAt: raw.createdAt,
 			updatedAt: raw.updatedAt,
 			profile: profileEntity,
@@ -49,6 +50,7 @@ export const UserMapper = {
 			passwordHash: entity.passwordHash,
 			googleId: entity.googleId ?? null,
 			status: entity.status as PrismaUserStatus,
+			isEmailVerified: entity.isEmailVerified,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 		};

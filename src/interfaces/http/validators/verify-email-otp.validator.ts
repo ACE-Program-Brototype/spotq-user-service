@@ -14,6 +14,14 @@ export const verifyEmailOtpSchema = z.object({
 		.trim()
 		.length(6, VALIDATION_MESSAGES.OTP.LENGTH)
 		.regex(/^\d{6}$/, VALIDATION_MESSAGES.OTP.FORMAT),
+
+	device: z
+		.object({
+			deviceName: z.string().max(100).optional(),
+			platform: z.enum(["ANDROID", "IOS", "WEB"]).optional(),
+			fcmToken: z.string().max(500).optional(),
+		})
+		.optional(),
 });
 
 export type VerifyEmailOtpInput = z.infer<typeof verifyEmailOtpSchema>;

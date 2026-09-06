@@ -94,6 +94,7 @@ export class PrismaUserRepository
 						passwordHash: params.user.passwordHash,
 						googleId: params.user.googleId,
 						status: params.user.status as PrismaUserStatus,
+						isEmailVerified: params.user.isEmailVerified,
 					},
 				});
 
