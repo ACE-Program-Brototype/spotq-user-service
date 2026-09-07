@@ -1,4 +1,5 @@
 import { TYPES } from "@config/di/types.ts";
+import type { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import type { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
@@ -9,6 +10,7 @@ import {
 	validateRequestBody,
 	verifyEmailOtpSchema,
 } from "@interfaces/http/validators/index.ts";
+import { CUSTOMER_ROUTES } from "@shared/constants/routes.constants.ts";
 import { Router } from "express";
 import { inject, injectable } from "inversify";
 import { customerTempTokenCheck } from "../middlewares/customer.auth.middleware";
@@ -30,12 +32,25 @@ export class UserRouter {
 	constructor(
 		@inject(TYPES.UserAuthController)
 		private readonly userController: UserAuthController,
+		@inject(TYPES.CustomerProfileController)
+		private readonly profileController: CustomerProfileController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
 	}
 
 	private registerRoutes(): void {
+		this.router.get(
+			CUSTOMER_ROUTES.PROFILE,
+			authMiddleware,
+			this.profileController.getProfile,
+		);
+
+		this.router.get(
+			CUSTOMER_ROUTES.ME,
+			authMiddleware,
+			this.profileController.getProfile,
+		);
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),

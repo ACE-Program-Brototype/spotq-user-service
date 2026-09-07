@@ -1,3 +1,4 @@
+export * from "./customer-profile-response.dto.ts";
 export * from "./google-auth.dto.ts";
 export * from "./login.dto.ts";
 export * from "./logout.dto.ts";

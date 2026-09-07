@@ -12,9 +12,11 @@ export const USER_TYPES = {
 	GoogleAuthUseCase: Symbol.for("GoogleAuthUseCase"),
 	LoginUseCase: Symbol.for("LoginUseCase"),
 	RefreshTokenUseCase: Symbol.for("RefreshTokenUseCase"),
+	GetCustomerProfileUseCase: Symbol.for("GetCustomerProfileUseCase"),
 
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),
+	CustomerProfileController: Symbol.for("CustomerProfileController"),
 	UserRouter: Symbol.for("UserRouter"),
 
 	CustomerForgotPasswordUseCase: Symbol.for("CustomerForgotPasswordUseCase"),
