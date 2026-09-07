@@ -11,12 +11,16 @@ describe("GetCustomerProfileUseCase", () => {
 
 	beforeEach(() => {
 		mockUserRepository = {
-			save: jest.fn(),
+			create: jest.fn(),
+			update: jest.fn(),
+			delete: jest.fn(),
+			find: jest.fn(),
 			findById: jest.fn(),
 			findByEmail: jest.fn(),
 			findByPhone: jest.fn(),
 			findByGoogleId: jest.fn(),
 			createWithSession: jest.fn(),
+			updateProfile: jest.fn(),
 		};
 
 		useCase = new GetCustomerProfileUseCase(mockUserRepository);
@@ -45,6 +49,7 @@ describe("GetCustomerProfileUseCase", () => {
 			passwordHash: "hashed_password",
 			googleId: null,
 			status: UserStatus.ACTIVE,
+			isEmailVerified: true,
 			createdAt: fixedDate,
 			updatedAt: fixedDate,
 			profile: profileEntity,
@@ -84,6 +89,7 @@ describe("GetCustomerProfileUseCase", () => {
 			passwordHash: "hashed_password",
 			googleId: null,
 			status: UserStatus.ACTIVE,
+			isEmailVerified: true,
 			createdAt: fixedDate,
 			updatedAt: fixedDate,
 			profile: null,
