@@ -2,6 +2,7 @@ import type { UserEntity } from "@domain/entities/user.entity.ts";
 import {
 	EmailAlreadyExistsError,
 	PhoneAlreadyExistsError,
+	UserNotFoundError,
 } from "@domain/errors/domain.error.ts";
 import type {
 	CreateUserWithSessionParams,
@@ -223,7 +224,7 @@ export class PrismaUserRepository
 		});
 
 		if (!result) {
-			throw new Error("Failed to update user profile");
+			throw new UserNotFoundError();
 		}
 
 		return UserMapper.toDomain(result);
