@@ -1,7 +1,22 @@
+import crypto from "node:crypto";
 import { z } from "zod";
 
 const isTest =
 	process.env.NODE_ENV === "test" || process.env.NODE_ENV === "testing";
+
+let testKeyPair: { privateKey: string; publicKey: string } | null = null;
+
+const getTestKeyPair = (): { privateKey: string; publicKey: string } => {
+	if (!testKeyPair) {
+		const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
+			modulusLength: 2048,
+			publicKeyEncoding: { type: "spki", format: "pem" },
+			privateKeyEncoding: { type: "pkcs8", format: "pem" },
+		});
+		testKeyPair = { privateKey, publicKey };
+	}
+	return testKeyPair;
+};
 
 const envSchema = z.object({
 	NODE_ENV: z
@@ -44,9 +59,20 @@ const envSchema = z.object({
 
 	BCRYPT_SALT_ROUNDS: z.coerce.number().min(4).max(16).default(10),
 
+	JWT_PRIVATE_KEY: isTest
+		? z.string().default(() => getTestKeyPair().privateKey)
+		: z.string().min(1, "JWT_PRIVATE_KEY is required"),
+	JWT_PUBLIC_KEY: isTest
+		? z.string().default(() => getTestKeyPair().publicKey)
+		: z.string().min(1, "JWT_PUBLIC_KEY is required"),
+	JWT_KEY_ID: z.string().default("spotq-main-key"),
+	JWT_KEY_TYPE: z.string().default("RSA"),
+	JWT_KEY_USE: z.string().default("sig"),
+	JWT_ALGORITHM: z.enum(["RS256", "RS384", "RS512"]).default("RS256"),
+
 	JWT_ACCESS_SECRET: isTest
 		? z.string().default("test_jwt_access_secret_min_16_chars")
-		: z.string().min(1, "JWT_ACCESS_SECRET is required"),
+		: z.string().optional(),
 	JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 
 	JWT_REFRESH_SECRET: isTest

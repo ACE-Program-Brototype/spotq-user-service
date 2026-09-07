@@ -72,4 +72,21 @@ describe("authMiddleware", () => {
 		});
 		expect(mockNext).toHaveBeenCalled();
 	});
+
+	it("should reject and return 401 when only raw unverified X-User-Id is passed without Bearer token", () => {
+		mockReq.headers = {
+			"x-user-id": "gw-user-456",
+			"x-user-role": "customer",
+			"x-user-email": "customer@example.com",
+		};
+
+		authMiddleware(
+			mockReq as AuthenticatedRequest,
+			mockRes as Response,
+			mockNext,
+		);
+
+		expect(mockRes.status).toHaveBeenCalledWith(401);
+		expect(mockNext).not.toHaveBeenCalled();
+	});
 });

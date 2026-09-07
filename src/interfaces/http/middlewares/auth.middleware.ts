@@ -7,7 +7,8 @@ import type { NextFunction, Request, Response } from "express";
 
 export interface AuthenticatedUser {
 	userId: string;
-	email: string;
+	email?: string;
+	role?: string;
 }
 
 export interface AuthenticatedRequest extends Request {
@@ -43,6 +44,7 @@ export function authMiddleware(
 		req.user = {
 			userId: payload.sub,
 			email: payload.email ?? "",
+			role: payload.role,
 		};
 
 		next();
