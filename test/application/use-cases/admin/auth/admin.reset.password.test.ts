@@ -22,7 +22,6 @@ describe("AdminResetPasswordUseCase", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 
-		// New password validation added to AdminResetPasswordUseCase
 		mockPasswordHasher.validateStrongPassword.mockReturnValue(true);
 
 		useCase = new AdminResetPasswordUseCase(

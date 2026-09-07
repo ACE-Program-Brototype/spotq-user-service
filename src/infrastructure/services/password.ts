@@ -33,10 +33,6 @@ export class BcryptPasswordHasher implements IPasswordHashService {
 
 	validateStrongPassword(password: string): boolean {
 		const result = zxcvbn.check(password);
-
-		if (result.score < 3) {
-			return false;
-		}
-		return true;
+		return result.score >= 3;
 	}
 }
