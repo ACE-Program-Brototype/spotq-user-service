@@ -13,6 +13,7 @@ export const USER_TYPES = {
 	LoginUseCase: Symbol.for("LoginUseCase"),
 	RefreshTokenUseCase: Symbol.for("RefreshTokenUseCase"),
 	GetCustomerProfileUseCase: Symbol.for("GetCustomerProfileUseCase"),
+	UpdateCustomerProfileUseCase: Symbol.for("UpdateCustomerProfileUseCase"),
 
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),

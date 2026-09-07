@@ -176,4 +176,60 @@ export class PrismaUserRepository
 			throw error;
 		}
 	}
+
+	/**
+	 * Updates personal and profile details for a given user.
+	 *
+	 * @param params User ID and fields to update
+	 * @returns Updated user domain entity
+	 */
+	public async updateProfile(
+		params: UpdateUserProfileParams,
+	): Promise<UserEntity> {
+		const result = await prisma.$transaction(async (tx) => {
+			if (params.fullName !== undefined) {
+				await tx.user.update({
+					where: { id: params.userId },
+					data: { fullname: params.fullName },
+				});
+			}
+
+			const profileUpdateData: Prisma.UserProfileUpdateInput = {};
+			if (params.avatarUrl !== undefined) {
+				profileUpdateData.avatarUrl = params.avatarUrl;
+			}
+			if (params.dob !== undefined) {
+				profileUpdateData.dob = params.dob;
+			}
+			if (params.gender !== undefined) {
+				profileUpdateData.gender = params.gender;
+			}
+			if (params.location !== undefined) {
+				profileUpdateData.location = params.location;
+			}
+
+			await tx.userProfile.upsert({
+				where: { userId: params.userId },
+				create: {
+					userId: params.userId,
+					avatarUrl: params.avatarUrl ?? null,
+					dob: params.dob ?? null,
+					gender: params.gender ?? null,
+					location: params.location ?? null,
+				},
+				update: profileUpdateData,
+			});
+
+			return tx.user.findUnique({
+				where: { id: params.userId },
+				include: { profile: true },
+			});
+		});
+
+		if (!result) {
+			throw new Error("Failed to update user profile");
+		}
+
+		return UserMapper.toDomain(result);
+	}
 }

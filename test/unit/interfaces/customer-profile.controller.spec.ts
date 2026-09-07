@@ -1,5 +1,6 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
+import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
 import { UnauthorizedError } from "@domain/errors/unauthorized.error.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
@@ -10,6 +11,7 @@ import type { Response } from "express";
 
 describe("CustomerProfileController", () => {
 	let mockGetCustomerProfileUseCase: jest.Mocked<IGetCustomerProfileUseCase>;
+	let mockUpdateCustomerProfileUseCase: jest.Mocked<IUpdateCustomerProfileUseCase>;
 	let controller: CustomerProfileController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
@@ -36,7 +38,14 @@ describe("CustomerProfileController", () => {
 			execute: jest.fn().mockResolvedValue(mockProfileData),
 		};
 
-		controller = new CustomerProfileController(mockGetCustomerProfileUseCase);
+		mockUpdateCustomerProfileUseCase = {
+			execute: jest.fn().mockResolvedValue(mockProfileData),
+		};
+
+		controller = new CustomerProfileController(
+			mockGetCustomerProfileUseCase,
+			mockUpdateCustomerProfileUseCase,
+		);
 
 		mockRes = {
 			status: jest.fn().mockReturnThis(),
@@ -44,68 +53,146 @@ describe("CustomerProfileController", () => {
 		};
 	});
 
-	it("should return 200 and profile payload for authenticated customer", async () => {
-		mockReq = {
-			user: {
-				userId: "user-123",
-				email: "john.doe@example.com",
-				role: "customer",
-			},
-		};
+	describe("getProfile", () => {
+		it("should return 200 and profile payload for authenticated customer", async () => {
+			mockReq = {
+				user: {
+					userId: "user-123",
+					email: "john.doe@example.com",
+					role: "customer",
+				},
+			};
 
-		await controller.getProfile(
-			mockReq as AuthenticatedRequest,
-			mockRes as Response,
-		);
+			await controller.getProfile(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+			);
 
-		expect(mockGetCustomerProfileUseCase.execute).toHaveBeenCalledWith(
-			"user-123",
-		);
-		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
-		expect(mockRes.json).toHaveBeenCalledWith({
-			success: true,
-			message: ResponseMessage.CUSTOMER_PROFILE_FETCH_SUCCESS,
-			data: mockProfileData,
-			statusCode: HttpStatus.OK,
+			expect(mockGetCustomerProfileUseCase.execute).toHaveBeenCalledWith(
+				"user-123",
+			);
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
+			expect(mockRes.json).toHaveBeenCalledWith({
+				success: true,
+				message: ResponseMessage.CUSTOMER_PROFILE_FETCH_SUCCESS,
+				data: mockProfileData,
+				statusCode: HttpStatus.OK,
+			});
+		});
+
+		it("should throw UnauthorizedError when req.user or userId is missing", async () => {
+			mockReq = {
+				user: undefined,
+			};
+
+			await expect(
+				controller.getProfile(
+					mockReq as AuthenticatedRequest,
+					mockRes as Response,
+				),
+			).rejects.toThrow(UnauthorizedError);
+
+			expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
+		});
+
+		it("should reject with 403 Forbidden when accessed with non-customer role", async () => {
+			mockReq = {
+				user: {
+					userId: "admin-123",
+					email: "admin@spotq.com",
+					role: "RESTAURANT_ADMIN",
+				},
+			};
+
+			await controller.getProfile(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+			);
+
+			expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
+			expect(mockRes.json).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: false,
+					code: DOMAIN_ERRORS.CODES.FORBIDDEN,
+				}),
+			);
 		});
 	});
 
-	it("should throw UnauthorizedError when req.user or userId is missing", async () => {
-		mockReq = {
-			user: undefined,
-		};
+	describe("updateProfile", () => {
+		it("should return 200 and updated profile payload when update is successful", async () => {
+			const updatePayload = {
+				first_name: "Rahul",
+				location: "Kochi",
+			};
 
-		await expect(
-			controller.getProfile(
+			mockReq = {
+				user: {
+					userId: "user-123",
+					email: "john.doe@example.com",
+					role: "customer",
+				},
+				body: updatePayload,
+			};
+
+			await controller.updateProfile(
 				mockReq as AuthenticatedRequest,
 				mockRes as Response,
-			),
-		).rejects.toThrow(UnauthorizedError);
+			);
 
-		expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
-	});
+			expect(mockUpdateCustomerProfileUseCase.execute).toHaveBeenCalledWith(
+				"user-123",
+				updatePayload,
+			);
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
+			expect(mockRes.json).toHaveBeenCalledWith({
+				success: true,
+				message: ResponseMessage.CUSTOMER_PROFILE_UPDATE_SUCCESS,
+				data: mockProfileData,
+				statusCode: HttpStatus.OK,
+			});
+		});
 
-	it("should reject with 403 Forbidden when accessed with non-customer role", async () => {
-		mockReq = {
-			user: {
-				userId: "admin-123",
-				email: "admin@spotq.com",
-				role: "RESTAURANT_ADMIN",
-			},
-		};
+		it("should throw UnauthorizedError when req.user or userId is missing on update", async () => {
+			mockReq = {
+				user: undefined,
+				body: { first_name: "Rahul" },
+			};
 
-		await controller.getProfile(
-			mockReq as AuthenticatedRequest,
-			mockRes as Response,
-		);
+			await expect(
+				controller.updateProfile(
+					mockReq as AuthenticatedRequest,
+					mockRes as Response,
+				),
+			).rejects.toThrow(UnauthorizedError);
 
-		expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
-		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
-		expect(mockRes.json).toHaveBeenCalledWith(
-			expect.objectContaining({
-				success: false,
-				code: DOMAIN_ERRORS.CODES.FORBIDDEN,
-			}),
-		);
+			expect(mockUpdateCustomerProfileUseCase.execute).not.toHaveBeenCalled();
+		});
+
+		it("should reject with 403 Forbidden when update accessed with non-customer role", async () => {
+			mockReq = {
+				user: {
+					userId: "admin-123",
+					email: "admin@spotq.com",
+					role: "RESTAURANT_ADMIN",
+				},
+				body: { first_name: "Rahul" },
+			};
+
+			await controller.updateProfile(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+			);
+
+			expect(mockUpdateCustomerProfileUseCase.execute).not.toHaveBeenCalled();
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
+			expect(mockRes.json).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: false,
+					code: DOMAIN_ERRORS.CODES.FORBIDDEN,
+				}),
+			);
+		});
 	});
 });
