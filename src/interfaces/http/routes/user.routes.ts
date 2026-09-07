@@ -60,13 +60,6 @@ export class UserRouter {
 			this.profileController.updateProfile,
 		);
 
-		this.router.put(
-			CUSTOMER_ROUTES.PROFILE,
-			authMiddleware,
-			validateRequestBody(updateCustomerProfileSchema),
-			this.profileController.updateProfile,
-		);
-
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),
