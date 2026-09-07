@@ -45,7 +45,6 @@ export class GetCustomerProfileUseCase implements IGetCustomerProfileUseCase {
 			email: user.email.getValue(),
 			phone: user.phone ? user.phone.getValue() : null,
 			status: user.status,
-			avatar_url: user.profile?.avatarUrl ?? null,
 			gender: user.profile?.gender ?? null,
 			dob: dobFormatted,
 			location: user.profile?.location ?? null,

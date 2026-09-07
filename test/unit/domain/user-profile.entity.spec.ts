@@ -5,12 +5,10 @@ describe("UserProfileEntity", () => {
 		const profile = UserProfileEntity.create({
 			id: "prof-123",
 			userId: "usr-123",
-			avatarUrl: "https://example.com/avatar.jpg",
 		});
 
 		expect(profile.id).toBe("prof-123");
 		expect(profile.userId).toBe("usr-123");
-		expect(profile.avatarUrl).toBe("https://example.com/avatar.jpg");
 		expect(profile.dob).toBeNull();
 		expect(profile.gender).toBeNull();
 		expect(profile.location).toBeNull();
@@ -22,7 +20,6 @@ describe("UserProfileEntity", () => {
 		const profile = UserProfileEntity.reconstitute({
 			id: "prof-123",
 			userId: "usr-123",
-			avatarUrl: "https://example.com/avatar.jpg",
 			dob: new Date("2000-01-01"),
 			gender: "Male",
 			location: "New York",

@@ -11,7 +11,10 @@ describe("GetCustomerProfileUseCase", () => {
 
 	beforeEach(() => {
 		mockUserRepository = {
-			save: jest.fn(),
+			create: jest.fn(),
+			update: jest.fn(),
+			delete: jest.fn(),
+			find: jest.fn(),
 			findById: jest.fn(),
 			findByEmail: jest.fn(),
 			findByPhone: jest.fn(),
@@ -29,7 +32,6 @@ describe("GetCustomerProfileUseCase", () => {
 		const profileEntity = UserProfileEntity.reconstitute({
 			id: "profile-123",
 			userId: "user-123",
-			avatarUrl: "https://cdn.spotq.com/avatars/user-123.jpg",
 			dob: birthDate,
 			gender: "MALE",
 			location: "Kochi, Kerala",
@@ -45,6 +47,7 @@ describe("GetCustomerProfileUseCase", () => {
 			passwordHash: "hashed_password",
 			googleId: null,
 			status: UserStatus.ACTIVE,
+			isEmailVerified: true,
 			createdAt: fixedDate,
 			updatedAt: fixedDate,
 			profile: profileEntity,
@@ -63,7 +66,6 @@ describe("GetCustomerProfileUseCase", () => {
 			email: "rahul.sharma@example.com",
 			phone: "+919876543210",
 			status: "ACTIVE",
-			avatar_url: "https://cdn.spotq.com/avatars/user-123.jpg",
 			gender: "MALE",
 			dob: "1995-06-20",
 			location: "Kochi, Kerala",
@@ -84,6 +86,7 @@ describe("GetCustomerProfileUseCase", () => {
 			passwordHash: "hashed_password",
 			googleId: null,
 			status: UserStatus.ACTIVE,
+			isEmailVerified: true,
 			createdAt: fixedDate,
 			updatedAt: fixedDate,
 			profile: null,
@@ -97,7 +100,6 @@ describe("GetCustomerProfileUseCase", () => {
 		expect(result.last_name).toBeNull();
 		expect(result.full_name).toBe("Ajex");
 		expect(result.phone).toBeNull();
-		expect(result.avatar_url).toBeNull();
 		expect(result.dob).toBeNull();
 		expect(result.gender).toBeNull();
 		expect(result.location).toBeNull();

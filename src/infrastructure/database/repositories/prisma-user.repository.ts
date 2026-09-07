@@ -104,7 +104,6 @@ export class PrismaUserRepository
 						data: {
 							id: params.user.profile.id,
 							userId: createdUser.id,
-							avatarUrl: params.user.profile.avatarUrl,
 							dob: params.user.profile.dob,
 							gender: params.user.profile.gender,
 							location: params.user.profile.location,
