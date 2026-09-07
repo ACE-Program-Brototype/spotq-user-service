@@ -73,7 +73,7 @@ describe("authMiddleware", () => {
 		expect(mockNext).toHaveBeenCalled();
 	});
 
-	it("should authenticate using Gateway X-User-Id and X-User-Role headers without Bearer token", () => {
+	it("should reject and return 401 when only raw unverified X-User-Id is passed without Bearer token", () => {
 		mockReq.headers = {
 			"x-user-id": "gw-user-456",
 			"x-user-role": "customer",
@@ -86,11 +86,7 @@ describe("authMiddleware", () => {
 			mockNext,
 		);
 
-		expect(mockReq.user).toEqual({
-			userId: "gw-user-456",
-			email: "customer@example.com",
-			role: "customer",
-		});
-		expect(mockNext).toHaveBeenCalled();
+		expect(mockRes.status).toHaveBeenCalledWith(401);
+		expect(mockNext).not.toHaveBeenCalled();
 	});
 });
