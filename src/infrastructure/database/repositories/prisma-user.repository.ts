@@ -6,6 +6,7 @@ import {
 import type {
 	CreateUserWithSessionParams,
 	IUserRepository,
+	UpdateUserProfileParams,
 } from "@domain/repositories/user.repository.interface.ts";
 import type { Email } from "@domain/value-objects/email.vo.ts";
 import type { PhoneNumber } from "@domain/value-objects/phone-number.vo.ts";
