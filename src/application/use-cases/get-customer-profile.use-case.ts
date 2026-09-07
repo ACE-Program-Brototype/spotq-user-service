@@ -34,7 +34,7 @@ export class GetCustomerProfileUseCase implements IGetCustomerProfileUseCase {
 		const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : null;
 
 		const dobFormatted = user.profile?.dob
-			? user.profile.dob.toISOString().split("T")[0]
+			? (user.profile.dob.toISOString().split("T")[0] ?? null)
 			: null;
 
 		return {
