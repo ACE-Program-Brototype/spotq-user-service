@@ -1,9 +1,8 @@
 import type { IPasswordHashService } from "@application/ports/services";
-import bcrypt from "bcrypt";
 import { ZxcvbnFactory } from "@zxcvbn-ts/core";
 import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
 import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
-
+import bcrypt from "bcrypt";
 
 const zxcvbn = new ZxcvbnFactory({
 	dictionary: {
@@ -33,12 +32,11 @@ export class BcryptPasswordHasher implements IPasswordHashService {
 	}
 
 	validateStrongPassword(password: string): boolean {
-
 		const result = zxcvbn.check(password);
 
 		if (result.score < 3) {
-			return false
+			return false;
 		}
-		return true
+		return true;
 	}
 }

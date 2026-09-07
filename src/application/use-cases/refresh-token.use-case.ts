@@ -2,6 +2,7 @@ import type {
 	IIdGenerator,
 	ILogger,
 } from "@application/ports/services/index.ts";
+import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
 import { UserStatus } from "@domain/entities/user.entity.ts";
@@ -16,7 +17,6 @@ import type {
 	RefreshTokenDto,
 	RefreshTokenResultDto,
 } from "../dtos/refresh-token.dto.ts";
-import { ITokenService } from "@application/ports/services/token-service.interface.ts";
 
 @injectable()
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {

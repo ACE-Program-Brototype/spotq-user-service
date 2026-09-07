@@ -29,7 +29,8 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 			throw new UserNotFoundError();
 		}
 
-		const strongPassword = this._passwordService.validateStrongPassword(password);
+		const strongPassword =
+			this._passwordService.validateStrongPassword(password);
 
 		if (!strongPassword) {
 			throw new WeakPasswordError();
