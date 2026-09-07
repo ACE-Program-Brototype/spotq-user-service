@@ -6,6 +6,7 @@ import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
 import { ResetPasswordFailedError } from "@domain/errors/reset.password.error";
 import { UserNotFoundError } from "@domain/errors/user.not-found.error";
+import { WeakPasswordError } from "@domain/errors/weak.password.error";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
 import { inject, injectable } from "inversify";
 
@@ -26,6 +27,12 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
 
 		if (!user) {
 			throw new UserNotFoundError();
+		}
+
+		const strongPassword = this._passwordService.validateStrongPassword(password);
+
+		if (!strongPassword) {
+			throw new WeakPasswordError();
 		}
 
 		const passwordHash = await this._passwordService.hashPassword(password);
