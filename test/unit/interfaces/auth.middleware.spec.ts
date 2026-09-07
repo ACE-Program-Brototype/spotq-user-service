@@ -4,6 +4,7 @@ import {
 	type AuthenticatedRequest,
 	authMiddleware,
 } from "@presentation/http/middlewares/auth.middleware.ts";
+import { HttpStatus } from "@shared/constants/http.constants.ts";
 import type { NextFunction, Response } from "express";
 
 describe("authMiddleware", () => {
@@ -29,7 +30,7 @@ describe("authMiddleware", () => {
 			mockNext,
 		);
 
-		expect(mockRes.status).toHaveBeenCalledWith(401);
+		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
 		expect(mockNext).not.toHaveBeenCalled();
 	});
 
@@ -42,7 +43,7 @@ describe("authMiddleware", () => {
 			mockNext,
 		);
 
-		expect(mockRes.status).toHaveBeenCalledWith(401);
+		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
 		expect(mockNext).not.toHaveBeenCalled();
 	});
 
@@ -86,7 +87,7 @@ describe("authMiddleware", () => {
 			mockNext,
 		);
 
-		expect(mockRes.status).toHaveBeenCalledWith(401);
+		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
 		expect(mockNext).not.toHaveBeenCalled();
 	});
 });
