@@ -1,6 +1,8 @@
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { UnauthorizedError } from "@domain/errors/unauthorized.error.ts";
+import { USER_ROLES } from "@shared/constants/auth.constants.ts";
+import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import { ApiResponse } from "@shared/response/api-response.model.ts";
@@ -35,14 +37,14 @@ export class CustomerProfileController {
 			throw new UnauthorizedError();
 		}
 
-		if (req.user?.role && req.user.role.toLowerCase() !== "customer") {
+		if (req.user?.role && req.user.role.toLowerCase() !== USER_ROLES.CUSTOMER) {
 			res
 				.status(HttpStatus.FORBIDDEN)
 				.json(
 					ApiResponse.fail(
-						"Access restricted to customer accounts only.",
+						DOMAIN_ERRORS.MESSAGES.CUSTOMER_ONLY_ACCESS,
 						HttpStatus.FORBIDDEN,
-						"FORBIDDEN",
+						DOMAIN_ERRORS.CODES.FORBIDDEN,
 					),
 				);
 			return;

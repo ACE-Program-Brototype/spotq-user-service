@@ -1,6 +1,8 @@
 import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
 import { container } from "@config/di/container.ts";
 import { TYPES } from "@config/di/types.ts";
+import { authConstants } from "@shared/constants/auth.constants.ts";
+import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ApiResponse } from "@shared/response/api-response.model.ts";
 import type { NextFunction, Request, Response } from "express";
@@ -22,14 +24,14 @@ export function authMiddleware(
 ): void {
 	const authHeader = req.headers.authorization;
 
-	if (!authHeader?.startsWith("Bearer ")) {
+	if (!authHeader?.startsWith(authConstants.BEARER_PREFIX)) {
 		res
 			.status(HttpStatus.UNAUTHORIZED)
 			.json(
 				ApiResponse.fail(
-					"Authorization header with Bearer token is required.",
+					DOMAIN_ERRORS.MESSAGES.AUTH_HEADER_REQUIRED,
 					HttpStatus.UNAUTHORIZED,
-					"UNAUTHORIZED",
+					DOMAIN_ERRORS.CODES.UNAUTHORIZED,
 				),
 			);
 		return;
@@ -53,9 +55,9 @@ export function authMiddleware(
 			.status(HttpStatus.UNAUTHORIZED)
 			.json(
 				ApiResponse.fail(
-					"Invalid or expired access token.",
+					DOMAIN_ERRORS.MESSAGES.INVALID_OR_EXPIRED_TOKEN,
 					HttpStatus.UNAUTHORIZED,
-					"UNAUTHORIZED",
+					DOMAIN_ERRORS.CODES.UNAUTHORIZED,
 				),
 			);
 	}

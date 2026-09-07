@@ -3,6 +3,7 @@ import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/ge
 import { UnauthorizedError } from "@domain/errors/unauthorized.error.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
+import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import type { Response } from "express";
@@ -103,7 +104,7 @@ describe("CustomerProfileController", () => {
 		expect(mockRes.json).toHaveBeenCalledWith(
 			expect.objectContaining({
 				success: false,
-				code: "FORBIDDEN",
+				code: DOMAIN_ERRORS.CODES.FORBIDDEN,
 			}),
 		);
 	});
