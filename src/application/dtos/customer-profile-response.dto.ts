@@ -9,7 +9,6 @@ export interface CustomerProfileResponseDto {
 	email: string;
 	phone: string | null;
 	status: string;
-	avatar_url: string | null;
 	gender: string | null;
 	dob: string | null;
 	location: string | null;

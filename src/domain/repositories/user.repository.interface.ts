@@ -14,7 +14,6 @@ export interface CreateUserWithSessionParams {
 export interface UpdateUserProfileParams {
 	userId: string;
 	fullName?: string;
-	avatarUrl?: string | null;
 	dob?: Date | null;
 	gender?: string | null;
 	location?: string | null;

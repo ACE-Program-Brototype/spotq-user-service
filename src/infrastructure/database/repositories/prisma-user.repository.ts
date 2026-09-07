@@ -105,7 +105,6 @@ export class PrismaUserRepository
 						data: {
 							id: params.user.profile.id,
 							userId: createdUser.id,
-							avatarUrl: params.user.profile.avatarUrl,
 							dob: params.user.profile.dob,
 							gender: params.user.profile.gender,
 							location: params.user.profile.location,
@@ -196,9 +195,6 @@ export class PrismaUserRepository
 			}
 
 			const profileUpdateData: Prisma.UserProfileUpdateInput = {};
-			if (params.avatarUrl !== undefined) {
-				profileUpdateData.avatarUrl = params.avatarUrl;
-			}
 			if (params.dob !== undefined) {
 				profileUpdateData.dob = params.dob;
 			}
@@ -213,7 +209,6 @@ export class PrismaUserRepository
 				where: { userId: params.userId },
 				create: {
 					userId: params.userId,
-					avatarUrl: params.avatarUrl ?? null,
 					dob: params.dob ?? null,
 					gender: params.gender ?? null,
 					location: params.location ?? null,

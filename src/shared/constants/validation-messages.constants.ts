@@ -49,7 +49,6 @@ export const VALIDATION_MESSAGES = {
 		GENDER_INVALID: "Gender must be MALE, FEMALE, or OTHER.",
 		DOB_INVALID_FORMAT: "Invalid date of birth format. Expected YYYY-MM-DD.",
 		DOB_FUTURE: "Date of birth cannot be in the future.",
-		AVATAR_URL_INVALID: "Invalid avatar image URL format.",
 		LOCATION_TOO_LONG: "Location must not exceed 100 characters.",
 	},
 } as const;

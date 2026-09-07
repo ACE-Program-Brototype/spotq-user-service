@@ -7,5 +7,4 @@ export interface UpdateCustomerProfileDto {
 	gender?: "MALE" | "FEMALE" | "OTHER" | null;
 	dob?: string | null;
 	location?: string | null;
-	avatar_url?: string | null;
 }

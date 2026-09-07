@@ -17,7 +17,6 @@ export const UserMapper = {
 			? UserProfileEntity.reconstitute({
 					id: raw.profile.id,
 					userId: raw.profile.userId,
-					avatarUrl: raw.profile.avatarUrl,
 					dob: raw.profile.dob,
 					gender: raw.profile.gender,
 					location: raw.profile.location,

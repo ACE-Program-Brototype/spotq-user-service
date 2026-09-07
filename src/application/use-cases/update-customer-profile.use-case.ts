@@ -76,10 +76,6 @@ export class UpdateCustomerProfileUseCase
 			updateParams.fullName = updatedFullName;
 		}
 
-		if (dto.avatar_url !== undefined) {
-			updateParams.avatarUrl = dto.avatar_url;
-		}
-
 		if (dto.dob !== undefined) {
 			updateParams.dob = dto.dob ? new Date(dto.dob) : null;
 		}
@@ -112,7 +108,6 @@ export class UpdateCustomerProfileUseCase
 			email: updatedUser.email.getValue(),
 			phone: updatedUser.phone ? updatedUser.phone.getValue() : null,
 			status: updatedUser.status,
-			avatar_url: updatedUser.profile?.avatarUrl ?? null,
 			gender: updatedUser.profile?.gender ?? null,
 			dob: dobFormatted,
 			location: updatedUser.profile?.location ?? null,

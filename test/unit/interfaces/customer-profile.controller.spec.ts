@@ -24,7 +24,6 @@ describe("CustomerProfileController", () => {
 		email: "john.doe@example.com",
 		phone: "+919876543210",
 		status: "ACTIVE",
-		avatar_url: null,
 		gender: "MALE",
 		dob: "1990-05-12",
 		location: "Bengaluru",

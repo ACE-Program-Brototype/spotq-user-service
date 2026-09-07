@@ -64,12 +64,6 @@ export const updateCustomerProfileSchema = z
 			.max(100, { message: VALIDATION_MESSAGES.PROFILE.LOCATION_TOO_LONG })
 			.nullable()
 			.optional(),
-
-		avatar_url: z
-			.string()
-			.url({ message: VALIDATION_MESSAGES.PROFILE.AVATAR_URL_INVALID })
-			.nullable()
-			.optional(),
 	})
 	.strict();
 

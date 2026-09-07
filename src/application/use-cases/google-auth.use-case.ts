@@ -136,7 +136,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			const profileEntity = UserProfileEntity.create({
 				id: this.idGenerator.generateUuid(),
 				userId,
-				avatarUrl: googlePayload.picture,
 			});
 
 			const userEntity = UserEntity.create({

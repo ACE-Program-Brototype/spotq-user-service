@@ -9,7 +9,6 @@ describe("updateCustomerProfileSchema", () => {
 			gender: "MALE",
 			dob: "1995-06-20",
 			location: "Kochi, Kerala",
-			avatar_url: "https://cdn.spotq.com/avatars/user-123.jpg",
 		};
 
 		const result = updateCustomerProfileSchema.safeParse(payload);
@@ -23,7 +22,6 @@ describe("updateCustomerProfileSchema", () => {
 			gender: null,
 			dob: null,
 			location: null,
-			avatar_url: null,
 		};
 
 		const result = updateCustomerProfileSchema.safeParse(payload);
@@ -82,20 +80,6 @@ describe("updateCustomerProfileSchema", () => {
 		if (!result.success) {
 			expect(result.error.issues[0]?.message).toBe(
 				VALIDATION_MESSAGES.PROFILE.DOB_FUTURE,
-			);
-		}
-	});
-
-	it("should reject invalid avatar URL", () => {
-		const payload = {
-			avatar_url: "not-a-valid-url",
-		};
-
-		const result = updateCustomerProfileSchema.safeParse(payload);
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0]?.message).toBe(
-				VALIDATION_MESSAGES.PROFILE.AVATAR_URL_INVALID,
 			);
 		}
 	});

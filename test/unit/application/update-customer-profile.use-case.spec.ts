@@ -14,7 +14,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 
 	const createMockUser = (overrides?: {
 		fullName?: string;
-		avatarUrl?: string | null;
 		dob?: Date | null;
 		gender?: string | null;
 		location?: string | null;
@@ -22,10 +21,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		const profileEntity = UserProfileEntity.reconstitute({
 			id: "profile-123",
 			userId: "user-123",
-			avatarUrl:
-				overrides?.avatarUrl !== undefined
-					? overrides.avatarUrl
-					: "https://cdn.spotq.com/old.jpg",
 			dob: overrides?.dob !== undefined ? overrides.dob : originalDob,
 			gender: overrides?.gender !== undefined ? overrides.gender : "MALE",
 			location:
@@ -70,7 +65,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		const existingUser = createMockUser();
 		const updatedUser = createMockUser({
 			fullName: "Rahul Sharma",
-			avatarUrl: "https://cdn.spotq.com/new.jpg",
 			dob: new Date("1995-06-20T00:00:00.000Z"),
 			gender: "MALE",
 			location: "Bengaluru",
@@ -82,7 +76,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		const result = await useCase.execute("user-123", {
 			first_name: "Rahul",
 			last_name: "Sharma",
-			avatar_url: "https://cdn.spotq.com/new.jpg",
 			dob: "1995-06-20",
 			gender: "MALE",
 			location: "Bengaluru",
@@ -92,7 +85,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		expect(mockUserRepository.updateProfile).toHaveBeenCalledWith({
 			userId: "user-123",
 			fullName: "Rahul Sharma",
-			avatarUrl: "https://cdn.spotq.com/new.jpg",
 			dob: new Date("1995-06-20"),
 			gender: "MALE",
 			location: "Bengaluru",
@@ -105,7 +97,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 			email: "john.doe@example.com",
 			phone: "+919876543210",
 			status: "ACTIVE",
-			avatar_url: "https://cdn.spotq.com/new.jpg",
 			gender: "MALE",
 			dob: "1995-06-20",
 			location: "Bengaluru",
@@ -139,7 +130,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		const existingUser = createMockUser({ fullName: "John Doe" });
 		const updatedUser = createMockUser({
 			fullName: "John",
-			avatarUrl: null,
 			dob: null,
 			gender: null,
 			location: null,
@@ -150,7 +140,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 
 		const result = await useCase.execute("user-123", {
 			last_name: null,
-			avatar_url: null,
 			dob: null,
 			gender: null,
 			location: null,
@@ -159,13 +148,11 @@ describe("UpdateCustomerProfileUseCase", () => {
 		expect(mockUserRepository.updateProfile).toHaveBeenCalledWith({
 			userId: "user-123",
 			fullName: "John",
-			avatarUrl: null,
 			dob: null,
 			gender: null,
 			location: null,
 		});
 		expect(result.last_name).toBeNull();
-		expect(result.avatar_url).toBeNull();
 		expect(result.dob).toBeNull();
 		expect(result.gender).toBeNull();
 		expect(result.location).toBeNull();
