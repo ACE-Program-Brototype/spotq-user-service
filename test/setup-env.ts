@@ -16,3 +16,5 @@ process.env.COOKIE_TEMP_MAX_AGE = "600000";
 process.env.BREVO_API_KEY = "test-brevo-key";
 process.env.BREVO_SENDER_EMAIL = "noreply@example.com";
 process.env.BREVO_SENDER_NAME = "SpotQ Test";
+process.env.JWT_ALGORITHM = "RS256";
+process.env.JWT_KEY_ID = "spotq-main-key";

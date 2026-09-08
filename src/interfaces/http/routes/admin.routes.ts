@@ -3,6 +3,6 @@ import { Router } from "express";
 
 const router = Router();
 
-router.use("/auth", adminAuthRoutes);
+router.use("/", adminAuthRoutes);
 
 export default router;

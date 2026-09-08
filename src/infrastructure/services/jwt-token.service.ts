@@ -14,17 +14,21 @@ export class JwtTokenService implements ITokenService {
 	public generateAccessToken(payload: {
 		userId: string;
 		email: string;
+		role?: string;
 	}): string {
 		const claims = {
 			sub: payload.userId,
 			email: payload.email,
+			role: payload.role ?? "customer",
 		};
 
 		const signOptions: SignOptions = {
+			algorithm: config.jwt.access.algorithm,
+			keyid: config.jwt.access.keyId,
 			expiresIn: config.jwt.access.expiresIn as unknown as number,
 		};
 
-		return jwt.sign(claims, config.jwt.access.secret, signOptions);
+		return jwt.sign(claims, config.jwt.access.privateKey, signOptions);
 	}
 
 	public generateRefreshToken(): GeneratedRefreshToken {
@@ -46,7 +50,9 @@ export class JwtTokenService implements ITokenService {
 
 	public verifyAccessToken(token: string): AccessTokenPayload {
 		try {
-			const decoded = jwt.verify(token, config.jwt.access.secret);
+			const decoded = jwt.verify(token, config.jwt.access.publicKey, {
+				algorithms: [config.jwt.access.algorithm],
+			});
 			if (typeof decoded === "string" || !decoded.sub) {
 				throw new InvalidTokenError("Invalid token payload.");
 			}
@@ -54,6 +60,7 @@ export class JwtTokenService implements ITokenService {
 			return {
 				sub: decoded.sub as string,
 				email: (decoded as { email?: string }).email ?? "",
+				role: (decoded as { role?: string }).role,
 				iat: decoded.iat,
 				exp: decoded.exp,
 			};
