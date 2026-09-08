@@ -20,43 +20,55 @@ export function authMiddleware(
 	res: Response,
 	next: NextFunction,
 ): void {
-	const authHeader = req.headers.authorization;
-
-	if (!authHeader?.startsWith("Bearer ")) {
-		res
-			.status(HttpStatus.UNAUTHORIZED)
-			.json(
-				ApiResponse.fail(
-					"Authorization header with Bearer token is required.",
-					HttpStatus.UNAUTHORIZED,
-					"UNAUTHORIZED",
-				),
-			);
+	// 1. Gateway Forwarded Context (Primary - Injected by Envoy Gateway)
+	const gatewayUserId = req.headers["x-user-id"] as string | undefined;
+	if (gatewayUserId) {
+		req.user = {
+			userId: gatewayUserId,
+			email: (req.headers["x-user-email"] as string | undefined) ?? "",
+			role: req.headers["x-user-role"] as string | undefined,
+		};
+		next();
 		return;
 	}
 
-	const token = authHeader.split(" ")[1] ?? "";
+	// 2. Direct Bearer Token Fallback (Standalone / Local Testing)
+	const authHeader = req.headers.authorization;
+	if (authHeader?.startsWith("Bearer ")) {
+		const token = authHeader.split(" ")[1] ?? "";
+		try {
+			const tokenService = container.get<ITokenService>(TYPES.TokenService);
+			const payload = tokenService.verifyAccessToken(token);
 
-	try {
-		const tokenService = container.get<ITokenService>(TYPES.TokenService);
-		const payload = tokenService.verifyAccessToken(token);
-
-		req.user = {
-			userId: payload.sub,
-			email: payload.email ?? "",
-			role: payload.role,
-		};
-
-		next();
-	} catch (_err) {
-		res
-			.status(HttpStatus.UNAUTHORIZED)
-			.json(
-				ApiResponse.fail(
-					"Invalid or expired access token.",
-					HttpStatus.UNAUTHORIZED,
-					"UNAUTHORIZED",
-				),
-			);
+			req.user = {
+				userId: payload.sub,
+				email: payload.email ?? "",
+				role: payload.role,
+			};
+			next();
+			return;
+		} catch (_err) {
+			res
+				.status(HttpStatus.UNAUTHORIZED)
+				.json(
+					ApiResponse.fail(
+						"Invalid or expired access token.",
+						HttpStatus.UNAUTHORIZED,
+						"UNAUTHORIZED",
+					),
+				);
+			return;
+		}
 	}
+
+	// 3. Unauthorized when neither is present
+	res
+		.status(HttpStatus.UNAUTHORIZED)
+		.json(
+			ApiResponse.fail(
+				"Authentication required.",
+				HttpStatus.UNAUTHORIZED,
+				"UNAUTHORIZED",
+			),
+		);
 }

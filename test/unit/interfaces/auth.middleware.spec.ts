@@ -22,19 +22,12 @@ describe("authMiddleware", () => {
 		mockNext = jest.fn();
 	});
 
-	it("should return 401 when authorization header is missing", () => {
-		authMiddleware(
-			mockReq as AuthenticatedRequest,
-			mockRes as Response,
-			mockNext,
-		);
-
-		expect(mockRes.status).toHaveBeenCalledWith(401);
-		expect(mockNext).not.toHaveBeenCalled();
-	});
-
-	it("should return 401 when authorization header does not start with Bearer", () => {
-		mockReq.headers = { authorization: "Basic 12345" };
+	it("should authenticate and populate req.user when X-User-Id is forwarded by API Gateway", () => {
+		mockReq.headers = {
+			"x-user-id": "gw-user-456",
+			"x-user-role": "customer",
+			"x-user-email": "customer@example.com",
+		};
 
 		authMiddleware(
 			mockReq as AuthenticatedRequest,
@@ -42,17 +35,23 @@ describe("authMiddleware", () => {
 			mockNext,
 		);
 
-		expect(mockRes.status).toHaveBeenCalledWith(401);
-		expect(mockNext).not.toHaveBeenCalled();
+		expect(mockReq.user).toEqual({
+			userId: "gw-user-456",
+			email: "customer@example.com",
+			role: "customer",
+		});
+		expect(mockNext).toHaveBeenCalled();
+		expect(mockRes.status).not.toHaveBeenCalled();
 	});
 
-	it("should set req.user and call next when token is valid", () => {
+	it("should set req.user and call next when fallback Bearer token is valid", () => {
 		mockReq.headers = { authorization: "Bearer valid_token" };
 
 		const mockTokenService: Partial<ITokenService> = {
 			verifyAccessToken: jest.fn().mockReturnValue({
 				sub: "user-123",
 				email: "user@example.com",
+				role: "customer",
 			}),
 		};
 
@@ -69,16 +68,36 @@ describe("authMiddleware", () => {
 		expect(mockReq.user).toEqual({
 			userId: "user-123",
 			email: "user@example.com",
+			role: "customer",
 		});
 		expect(mockNext).toHaveBeenCalled();
 	});
 
-	it("should reject and return 401 when only raw unverified X-User-Id is passed without Bearer token", () => {
-		mockReq.headers = {
-			"x-user-id": "gw-user-456",
-			"x-user-role": "customer",
-			"x-user-email": "customer@example.com",
+	it("should return 401 when neither Gateway headers nor Bearer token are provided", () => {
+		mockReq.headers = {};
+
+		authMiddleware(
+			mockReq as AuthenticatedRequest,
+			mockRes as Response,
+			mockNext,
+		);
+
+		expect(mockRes.status).toHaveBeenCalledWith(401);
+		expect(mockNext).not.toHaveBeenCalled();
+	});
+
+	it("should return 401 when invalid Bearer token is provided", () => {
+		mockReq.headers = { authorization: "Bearer invalid_token" };
+
+		const mockTokenService: Partial<ITokenService> = {
+			verifyAccessToken: jest.fn().mockImplementation(() => {
+				throw new Error("Invalid token");
+			}),
 		};
+
+		jest
+			.spyOn(container, "get")
+			.mockReturnValue(mockTokenService as ITokenService);
 
 		authMiddleware(
 			mockReq as AuthenticatedRequest,
