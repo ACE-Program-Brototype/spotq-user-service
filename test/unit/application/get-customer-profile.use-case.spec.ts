@@ -60,8 +60,6 @@ describe("GetCustomerProfileUseCase", () => {
 		expect(mockUserRepository.findById).toHaveBeenCalledWith("user-123");
 		expect(result).toEqual({
 			id: "user-123",
-			first_name: "Rahul",
-			last_name: "Sharma",
 			full_name: "Rahul Sharma",
 			email: "rahul.sharma@example.com",
 			phone: "+919876543210",
@@ -75,7 +73,7 @@ describe("GetCustomerProfileUseCase", () => {
 		});
 	});
 
-	it("should handle single word names without crashing and set last_name to null", async () => {
+	it("should handle single word names without crashing", async () => {
 		const fixedDate = new Date("2026-01-15T10:00:00.000Z");
 
 		const userEntity = UserEntity.reconstitute({
@@ -96,8 +94,6 @@ describe("GetCustomerProfileUseCase", () => {
 
 		const result = await useCase.execute("user-456");
 
-		expect(result.first_name).toBe("Ajex");
-		expect(result.last_name).toBeNull();
 		expect(result.full_name).toBe("Ajex");
 		expect(result.phone).toBeNull();
 		expect(result.dob).toBeNull();

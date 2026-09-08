@@ -15,8 +15,6 @@ describe("CustomerProfileController", () => {
 
 	const mockProfileData: CustomerProfileResponseDto = {
 		id: "user-123",
-		first_name: "John",
-		last_name: "Doe",
 		full_name: "John Doe",
 		email: "john.doe@example.com",
 		phone: "+919876543210",
