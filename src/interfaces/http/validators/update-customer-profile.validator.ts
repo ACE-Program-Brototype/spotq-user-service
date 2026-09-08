@@ -47,6 +47,9 @@ export const updateCustomerProfileSchema = z
 					if (Number.isNaN(parsed.getTime())) {
 						return false;
 					}
+					if (parsed.toISOString().split("T")[0] !== val) {
+						return false;
+					}
 					const today = new Date();
 					today.setHours(23, 59, 59, 999);
 					return parsed <= today;

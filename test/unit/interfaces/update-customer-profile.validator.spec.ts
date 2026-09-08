@@ -84,6 +84,20 @@ describe("updateCustomerProfileSchema", () => {
 		}
 	});
 
+	it("should reject calendar rollover dates like February 31st or April 31st", () => {
+		const invalidDates = ["2024-02-31", "2023-04-31", "2023-02-29"];
+
+		for (const dob of invalidDates) {
+			const result = updateCustomerProfileSchema.safeParse({ dob });
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0]?.message).toBe(
+					VALIDATION_MESSAGES.PROFILE.DOB_FUTURE,
+				);
+			}
+		}
+	});
+
 	it("should reject protected/unrecognized fields like role and email", () => {
 		const payload = {
 			first_name: "Rahul",
