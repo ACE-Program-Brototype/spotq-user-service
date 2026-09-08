@@ -17,6 +17,7 @@ import type {
 } from "@domain/repositories/index.ts";
 import { Email, FullName } from "@domain/value-objects/index.ts";
 import type { IGoogleAuthUseCase } from "@ports/use-cases/index.ts";
+import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
 import { inject, injectable } from "inversify";
 import type {
 	GoogleAuthDto,
