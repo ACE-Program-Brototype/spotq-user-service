@@ -56,7 +56,7 @@ export function adminAuthMiddleware(
 	req.user = {
 		userId,
 		email: email || "",
-		role: "admin",
+		role: role || "admin",
 	};
 	req.userId = userId;
 
