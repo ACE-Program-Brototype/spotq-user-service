@@ -1,6 +1,6 @@
 import { TYPES } from "@config/di/types.ts";
-import type { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
-import type { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
+import type { ICustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.interface.ts";
+import type { IUserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.interface.ts";
 import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
 	googleAuthSchema,
@@ -31,9 +31,9 @@ export class UserRouter {
 
 	constructor(
 		@inject(TYPES.UserAuthController)
-		private readonly userController: UserAuthController,
+		private readonly userController: IUserAuthController,
 		@inject(TYPES.CustomerProfileController)
-		private readonly profileController: CustomerProfileController,
+		private readonly profileController: ICustomerProfileController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
