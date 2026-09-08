@@ -12,31 +12,11 @@ export const updateCustomerProfileSchema = z
 		full_name: z
 			.string()
 			.trim()
-			.min(1, { message: VALIDATION_MESSAGES.PROFILE.FIRST_NAME_REQUIRED })
+			.min(1, { message: VALIDATION_MESSAGES.PROFILE.FULL_NAME_REQUIRED })
 			.max(100)
 			.refine((val) => nameRegex.test(val), {
-				message: VALIDATION_MESSAGES.PROFILE.FIRST_NAME_INVALID,
+				message: VALIDATION_MESSAGES.PROFILE.FULL_NAME_INVALID,
 			})
-			.optional(),
-
-		first_name: z
-			.string()
-			.trim()
-			.min(1, { message: VALIDATION_MESSAGES.PROFILE.FIRST_NAME_REQUIRED })
-			.max(50)
-			.refine((val) => nameRegex.test(val), {
-				message: VALIDATION_MESSAGES.PROFILE.FIRST_NAME_INVALID,
-			})
-			.optional(),
-
-		last_name: z
-			.string()
-			.trim()
-			.max(50)
-			.refine((val) => val === "" || nameRegex.test(val), {
-				message: VALIDATION_MESSAGES.PROFILE.LAST_NAME_INVALID,
-			})
-			.nullable()
 			.optional(),
 
 		gender: z

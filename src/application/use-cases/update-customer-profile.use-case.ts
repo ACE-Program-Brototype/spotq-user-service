@@ -40,35 +40,10 @@ export class UpdateCustomerProfileUseCase
 			throw new UserNotFoundError();
 		}
 
-		const fullNameStr = existingUser.fullName.getValue();
-		const nameParts = fullNameStr.trim().split(/\s+/);
-		const existingFirstName = nameParts[0] || fullNameStr;
-		const existingLastName =
-			nameParts.length > 1 ? nameParts.slice(1).join(" ") : null;
-
 		let updatedFullName: string | undefined;
 
 		if (dto.full_name !== undefined) {
 			const validatedFullName = FullName.create(dto.full_name.trim());
-			updatedFullName = validatedFullName.getValue();
-		} else if (dto.first_name !== undefined || dto.last_name !== undefined) {
-			const nextFirstName =
-				dto.first_name !== undefined
-					? dto.first_name.trim()
-					: existingFirstName;
-
-			const nextLastName =
-				dto.last_name !== undefined
-					? dto.last_name
-						? dto.last_name.trim()
-						: null
-					: existingLastName;
-
-			const composedFullName = [nextFirstName, nextLastName]
-				.filter(Boolean)
-				.join(" ");
-
-			const validatedFullName = FullName.create(composedFullName);
 			updatedFullName = validatedFullName.getValue();
 		}
 

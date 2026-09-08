@@ -4,8 +4,7 @@ import { VALIDATION_MESSAGES } from "@shared/constants/validation-messages.const
 describe("updateCustomerProfileSchema", () => {
 	it("should validate a complete valid profile update payload", () => {
 		const payload = {
-			first_name: "Rahul",
-			last_name: "Sharma",
+			full_name: "Rahul Sharma",
 			gender: "MALE",
 			dob: "1995-06-20",
 			location: "Kochi, Kerala",
@@ -15,21 +14,9 @@ describe("updateCustomerProfileSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("should validate payload containing full_name directly", () => {
-		const payload = {
-			full_name: "Rahul Sharma",
-			gender: "MALE",
-			location: "Kochi, Kerala",
-		};
-
-		const result = updateCustomerProfileSchema.safeParse(payload);
-		expect(result.success).toBe(true);
-	});
-
 	it("should validate partial payloads with null values for optional fields", () => {
 		const payload = {
-			first_name: "Rahul",
-			last_name: null,
+			full_name: "Rahul Sharma",
 			gender: null,
 			dob: null,
 			location: null,
@@ -39,16 +26,16 @@ describe("updateCustomerProfileSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("should reject empty first name", () => {
+	it("should reject empty full name", () => {
 		const payload = {
-			first_name: "",
+			full_name: "",
 		};
 
 		const result = updateCustomerProfileSchema.safeParse(payload);
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0]?.message).toBe(
-				VALIDATION_MESSAGES.PROFILE.FIRST_NAME_REQUIRED,
+				VALIDATION_MESSAGES.PROFILE.FULL_NAME_REQUIRED,
 			);
 		}
 	});
@@ -111,7 +98,7 @@ describe("updateCustomerProfileSchema", () => {
 
 	it("should reject protected/unrecognized fields like role and email", () => {
 		const payload = {
-			first_name: "Rahul",
+			full_name: "Rahul",
 			role: "ADMIN",
 			email: "hacked@example.com",
 		};

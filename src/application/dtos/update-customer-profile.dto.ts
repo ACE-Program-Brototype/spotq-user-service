@@ -3,8 +3,6 @@
  */
 export interface UpdateCustomerProfileDto {
 	full_name?: string;
-	first_name?: string;
-	last_name?: string | null;
 	gender?: "MALE" | "FEMALE" | "OTHER" | null;
 	dob?: string | null;
 	location?: string | null;

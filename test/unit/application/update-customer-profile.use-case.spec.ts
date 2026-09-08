@@ -74,8 +74,7 @@ describe("UpdateCustomerProfileUseCase", () => {
 		mockUserRepository.updateProfile.mockResolvedValue(updatedUser);
 
 		const result = await useCase.execute("user-123", {
-			first_name: "Rahul",
-			last_name: "Sharma",
+			full_name: "Rahul Sharma",
 			dob: "1995-06-20",
 			gender: "MALE",
 			location: "Bengaluru",
@@ -91,8 +90,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		});
 		expect(result).toEqual({
 			id: "user-123",
-			first_name: "Rahul",
-			last_name: "Sharma",
 			full_name: "Rahul Sharma",
 			email: "john.doe@example.com",
 			phone: "+919876543210",
@@ -106,7 +103,7 @@ describe("UpdateCustomerProfileUseCase", () => {
 		});
 	});
 
-	it("should support partial update of first_name only while preserving existing last_name", async () => {
+	it("should support updating full_name directly without splitting", async () => {
 		const existingUser = createMockUser({ fullName: "John Doe" });
 		const updatedUser = createMockUser({ fullName: "Jonathan Doe" });
 
@@ -114,22 +111,20 @@ describe("UpdateCustomerProfileUseCase", () => {
 		mockUserRepository.updateProfile.mockResolvedValue(updatedUser);
 
 		const result = await useCase.execute("user-123", {
-			first_name: "Jonathan",
+			full_name: "Jonathan Doe",
 		});
 
 		expect(mockUserRepository.updateProfile).toHaveBeenCalledWith({
 			userId: "user-123",
 			fullName: "Jonathan Doe",
 		});
-		expect(result.first_name).toBe("Jonathan");
-		expect(result.last_name).toBe("Doe");
 		expect(result.full_name).toBe("Jonathan Doe");
 	});
 
 	it("should support clearing nullable profile fields", async () => {
 		const existingUser = createMockUser({ fullName: "John Doe" });
 		const updatedUser = createMockUser({
-			fullName: "John",
+			fullName: "John Doe",
 			dob: null,
 			gender: null,
 			location: null,
@@ -139,7 +134,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 		mockUserRepository.updateProfile.mockResolvedValue(updatedUser);
 
 		const result = await useCase.execute("user-123", {
-			last_name: null,
 			dob: null,
 			gender: null,
 			location: null,
@@ -147,40 +141,20 @@ describe("UpdateCustomerProfileUseCase", () => {
 
 		expect(mockUserRepository.updateProfile).toHaveBeenCalledWith({
 			userId: "user-123",
-			fullName: "John",
 			dob: null,
 			gender: null,
 			location: null,
 		});
-		expect(result.last_name).toBeNull();
 		expect(result.dob).toBeNull();
 		expect(result.gender).toBeNull();
 		expect(result.location).toBeNull();
-	});
-
-	it("should support updating full_name directly without splitting", async () => {
-		const existingUser = createMockUser({ fullName: "John Doe" });
-		const updatedUser = createMockUser({ fullName: "Alex Joshy" });
-
-		mockUserRepository.findById.mockResolvedValue(existingUser);
-		mockUserRepository.updateProfile.mockResolvedValue(updatedUser);
-
-		const result = await useCase.execute("user-123", {
-			full_name: "Alex Joshy",
-		});
-
-		expect(mockUserRepository.updateProfile).toHaveBeenCalledWith({
-			userId: "user-123",
-			fullName: "Alex Joshy",
-		});
-		expect(result.full_name).toBe("Alex Joshy");
 	});
 
 	it("should throw UserNotFoundError when user does not exist", async () => {
 		mockUserRepository.findById.mockResolvedValue(null);
 
 		await expect(
-			useCase.execute("non-existent-user", { first_name: "Alex" }),
+			useCase.execute("non-existent-user", { full_name: "Alex" }),
 		).rejects.toThrow(UserNotFoundError);
 
 		expect(mockUserRepository.updateProfile).not.toHaveBeenCalled();

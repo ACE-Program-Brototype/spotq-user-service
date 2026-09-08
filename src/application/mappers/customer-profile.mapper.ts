@@ -6,20 +6,13 @@ import type { UserEntity } from "@domain/entities/user.entity.ts";
  */
 export const CustomerProfileMapper = {
 	toDto(user: UserEntity): CustomerProfileResponseDto {
-		const fullNameStr = user.fullName.getValue();
-		const nameParts = fullNameStr.trim().split(/\s+/);
-		const firstName = nameParts[0] || fullNameStr;
-		const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : null;
-
 		const dobFormatted = user.profile?.dob
 			? (user.profile.dob.toISOString().split("T")[0] ?? null)
 			: null;
 
 		return {
 			id: user.id,
-			first_name: firstName,
-			last_name: lastName,
-			full_name: fullNameStr,
+			full_name: user.fullName.getValue(),
 			email: user.email.getValue(),
 			phone: user.phone ? user.phone.getValue() : null,
 			status: user.status,

@@ -18,8 +18,6 @@ describe("CustomerProfileController", () => {
 
 	const mockProfileData: CustomerProfileResponseDto = {
 		id: "user-123",
-		first_name: "John",
-		last_name: "Doe",
 		full_name: "John Doe",
 		email: "john.doe@example.com",
 		phone: "+919876543210",
@@ -117,7 +115,7 @@ describe("CustomerProfileController", () => {
 	describe("updateProfile", () => {
 		it("should return 200 and updated profile payload when update is successful", async () => {
 			const updatePayload = {
-				first_name: "Rahul",
+				full_name: "Rahul Sharma",
 				location: "Kochi",
 			};
 
@@ -151,7 +149,7 @@ describe("CustomerProfileController", () => {
 		it("should throw UnauthorizedError when req.user or userId is missing on update", async () => {
 			mockReq = {
 				user: undefined,
-				body: { first_name: "Rahul" },
+				body: { full_name: "Rahul Sharma" },
 			};
 
 			await expect(
@@ -171,7 +169,7 @@ describe("CustomerProfileController", () => {
 					email: "admin@spotq.com",
 					role: "RESTAURANT_ADMIN",
 				},
-				body: { first_name: "Rahul" },
+				body: { full_name: "Rahul Sharma" },
 			};
 
 			await expect(

@@ -41,6 +41,9 @@ export const VALIDATION_MESSAGES = {
 		ID_TOKEN_REQUIRED: "Google ID token is required.",
 	},
 	PROFILE: {
+		FULL_NAME_REQUIRED: "Full name cannot be empty.",
+		FULL_NAME_INVALID:
+			"Full name can only contain letters, spaces, hyphens, and apostrophes.",
 		FIRST_NAME_REQUIRED: "First name cannot be empty.",
 		FIRST_NAME_INVALID:
 			"First name can only contain letters, spaces, hyphens, and apostrophes.",
