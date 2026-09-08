@@ -44,11 +44,6 @@ export const VALIDATION_MESSAGES = {
 		FULL_NAME_REQUIRED: "Full name cannot be empty.",
 		FULL_NAME_INVALID:
 			"Full name can only contain letters, spaces, hyphens, and apostrophes.",
-		FIRST_NAME_REQUIRED: "First name cannot be empty.",
-		FIRST_NAME_INVALID:
-			"First name can only contain letters, spaces, hyphens, and apostrophes.",
-		LAST_NAME_INVALID:
-			"Last name can only contain letters, spaces, hyphens, and apostrophes.",
 		GENDER_INVALID: "Gender must be MALE, FEMALE, or OTHER.",
 		DOB_INVALID_FORMAT: "Invalid date of birth format. Expected YYYY-MM-DD.",
 		DOB_FUTURE: "Date of birth cannot be in the future.",
