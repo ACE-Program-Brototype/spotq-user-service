@@ -2,10 +2,68 @@ import { container, TYPES } from "@config/di";
 import type { JwtTokenService } from "@infrastructure/services/token";
 import { HttpStatus, ResponseMessage } from "@shared/constants";
 import { authConstants } from "@shared/constants/auth.constants";
+import { ApiResponse } from "@shared/response/api-response.model.ts";
 import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
+import type { AuthenticatedRequest } from "./auth.middleware.ts";
 
-const tokenService = container.get<JwtTokenService>(TYPES.TokenServices);
+function getHeaderValue(
+	header: string | string[] | undefined,
+): string | undefined {
+	if (Array.isArray(header)) {
+		return header[0]?.trim();
+	}
+	return header?.trim();
+}
+
+export function adminAuthMiddleware(
+	req: AuthenticatedRequest,
+	res: Response,
+	next: NextFunction,
+): void {
+	const userId = getHeaderValue(req.headers["x-user-id"]);
+
+	if (!userId) {
+		res
+			.status(HttpStatus.UNAUTHORIZED)
+			.json(
+				ApiResponse.fail(
+					authConstants.GATEWAY_UNAUTHORIZED,
+					HttpStatus.UNAUTHORIZED,
+					"UNAUTHORIZED",
+				),
+			);
+		return;
+	}
+
+	const role = getHeaderValue(req.headers["x-user-role"]);
+
+	if (role !== "admin") {
+		res
+			.status(HttpStatus.FORBIDDEN)
+			.json(
+				ApiResponse.fail(
+					authConstants.ADMIN_FORBIDDEN,
+					HttpStatus.FORBIDDEN,
+					"FORBIDDEN",
+				),
+			);
+		return;
+	}
+
+	const email = getHeaderValue(req.headers["x-user-email"]);
+
+	req.user = {
+		userId,
+		email: email || "",
+		role: "admin",
+	};
+	req.userId = userId;
+
+	next();
+}
+
+export const adminAuth = adminAuthMiddleware;
 
 export const adminTempTokenCheck = async (
 	req: Request,
@@ -13,6 +71,7 @@ export const adminTempTokenCheck = async (
 	next: NextFunction,
 ) => {
 	try {
+		const tokenService = container.get<JwtTokenService>(TYPES.TokenServices);
 		const { tempToken } = req.cookies;
 
 		if (!tempToken) {
@@ -42,7 +101,6 @@ export const adminTempTokenCheck = async (
 			throw error;
 		}
 
-		// Unexpected errors should remain internal server errors.
 		throw new AppError(
 			ResponseMessage.INTERNAL_SERVER_ERROR,
 			HttpStatus.INTERNAL_SERVER_ERROR,

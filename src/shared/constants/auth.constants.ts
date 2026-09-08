@@ -19,4 +19,7 @@ export const authConstants = {
 	PASSWORD_RESET_SUCCESS: "Password reset Successfully",
 	INVALID_CREDENTIALS: "Invalid credentials",
 	INVALID_TOKEN: "Invalid token",
+	GATEWAY_UNAUTHORIZED:
+		"Unauthorized: Missing user authentication from API Gateway.",
+	ADMIN_FORBIDDEN: "Forbidden: Access denied. Admin role required.",
 };

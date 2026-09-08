@@ -1,17 +1,26 @@
-import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
-import { container } from "@config/di/container.ts";
-import { TYPES } from "@config/di/types.ts";
+import { authConstants } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ApiResponse } from "@shared/response/api-response.model.ts";
 import type { NextFunction, Request, Response } from "express";
 
 export interface AuthenticatedUser {
 	userId: string;
-	email: string;
+	email?: string;
+	role?: string;
 }
 
 export interface AuthenticatedRequest extends Request {
 	user?: AuthenticatedUser;
+	userId?: string;
+}
+
+function getHeaderValue(
+	header: string | string[] | undefined,
+): string | undefined {
+	if (Array.isArray(header)) {
+		return header[0]?.trim();
+	}
+	return header?.trim();
 }
 
 export function authMiddleware(
@@ -19,14 +28,14 @@ export function authMiddleware(
 	res: Response,
 	next: NextFunction,
 ): void {
-	const authHeader = req.headers.authorization;
+	const userId = getHeaderValue(req.headers["x-user-id"]);
 
-	if (!authHeader?.startsWith("Bearer ")) {
+	if (!userId) {
 		res
 			.status(HttpStatus.UNAUTHORIZED)
 			.json(
 				ApiResponse.fail(
-					"Authorization header with Bearer token is required.",
+					authConstants.GATEWAY_UNAUTHORIZED,
 					HttpStatus.UNAUTHORIZED,
 					"UNAUTHORIZED",
 				),
@@ -34,27 +43,15 @@ export function authMiddleware(
 		return;
 	}
 
-	const token = authHeader.split(" ")[1] ?? "";
+	const role = getHeaderValue(req.headers["x-user-role"]);
+	const email = getHeaderValue(req.headers["x-user-email"]);
 
-	try {
-		const tokenService = container.get<ITokenService>(TYPES.TokenService);
-		const payload = tokenService.verifyAccessToken(token);
+	req.user = {
+		userId,
+		email: email || "",
+		role,
+	};
+	req.userId = userId;
 
-		req.user = {
-			userId: payload.sub,
-			email: payload.email ?? "",
-		};
-
-		next();
-	} catch (_err) {
-		res
-			.status(HttpStatus.UNAUTHORIZED)
-			.json(
-				ApiResponse.fail(
-					"Invalid or expired access token.",
-					HttpStatus.UNAUTHORIZED,
-					"UNAUTHORIZED",
-				),
-			);
-	}
+	next();
 }
