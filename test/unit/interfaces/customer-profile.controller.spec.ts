@@ -1,10 +1,10 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
 import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
+import { ForbiddenError } from "@domain/errors/forbidden.error.ts";
 import { UnauthorizedError } from "@domain/errors/unauthorized.error.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
-import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import type { Response } from "express";
@@ -94,7 +94,7 @@ describe("CustomerProfileController", () => {
 			expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
 		});
 
-		it("should reject with 403 Forbidden when accessed with non-customer role", async () => {
+		it("should reject with ForbiddenError when accessed with non-customer role", async () => {
 			mockReq = {
 				user: {
 					userId: "admin-123",
@@ -103,19 +103,14 @@ describe("CustomerProfileController", () => {
 				},
 			};
 
-			await controller.getProfile(
-				mockReq as AuthenticatedRequest,
-				mockRes as Response,
-			);
+			await expect(
+				controller.getProfile(
+					mockReq as AuthenticatedRequest,
+					mockRes as Response,
+				),
+			).rejects.toThrow(ForbiddenError);
 
 			expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
-			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
-			expect(mockRes.json).toHaveBeenCalledWith(
-				expect.objectContaining({
-					success: false,
-					code: DOMAIN_ERRORS.CODES.FORBIDDEN,
-				}),
-			);
 		});
 	});
 
@@ -169,7 +164,7 @@ describe("CustomerProfileController", () => {
 			expect(mockUpdateCustomerProfileUseCase.execute).not.toHaveBeenCalled();
 		});
 
-		it("should reject with 403 Forbidden when update accessed with non-customer role", async () => {
+		it("should reject with ForbiddenError when update accessed with non-customer role", async () => {
 			mockReq = {
 				user: {
 					userId: "admin-123",
@@ -179,19 +174,14 @@ describe("CustomerProfileController", () => {
 				body: { first_name: "Rahul" },
 			};
 
-			await controller.updateProfile(
-				mockReq as AuthenticatedRequest,
-				mockRes as Response,
-			);
+			await expect(
+				controller.updateProfile(
+					mockReq as AuthenticatedRequest,
+					mockRes as Response,
+				),
+			).rejects.toThrow(ForbiddenError);
 
 			expect(mockUpdateCustomerProfileUseCase.execute).not.toHaveBeenCalled();
-			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
-			expect(mockRes.json).toHaveBeenCalledWith(
-				expect.objectContaining({
-					success: false,
-					code: DOMAIN_ERRORS.CODES.FORBIDDEN,
-				}),
-			);
 		});
 	});
 });
