@@ -66,6 +66,8 @@ export const DOMAIN_ERRORS = {
 		AUTH_HEADER_REQUIRED: "Authorization header with Bearer token is required.",
 		INVALID_OR_EXPIRED_TOKEN: "Invalid or expired access token.",
 		CUSTOMER_ONLY_ACCESS: "Access restricted to customer accounts only.",
+		GOOGLE_AUTH_ACCOUNT_INACTIVE:
+			"Google authentication failed. Account is not active.",
 	},
 };
 

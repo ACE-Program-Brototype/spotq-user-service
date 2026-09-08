@@ -49,11 +49,9 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			dto.idToken,
 		);
 
-		// Normalize Google email
 		const normalizedEmailString = googlePayload.email.trim().toLowerCase();
 		const emailObj = Email.create(normalizedEmailString);
 
-		// Check if user already exists by googleId (immutable sub)
 		const existingUserByGoogleId = await this.userRepository.findByGoogleId(
 			googlePayload.sub,
 		);
@@ -62,7 +60,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 
 		if (existingUserByGoogleId) {
 			finalUser = existingUserByGoogleId;
-			// Account exists. Validate account status
 			if (finalUser.status !== UserStatus.ACTIVE) {
 				this.logger.warn(
 					{
@@ -73,16 +70,14 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 					"Google authentication rejected due to inactive/blocked user status",
 				);
 				throw new UserBlockedError(
-					"Google authentication failed. Account is not active.",
+					DOMAIN_ERRORS.MESSAGES.GOOGLE_AUTH_ACCOUNT_INACTIVE,
 				);
 			}
 		} else {
-			// 2. Google ID doesn't exist, check email
 			const existingUserByEmail =
 				await this.userRepository.findByEmail(emailObj);
 
 			if (existingUserByEmail) {
-				// Email exists, but googleId is not mapped and user has password-based account
 				if (existingUserByEmail.passwordHash !== null) {
 					this.logger.info(
 						{
@@ -106,7 +101,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 						"Google account linked successfully to existing password-based account",
 					);
 				}
-				// Re-assign to finalUser
 				finalUser = existingUserByEmail;
 			} else {
 				isNewUser = true;
