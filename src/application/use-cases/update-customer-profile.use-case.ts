@@ -48,7 +48,10 @@ export class UpdateCustomerProfileUseCase
 
 		let updatedFullName: string | undefined;
 
-		if (dto.first_name !== undefined || dto.last_name !== undefined) {
+		if (dto.full_name !== undefined) {
+			const validatedFullName = FullName.create(dto.full_name.trim());
+			updatedFullName = validatedFullName.getValue();
+		} else if (dto.first_name !== undefined || dto.last_name !== undefined) {
 			const nextFirstName =
 				dto.first_name !== undefined
 					? dto.first_name.trim()

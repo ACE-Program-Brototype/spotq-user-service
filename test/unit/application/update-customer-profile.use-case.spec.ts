@@ -158,6 +158,24 @@ describe("UpdateCustomerProfileUseCase", () => {
 		expect(result.location).toBeNull();
 	});
 
+	it("should support updating full_name directly without splitting", async () => {
+		const existingUser = createMockUser({ fullName: "John Doe" });
+		const updatedUser = createMockUser({ fullName: "Alex Joshy" });
+
+		mockUserRepository.findById.mockResolvedValue(existingUser);
+		mockUserRepository.updateProfile.mockResolvedValue(updatedUser);
+
+		const result = await useCase.execute("user-123", {
+			full_name: "Alex Joshy",
+		});
+
+		expect(mockUserRepository.updateProfile).toHaveBeenCalledWith({
+			userId: "user-123",
+			fullName: "Alex Joshy",
+		});
+		expect(result.full_name).toBe("Alex Joshy");
+	});
+
 	it("should throw UserNotFoundError when user does not exist", async () => {
 		mockUserRepository.findById.mockResolvedValue(null);
 

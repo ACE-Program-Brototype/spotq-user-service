@@ -15,6 +15,17 @@ describe("updateCustomerProfileSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
+	it("should validate payload containing full_name directly", () => {
+		const payload = {
+			full_name: "Rahul Sharma",
+			gender: "MALE",
+			location: "Kochi, Kerala",
+		};
+
+		const result = updateCustomerProfileSchema.safeParse(payload);
+		expect(result.success).toBe(true);
+	});
+
 	it("should validate partial payloads with null values for optional fields", () => {
 		const payload = {
 			first_name: "Rahul",
