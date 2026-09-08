@@ -1,5 +1,6 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { UpdateCustomerProfileDto } from "@application/dtos/update-customer-profile.dto.ts";
+import { CustomerProfileMapper } from "@application/mappers/customer-profile.mapper.ts";
 import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { UserNotFoundError } from "@domain/errors/user-not-found.error.ts";
@@ -90,30 +91,6 @@ export class UpdateCustomerProfileUseCase
 
 		const updatedUser = await this.userRepository.updateProfile(updateParams);
 
-		const updatedFullNameStr = updatedUser.fullName.getValue();
-		const updatedNameParts = updatedFullNameStr.trim().split(/\s+/);
-		const resultFirstName = updatedNameParts[0] || updatedFullNameStr;
-		const resultLastName =
-			updatedNameParts.length > 1 ? updatedNameParts.slice(1).join(" ") : null;
-
-		const dobFormatted = updatedUser.profile?.dob
-			? (updatedUser.profile.dob.toISOString().split("T")[0] ?? null)
-			: null;
-
-		return {
-			id: updatedUser.id,
-			first_name: resultFirstName,
-			last_name: resultLastName,
-			full_name: updatedFullNameStr,
-			email: updatedUser.email.getValue(),
-			phone: updatedUser.phone ? updatedUser.phone.getValue() : null,
-			status: updatedUser.status,
-			gender: updatedUser.profile?.gender ?? null,
-			dob: dobFormatted,
-			location: updatedUser.profile?.location ?? null,
-			default_address: null,
-			created_at: updatedUser.createdAt.toISOString(),
-			updated_at: updatedUser.updatedAt.toISOString(),
-		};
+		return CustomerProfileMapper.toDto(updatedUser);
 	}
 }
