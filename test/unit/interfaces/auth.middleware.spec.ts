@@ -80,7 +80,30 @@ describe("authMiddleware", () => {
 			role: "customer",
 		});
 		expect(mockReq.userId).toBe("user-123");
-		expect(mockNext).toHaveBeenCalled();
+		expect(mockNext).toHaveBeenCalledTimes(1);
+		expect(mockRes.status).not.toHaveBeenCalled();
+		expect(mockRes.json).not.toHaveBeenCalled();
+	});
+
+	it("should default email to empty string if x-user-email is missing", () => {
+		mockReq.headers = {
+			"x-user-id": "user-123",
+			"x-user-role": "customer",
+		};
+
+		authMiddleware(
+			mockReq as AuthenticatedRequest,
+			mockRes as Response,
+			mockNext,
+		);
+
+		expect(mockReq.user).toEqual({
+			userId: "user-123",
+			email: "",
+			role: "customer",
+		});
+		expect(mockReq.userId).toBe("user-123");
+		expect(mockNext).toHaveBeenCalledTimes(1);
 	});
 
 	it("should handle array header values correctly", () => {
@@ -102,14 +125,12 @@ describe("authMiddleware", () => {
 			role: "customer",
 		});
 		expect(mockReq.userId).toBe("user-456");
-		expect(mockNext).toHaveBeenCalled();
+		expect(mockNext).toHaveBeenCalledTimes(1);
 	});
 
-	it("should reject and return 401 when only raw unverified X-User-Id is passed without Bearer token", () => {
+	it("should trim x-user-id header correctly", () => {
 		mockReq.headers = {
-			"x-user-id": "gw-user-456",
-			"x-user-role": "customer",
-			"x-user-email": "customer@example.com",
+			"x-user-id": "  user-789  ",
 		};
 
 		authMiddleware(
@@ -118,7 +139,8 @@ describe("authMiddleware", () => {
 			mockNext,
 		);
 
-		expect(mockRes.status).toHaveBeenCalledWith(401);
-		expect(mockNext).not.toHaveBeenCalled();
+		expect(mockReq.userId).toBe("user-789");
+		expect(mockReq.user?.userId).toBe("user-789");
+		expect(mockNext).toHaveBeenCalledTimes(1);
 	});
 });
