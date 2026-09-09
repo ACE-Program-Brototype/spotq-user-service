@@ -10,7 +10,7 @@ import {
 	forgotPasswordValidate,
 	forgotPasswordVerifyValidate,
 } from "@interfaces/http/validators/forgot-password.validate";
-import { passwordValidate } from "@interfaces/http/validators/reset.password.validate";
+import { adminPasswordValidate } from "@interfaces/http/validators/reset.password.validate";
 import { Router } from "express";
 import { validate } from "../../middlewares/validate.middleware";
 import { loginValidator } from "../../validators/login.validate";
@@ -44,7 +44,7 @@ router.post(
 router.post(
 	"/reset-password",
 	adminTempTokenCheck,
-	validate(passwordValidate),
+	validate(adminPasswordValidate),
 	adminAuthController.resetPassword,
 );
 

@@ -43,6 +43,7 @@ export const DOMAIN_ERRORS = {
 		UNAUTHORIZED: "UNAUTHORIZED",
 		INVALID_TOKEN: "INVALID_TOKEN",
 		EMAIL_NOT_VERIFIED: "EMAIL_NOT_VERIFIED",
+		WEAK_PASSWORD: "WEAK_PASSWORD",
 	},
 	MESSAGES: {
 		INVALID_NAME: "Invalid full name provided.",
@@ -62,6 +63,7 @@ export const DOMAIN_ERRORS = {
 		OTP_ALREADY_USED: "OTP has already been used.",
 		UNAUTHORIZED: "Unauthorized access.",
 		INVALID_TOKEN: "Invalid or revoked token provided.",
+		WEAK_PASSWORD: "Password is too weak. Please choose a stronger password.",
 	},
 };
 

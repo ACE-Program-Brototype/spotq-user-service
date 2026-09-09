@@ -1,6 +1,14 @@
 import { authConstants } from "@shared/constants/auth.constants";
 import z from "zod";
 
+export const adminPasswordValidate = z.object({
+	password: z
+		.string()
+		.trim()
+		.min(15, authConstants.ADMIN_PASSWORD_TOO_SHORT)
+		.max(100, authConstants.PASSWORD_TOO_LONG),
+});
+
 export const passwordValidate = z.object({
 	password: z
 		.string()
