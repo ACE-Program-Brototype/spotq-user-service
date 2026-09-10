@@ -11,6 +11,7 @@ import {
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
 	UpdateCustomerProfileUseCase,
+	UpdateCustomerStatusUseCase,
 	VerifyEmailOtpUseCase,
 } from "@application/use-cases/index.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
@@ -35,6 +36,7 @@ import type {
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IUpdateCustomerProfileUseCase,
+	IUpdateCustomerStatusUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
 import { ContainerModule } from "inversify";
@@ -73,6 +75,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<IListCustomersUseCase>(USER_TYPES.ListCustomersUseCase).to(
 		ListCustomersUseCase,
 	);
+	bind<IUpdateCustomerStatusUseCase>(
+		USER_TYPES.UpdateCustomerStatusUseCase,
+	).to(UpdateCustomerStatusUseCase);
 
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,

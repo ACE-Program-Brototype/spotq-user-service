@@ -15,6 +15,7 @@ export const USER_TYPES = {
 	GetCustomerProfileUseCase: Symbol.for("GetCustomerProfileUseCase"),
 	UpdateCustomerProfileUseCase: Symbol.for("UpdateCustomerProfileUseCase"),
 	ListCustomersUseCase: Symbol.for("ListCustomersUseCase"),
+	UpdateCustomerStatusUseCase: Symbol.for("UpdateCustomerStatusUseCase"),
 
 	// Forgot/Reset Password Use Cases
 	CustomerForgotPasswordUseCase: Symbol.for("CustomerForgotPasswordUseCase"),

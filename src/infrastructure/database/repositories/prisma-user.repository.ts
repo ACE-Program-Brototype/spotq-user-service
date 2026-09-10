@@ -1,4 +1,4 @@
-import type { UserEntity } from "@domain/entities/user.entity.ts";
+import type { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import {
 	EmailAlreadyExistsError,
 	PhoneAlreadyExistsError,
@@ -288,4 +288,28 @@ export class PrismaUserRepository
 
 		return prisma.user.count({ where });
 	}
+
+	public async updateStatus(
+		userId: string,
+		status: UserStatus,
+	): Promise<UserEntity> {
+		try {
+			const updated = await prisma.user.update({
+				where: { id: userId },
+				data: { status: status as PrismaUserStatus },
+				include: { profile: true },
+			});
+
+			return UserMapper.toDomain(updated);
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError &&
+				error.code === "P2025"
+			) {
+				throw new UserNotFoundError();
+			}
+			throw error;
+		}
+	}
 }
+
