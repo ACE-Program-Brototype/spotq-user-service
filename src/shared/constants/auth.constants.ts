@@ -1,6 +1,8 @@
 export const authConstants = {
 	INVALID_EMAIL: "Invalid email address",
-	PASSWORD_TOO_SHORT: "Password must be at least 6 characters long",
+	ADMIN_PASSWORD_TOO_SHORT: "Password must be at least 15 characters long",
+	PASSWORD_TOO_SHORT: "Password must be at least 8 characters long",
+	PASSWORD_TOO_LONG: "Password must not exceed 100 characters",
 	INVALID_PASSWORD: "Invalid credentials",
 	USER_NOT_FOUND: "User not found",
 	INCORRECT_PASSWORD: "Incorrect password",
@@ -21,6 +23,9 @@ export const authConstants = {
 	INVALID_OR_EXPIRED_TOKEN: "Invalid or expired access token.",
 	CUSTOMER_ONLY_ACCESS: "Access restricted to customer accounts only.",
 	BEARER_PREFIX: "Bearer ",
+	GATEWAY_UNAUTHORIZED:
+		"Unauthorized: Missing user authentication from API Gateway.",
+	ADMIN_FORBIDDEN: "Forbidden: Access denied. Admin role required.",
 };
 
 export const USER_ROLES = {

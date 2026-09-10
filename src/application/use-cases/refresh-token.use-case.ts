@@ -1,8 +1,8 @@
 import type {
 	IIdGenerator,
 	ILogger,
-	ITokenService,
 } from "@application/ports/services/index.ts";
+import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
 import { UserStatus } from "@domain/entities/user.entity.ts";
