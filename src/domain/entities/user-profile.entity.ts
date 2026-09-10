@@ -1,7 +1,6 @@
 export interface UserProfileProps {
 	id: string;
 	userId: string;
-	avatarUrl?: string | null;
 	dob?: Date | null;
 	gender?: string | null;
 	location?: string | null;
@@ -19,7 +18,6 @@ export class UserProfileEntity {
 	public static create(params: {
 		id: string;
 		userId: string;
-		avatarUrl?: string | null;
 		dob?: Date | null;
 		gender?: string | null;
 		location?: string | null;
@@ -28,7 +26,6 @@ export class UserProfileEntity {
 		return new UserProfileEntity({
 			id: params.id,
 			userId: params.userId,
-			avatarUrl: params.avatarUrl ?? null,
 			dob: params.dob ?? null,
 			gender: params.gender ?? null,
 			location: params.location ?? null,
@@ -47,10 +44,6 @@ export class UserProfileEntity {
 
 	public get userId(): string {
 		return this.props.userId;
-	}
-
-	public get avatarUrl(): string | null | undefined {
-		return this.props.avatarUrl;
 	}
 
 	public get dob(): Date | null | undefined {

@@ -1,3 +1,4 @@
+export * from "./get-customer-profile.use-case.ts";
 export * from "./google-auth.use-case.ts";
 export * from "./login.use-case.ts";
 export * from "./logout.use-case.ts";

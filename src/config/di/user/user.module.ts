@@ -1,7 +1,12 @@
+/**
+ * Inversify container module for user domain dependencies.
+ * Registers repositories, use cases, controllers, and routers.
+ */
 import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.forgot-password.ts";
 import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
 import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
 import {
+	GetCustomerProfileUseCase,
 	GoogleAuthUseCase,
 	LoginUseCase,
 	LogoutUseCase,
@@ -18,9 +23,11 @@ import {
 	PrismaRefreshTokenRepository,
 	PrismaUserRepository,
 } from "@infrastructure/database/repositories/index.ts";
+import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
 import type {
+	IGetCustomerProfileUseCase,
 	IGoogleAuthUseCase,
 	ILoginUseCase,
 	ILogoutUseCase,
@@ -33,7 +40,6 @@ import { ContainerModule } from "inversify";
 import { USER_TYPES } from "./user.types.ts";
 
 export const userModule = new ContainerModule(({ bind }) => {
-	// Repositories
 	bind<IUserRepository>(USER_TYPES.UserRepository).to(PrismaUserRepository);
 	bind<IRefreshTokenRepository>(USER_TYPES.RefreshTokenRepository).to(
 		PrismaRefreshTokenRepository,
@@ -42,7 +48,6 @@ export const userModule = new ContainerModule(({ bind }) => {
 		PrismaDeviceRepository,
 	);
 
-	// Application Use Cases
 	bind<IRegisterUserUseCase>(USER_TYPES.RegisterUserUseCase).to(
 		RegisterUserUseCase,
 	);
@@ -58,10 +63,15 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<IRefreshTokenUseCase>(USER_TYPES.RefreshTokenUseCase).to(
 		RefreshTokenUseCase,
 	);
+	bind<IGetCustomerProfileUseCase>(USER_TYPES.GetCustomerProfileUseCase).to(
+		GetCustomerProfileUseCase,
+	);
 
-	// HTTP Controllers & Routers
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,
+	);
+	bind<CustomerProfileController>(USER_TYPES.CustomerProfileController).to(
+		CustomerProfileController,
 	);
 	bind<UserRouter>(USER_TYPES.UserRouter).to(UserRouter);
 

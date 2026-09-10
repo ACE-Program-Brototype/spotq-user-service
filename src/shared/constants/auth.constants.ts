@@ -19,7 +19,16 @@ export const authConstants = {
 	PASSWORD_RESET_SUCCESS: "Password reset Successfully",
 	INVALID_CREDENTIALS: "Invalid credentials",
 	INVALID_TOKEN: "Invalid token",
+	AUTH_HEADER_REQUIRED: "Authorization header with Bearer token is required.",
+	INVALID_OR_EXPIRED_TOKEN: "Invalid or expired access token.",
+	CUSTOMER_ONLY_ACCESS: "Access restricted to customer accounts only.",
+	BEARER_PREFIX: "Bearer ",
 	GATEWAY_UNAUTHORIZED:
 		"Unauthorized: Missing user authentication from API Gateway.",
 	ADMIN_FORBIDDEN: "Forbidden: Access denied. Admin role required.",
 };
+
+export const USER_ROLES = {
+	CUSTOMER: "customer",
+	ADMIN: "admin",
+} as const;

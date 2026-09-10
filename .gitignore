@@ -144,3 +144,8 @@ vite.config.ts.timestamp-*
 
 /generated/prisma
 .certs
+
+# API Testing Artifacts
+bruno/
+*.bru
+*.postman_collection.json
