@@ -75,9 +75,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<IListCustomersUseCase>(USER_TYPES.ListCustomersUseCase).to(
 		ListCustomersUseCase,
 	);
-	bind<IUpdateCustomerStatusUseCase>(
-		USER_TYPES.UpdateCustomerStatusUseCase,
-	).to(UpdateCustomerStatusUseCase);
+	bind<IUpdateCustomerStatusUseCase>(USER_TYPES.UpdateCustomerStatusUseCase).to(
+		UpdateCustomerStatusUseCase,
+	);
 
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,

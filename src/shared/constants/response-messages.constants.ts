@@ -19,4 +19,3 @@ export const ResponseMessage = {
 	CUSTOMER_BLOCKED_SUCCESS: "Customer blocked successfully.",
 	CUSTOMER_UNBLOCKED_SUCCESS: "Customer unblocked successfully.",
 } as const;
-

@@ -62,4 +62,3 @@ export const VALIDATION_MESSAGES = {
 		INVALID_USER_ID: "Invalid user ID.",
 	},
 } as const;
-

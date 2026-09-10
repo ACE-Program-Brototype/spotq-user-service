@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const updateCustomerStatusSchema = z.object({
 	status: z.enum(["ACTIVE", "BLOCKED"], {
-		errorMap: () => ({ message: VALIDATION_MESSAGES.STATUS.INVALID_STATUS }),
+		message: VALIDATION_MESSAGES.STATUS.INVALID_STATUS,
 	}),
 });
 

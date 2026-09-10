@@ -1,3 +1,4 @@
+import type { ListCustomersQueryDto } from "@application/dtos/admin/list-customers.dto.ts";
 import type { IListCustomersUseCase } from "@application/ports/use-cases/admin/list-customers.use-case.interface.ts";
 import type { IUpdateCustomerStatusUseCase } from "@application/ports/use-cases/admin/update-customer-status.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
@@ -42,7 +43,9 @@ export class CustomerAdminController implements ICustomerAdminController {
 		const query =
 			(req as AuthenticatedRequest & { validatedQuery?: unknown })
 				.validatedQuery || req.query;
-		const result = await this.listCustomersUseCase.execute(query as any);
+		const result = await this.listCustomersUseCase.execute(
+			query as unknown as ListCustomersQueryDto,
+		);
 
 		sendSuccessResponse(
 			res,
@@ -86,4 +89,3 @@ export class CustomerAdminController implements ICustomerAdminController {
 		sendSuccessResponse(res, result, message, HttpStatus.OK);
 	};
 }
-
