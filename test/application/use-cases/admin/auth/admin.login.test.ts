@@ -1,6 +1,6 @@
 import type {
-	IAdminPasswordHasher,
-	IAdminTokenService,
+	IPasswordHashService,
+	ITokenService,
 } from "@application/ports/services/index.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
@@ -14,12 +14,13 @@ describe("AdminLoginUseCase", () => {
 		update: jest.fn(),
 	};
 
-	const mockPasswordHasher: jest.Mocked<IAdminPasswordHasher> = {
+	const mockPasswordHasher: jest.Mocked<IPasswordHashService> = {
 		hashPassword: jest.fn(),
 		verifyPassword: jest.fn(),
+		validateStrongPassword: jest.fn(),
 	};
 
-	const mockTokenService: jest.Mocked<IAdminTokenService> = {
+	const mockTokenService: jest.Mocked<ITokenService> = {
 		generateAccessToken: jest.fn(),
 		generateRefreshToken: jest.fn(),
 		generateTempToken: jest.fn(),
@@ -86,12 +87,14 @@ describe("AdminLoginUseCase", () => {
 		);
 
 		expect(mockTokenService.generateAccessToken).toHaveBeenCalledWith({
-			userId: "admin-123",
+			sub: "admin-123",
+			email: "admin@example.com",
 			role: "admin",
 		});
 
 		expect(mockTokenService.generateRefreshToken).toHaveBeenCalledWith({
-			userId: "admin-123",
+			sub: "admin-123",
+			email: "admin@example.com",
 			role: "admin",
 		});
 	});

@@ -41,11 +41,13 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 		const role = "admin";
 
 		const accessToken = this._tokenService.generateAccessToken({
-			userId: user.id,
+			sub: user.id,
+			email: user.email,
 			role,
 		});
 		const refreshToken = this._tokenService.generateRefreshToken({
-			userId: user.id,
+			sub: user.id,
+			email: user.email,
 			role,
 		});
 
