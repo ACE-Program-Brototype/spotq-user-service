@@ -2,6 +2,7 @@ export const REGEX = {
 	EMAIL:
 		/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
 	NAME: /^[\p{L}\p{M}]+(?:[' -][\p{L}\p{M}]+)*$/u,
+	ISO_DATE_ONLY: /^\d{4}-\d{2}-\d{2}$/,
 	INDIAN_PHONE: /^\+91[6-9]\d{9}$/,
 	OTP: /^\d{6}$/,
 	PASSWORD: {

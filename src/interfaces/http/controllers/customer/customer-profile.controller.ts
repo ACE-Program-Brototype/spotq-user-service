@@ -1,4 +1,5 @@
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
+import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { ForbiddenError, UnauthorizedError } from "@domain/errors/index.ts";
 import { USER_ROLES } from "@shared/constants/auth.constants.ts";
@@ -15,6 +16,8 @@ export class CustomerProfileController implements ICustomerProfileController {
 	constructor(
 		@inject(TYPES.GetCustomerProfileUseCase)
 		private readonly getCustomerProfileUseCase: IGetCustomerProfileUseCase,
+		@inject(TYPES.UpdateCustomerProfileUseCase)
+		private readonly updateCustomerProfileUseCase: IUpdateCustomerProfileUseCase,
 	) {}
 
 	public getProfile = async (
@@ -37,6 +40,33 @@ export class CustomerProfileController implements ICustomerProfileController {
 			res,
 			profile,
 			ResponseMessage.CUSTOMER_PROFILE_FETCH_SUCCESS,
+			HttpStatus.OK,
+		);
+	};
+
+	public updateProfile = async (
+		req: AuthenticatedRequest,
+		res: Response,
+	): Promise<void> => {
+		const userId = req.user?.userId;
+
+		if (!userId) {
+			throw new UnauthorizedError();
+		}
+
+		if (req.user?.role && req.user.role.toLowerCase() !== USER_ROLES.CUSTOMER) {
+			throw new ForbiddenError();
+		}
+
+		const updatedProfile = await this.updateCustomerProfileUseCase.execute(
+			userId,
+			req.body,
+		);
+
+		sendSuccessResponse(
+			res,
+			updatedProfile,
+			ResponseMessage.CUSTOMER_PROFILE_UPDATE_SUCCESS,
 			HttpStatus.OK,
 		);
 	};

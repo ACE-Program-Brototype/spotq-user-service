@@ -1,25 +1,24 @@
 export const authConstants = {
-	INVALID_EMAIL: "Invalid email address",
-	ADMIN_PASSWORD_TOO_SHORT: "Password must be at least 15 characters long",
-	PASSWORD_TOO_SHORT: "Password must be at least 8 characters long",
-	PASSWORD_TOO_LONG: "Password must not exceed 100 characters",
-	INVALID_PASSWORD: "Invalid credentials",
-	USER_NOT_FOUND: "User not found",
-	INCORRECT_PASSWORD: "Incorrect password",
-	ADMIN_LOGIN_SUCCESS: "Admin login successful",
-	ADMIN_LOGOUT_SUCCESS: "Admin logout successful",
-	FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS:
-		"Forgot Password verification OTP send successfully",
-	EMAIL_VERIFIED_SUCCESS: "Email verified successfully",
-	FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS:
-		"Forgot Password verification OTP re-send successfully",
-	MISSING_TOKEN: "Token not found",
-	INVALID_USER: "Invalid user",
-	RESET_PASSWORD_FAILED: "Reset password failed",
-	PASSWORD_RESET_SUCCESS: "Password reset Successfully",
-	INVALID_CREDENTIALS: "Invalid credentials",
-	INVALID_TOKEN: "Invalid token",
-	AUTH_HEADER_REQUIRED: "Authorization header with Bearer token is required.",
+	COOKIE_MAX_AGE: 7 * 24 * 60 * 60 * 1000,
+	ACCESS_TOKEN_EXPIRY: "15m",
+	REFRESH_TOKEN_EXPIRY: "7d",
+	RESET_TOKEN_EXPIRY_MS: 15 * 60 * 1000,
+	TOKEN_NAME: "refreshToken",
+	USER_LOGGED_IN: "User logged in successfully.",
+	USER_LOGGED_OUT: "User logged out successfully.",
+	PASSWORD_RESET_EMAIL_SENT:
+		"If the email is registered, a password reset link has been sent.",
+	PASSWORD_RESET_SUCCESS:
+		"Password has been reset successfully. Please log in with your new password.",
+	ACCOUNT_NOT_FOUND: "Account not found.",
+	INVALID_REFRESH_TOKEN: "Invalid refresh token",
+	REFRESH_TOKEN_MISSING: "Refresh token missing",
+	USER_BLOCKED_OR_INACTIVE: "User is blocked or inactive",
+	TOKEN_REFRESH_SUCCESS: "Access token refreshed successfully",
+	AUTHENTICATION_FAILED: "Authentication failed",
+	ADMIN_LOGGED_IN: "Admin logged in successfully.",
+	INVALID_CREDENTIALS: "Invalid email or password.",
+	ADMIN_ACCESS_RESTRICTED: "Access restricted to platform administrators only.",
 	INVALID_OR_EXPIRED_TOKEN: "Invalid or expired access token.",
 	CUSTOMER_ONLY_ACCESS: "Access restricted to customer accounts only.",
 	BEARER_PREFIX: "Bearer ",
@@ -29,6 +28,10 @@ export const authConstants = {
 };
 
 export const USER_ROLES = {
-	CUSTOMER: "customer",
 	ADMIN: "admin",
+	PLATFORM_ADMIN: "PLATFORM_ADMIN",
+	CUSTOMER: "customer",
+	RESTAURANT_ADMIN: "restaurant_admin",
 } as const;
+
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];

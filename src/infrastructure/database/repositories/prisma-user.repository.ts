@@ -2,10 +2,12 @@ import type { UserEntity } from "@domain/entities/user.entity.ts";
 import {
 	EmailAlreadyExistsError,
 	PhoneAlreadyExistsError,
+	UserNotFoundError,
 } from "@domain/errors/domain.error.ts";
 import type {
 	CreateUserWithSessionParams,
 	IUserRepository,
+	UpdateUserProfileParams,
 } from "@domain/repositories/user.repository.interface.ts";
 import type { Email } from "@domain/value-objects/email.vo.ts";
 import type { PhoneNumber } from "@domain/value-objects/phone-number.vo.ts";
@@ -174,5 +176,57 @@ export class PrismaUserRepository
 			}
 			throw error;
 		}
+	}
+
+	/**
+	 * Updates personal and profile details for a given user.
+	 *
+	 * @param params User ID and fields to update
+	 * @returns Updated user domain entity
+	 */
+	public async updateProfile(
+		params: UpdateUserProfileParams,
+	): Promise<UserEntity> {
+		const result = await prisma.$transaction(async (tx) => {
+			if (params.fullName !== undefined) {
+				await tx.user.update({
+					where: { id: params.userId },
+					data: { fullname: params.fullName },
+				});
+			}
+
+			const profileUpdateData: Prisma.UserProfileUpdateInput = {};
+			if (params.dob !== undefined) {
+				profileUpdateData.dob = params.dob;
+			}
+			if (params.gender !== undefined) {
+				profileUpdateData.gender = params.gender;
+			}
+			if (params.location !== undefined) {
+				profileUpdateData.location = params.location;
+			}
+
+			await tx.userProfile.upsert({
+				where: { userId: params.userId },
+				create: {
+					userId: params.userId,
+					dob: params.dob ?? null,
+					gender: params.gender ?? null,
+					location: params.location ?? null,
+				},
+				update: profileUpdateData,
+			});
+
+			return tx.user.findUnique({
+				where: { id: params.userId },
+				include: { profile: true },
+			});
+		});
+
+		if (!result) {
+			throw new UserNotFoundError();
+		}
+
+		return UserMapper.toDomain(result);
 	}
 }

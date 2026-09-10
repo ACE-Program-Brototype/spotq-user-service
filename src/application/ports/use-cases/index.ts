@@ -6,4 +6,5 @@ export * from "./logout.use-case.interface.ts";
 export * from "./refresh-token.use-case.interface.ts";
 export * from "./register-user.use-case.interface.ts";
 export * from "./resend-email-otp.use-case.interface.ts";
+export * from "./update-customer-profile.use-case.interface.ts";
 export * from "./verify-email-otp.use-case.interface.ts";

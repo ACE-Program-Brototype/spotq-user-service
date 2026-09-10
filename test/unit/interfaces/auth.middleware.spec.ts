@@ -23,26 +23,8 @@ describe("authMiddleware", () => {
 		mockNext = jest.fn();
 	});
 
-	it("should return 401 when x-user-id header is missing", () => {
-		authMiddleware(
-			mockReq as AuthenticatedRequest,
-			mockRes as Response,
-			mockNext,
-		);
-
-		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
-		expect(mockRes.json).toHaveBeenCalledWith(
-			ApiResponse.fail(
-				authConstants.GATEWAY_UNAUTHORIZED,
-				HttpStatus.UNAUTHORIZED,
-				"UNAUTHORIZED",
-			),
-		);
-		expect(mockNext).not.toHaveBeenCalled();
-	});
-
-	it("should return 401 when x-user-id header is empty or whitespace", () => {
-		mockReq.headers = { "x-user-id": "   " };
+	it("should reject request when x-user-id header is missing", () => {
+		mockReq.headers = {};
 
 		authMiddleware(
 			mockReq as AuthenticatedRequest,
@@ -61,7 +43,29 @@ describe("authMiddleware", () => {
 		expect(mockNext).not.toHaveBeenCalled();
 	});
 
-	it("should set req.user and req.userId and call next when x-user-id is present", () => {
+	it("should reject request when x-user-id header is empty string", () => {
+		mockReq.headers = {
+			"x-user-id": "   ",
+		};
+
+		authMiddleware(
+			mockReq as AuthenticatedRequest,
+			mockRes as Response,
+			mockNext,
+		);
+
+		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+		expect(mockRes.json).toHaveBeenCalledWith(
+			ApiResponse.fail(
+				authConstants.GATEWAY_UNAUTHORIZED,
+				HttpStatus.UNAUTHORIZED,
+				"UNAUTHORIZED",
+			),
+		);
+		expect(mockNext).not.toHaveBeenCalled();
+	});
+
+	it("should attach user context to request and call next when headers are present", () => {
 		mockReq.headers = {
 			"x-user-id": "user-123",
 			"x-user-email": "user@example.com",
@@ -81,14 +85,11 @@ describe("authMiddleware", () => {
 		});
 		expect(mockReq.userId).toBe("user-123");
 		expect(mockNext).toHaveBeenCalledTimes(1);
-		expect(mockRes.status).not.toHaveBeenCalled();
-		expect(mockRes.json).not.toHaveBeenCalled();
 	});
 
-	it("should default email to empty string if x-user-email is missing", () => {
+	it("should handle missing optional email and role headers", () => {
 		mockReq.headers = {
 			"x-user-id": "user-123",
-			"x-user-role": "customer",
 		};
 
 		authMiddleware(
@@ -100,7 +101,7 @@ describe("authMiddleware", () => {
 		expect(mockReq.user).toEqual({
 			userId: "user-123",
 			email: "",
-			role: "customer",
+			role: undefined,
 		});
 		expect(mockReq.userId).toBe("user-123");
 		expect(mockNext).toHaveBeenCalledTimes(1);

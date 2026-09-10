@@ -2,7 +2,12 @@ import type { CustomerProfileResponseDto } from "@application/dtos/customer-prof
 import { CustomerProfileDtoMapper } from "@application/mappers/customer-profile-dto.mapper.ts";
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
-import { UserNotFoundError } from "@domain/errors/user-not-found.error.ts";
+import { UserStatus } from "@domain/entities/user.entity.ts";
+import {
+	UserBlockedError,
+	UserInactiveError,
+	UserNotFoundError,
+} from "@domain/errors/index.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { inject, injectable } from "inversify";
 
@@ -18,6 +23,14 @@ export class GetCustomerProfileUseCase implements IGetCustomerProfileUseCase {
 
 		if (!user) {
 			throw new UserNotFoundError();
+		}
+
+		if (user.status === UserStatus.BLOCKED) {
+			throw new UserBlockedError();
+		}
+
+		if (user.status === UserStatus.INACTIVE) {
+			throw new UserInactiveError();
 		}
 
 		return CustomerProfileDtoMapper.toResponse(user);

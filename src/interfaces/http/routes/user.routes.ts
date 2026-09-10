@@ -7,6 +7,7 @@ import {
 	loginSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
+	updateCustomerProfileSchema,
 	validateRequestBody,
 	verifyEmailOtpSchema,
 } from "@interfaces/http/validators/index.ts";
@@ -46,11 +47,19 @@ export class UserRouter {
 			this.profileController.getProfile,
 		);
 
+		this.router.patch(
+			CUSTOMER_ROUTES.PROFILE,
+			authMiddleware,
+			validateRequestBody(updateCustomerProfileSchema),
+			this.profileController.updateProfile,
+		);
+
 		this.router.get(
 			CUSTOMER_ROUTES.ME,
 			authMiddleware,
 			this.profileController.getProfile,
 		);
+
 		this.router.post(
 			"/register",
 			validateRequestBody(registerUserSchema),

@@ -13,15 +13,17 @@ export const USER_TYPES = {
 	LoginUseCase: Symbol.for("LoginUseCase"),
 	RefreshTokenUseCase: Symbol.for("RefreshTokenUseCase"),
 	GetCustomerProfileUseCase: Symbol.for("GetCustomerProfileUseCase"),
+	UpdateCustomerProfileUseCase: Symbol.for("UpdateCustomerProfileUseCase"),
 
-	// Presentation
-	UserAuthController: Symbol.for("UserAuthController"),
-	CustomerProfileController: Symbol.for("CustomerProfileController"),
-	UserRouter: Symbol.for("UserRouter"),
-
+	// Forgot/Reset Password Use Cases
 	CustomerForgotPasswordUseCase: Symbol.for("CustomerForgotPasswordUseCase"),
 	CustomerVerifyForgotPasswordUseCase: Symbol.for(
 		"CustomerVerifyForgotPasswordUseCase",
 	),
 	CustomerResetPasswordUseCase: Symbol.for("CustomerResetPasswordUseCase"),
-} as const;
+
+	// Presentation
+	UserAuthController: Symbol.for("UserAuthController"),
+	CustomerProfileController: Symbol.for("CustomerProfileController"),
+	UserRouter: Symbol.for("UserRouter"),
+};

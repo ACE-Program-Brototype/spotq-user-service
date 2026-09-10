@@ -11,9 +11,18 @@ export interface CreateUserWithSessionParams {
 	refreshToken: RefreshTokenEntity;
 }
 
+export interface UpdateUserProfileParams {
+	userId: string;
+	fullName?: string;
+	dob?: Date | null;
+	gender?: string | null;
+	location?: string | null;
+}
+
 export interface IUserRepository extends IBaseRepository<UserEntity> {
 	findByEmail(email: Email | string): Promise<UserEntity | null>;
 	findByPhone(phone: PhoneNumber | string): Promise<UserEntity | null>;
 	findByGoogleId(googleId: string): Promise<UserEntity | null>;
 	createWithSession(params: CreateUserWithSessionParams): Promise<UserEntity>;
+	updateProfile(params: UpdateUserProfileParams): Promise<UserEntity>;
 }

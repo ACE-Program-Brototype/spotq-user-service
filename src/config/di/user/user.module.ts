@@ -1,7 +1,3 @@
-/**
- * Inversify container module for user domain dependencies.
- * Registers repositories, use cases, controllers, and routers.
- */
 import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.forgot-password.ts";
 import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
 import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
@@ -13,6 +9,7 @@ import {
 	RefreshTokenUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
+	UpdateCustomerProfileUseCase,
 	VerifyEmailOtpUseCase,
 } from "@application/use-cases/index.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
@@ -34,6 +31,7 @@ import type {
 	IRefreshTokenUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
+	IUpdateCustomerProfileUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
 import { ContainerModule } from "inversify";
@@ -66,6 +64,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<IGetCustomerProfileUseCase>(USER_TYPES.GetCustomerProfileUseCase).to(
 		GetCustomerProfileUseCase,
 	);
+	bind<IUpdateCustomerProfileUseCase>(
+		USER_TYPES.UpdateCustomerProfileUseCase,
+	).to(UpdateCustomerProfileUseCase);
 
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,

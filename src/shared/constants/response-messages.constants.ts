@@ -13,4 +13,5 @@ export const ResponseMessage = {
 	OTP_RESENT: "Verification OTP resent successfully.",
 	LOGOUT_SUCCESS: "Logged out successfully.",
 	CUSTOMER_PROFILE_FETCH_SUCCESS: "Customer profile retrieved successfully.",
+	CUSTOMER_PROFILE_UPDATE_SUCCESS: "Customer profile updated successfully.",
 } as const;

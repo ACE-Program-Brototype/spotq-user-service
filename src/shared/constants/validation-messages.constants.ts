@@ -40,4 +40,13 @@ export const VALIDATION_MESSAGES = {
 	GOOGLE: {
 		ID_TOKEN_REQUIRED: "Google ID token is required.",
 	},
+	PROFILE: {
+		FULL_NAME_REQUIRED: "Full name cannot be empty.",
+		FULL_NAME_INVALID:
+			"Full name can only contain letters, spaces, hyphens, and apostrophes.",
+		GENDER_INVALID: "Gender must be MALE, FEMALE, or OTHER.",
+		DOB_INVALID_FORMAT: "Invalid date of birth format. Expected YYYY-MM-DD.",
+		DOB_FUTURE: "Date of birth cannot be in the future.",
+		LOCATION_TOO_LONG: "Location must not exceed 100 characters.",
+	},
 } as const;
