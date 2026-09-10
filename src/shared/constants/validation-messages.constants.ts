@@ -56,4 +56,10 @@ export const VALIDATION_MESSAGES = {
 		INVALID_SORT_FIELD: "Invalid sort field.",
 		INVALID_SORT_ORDER: "Invalid sort order.",
 	},
+	STATUS: {
+		INVALID_STATUS: "Invalid customer status.",
+		STATUS_REQUIRED: "Status is required.",
+		INVALID_USER_ID: "Invalid user ID.",
+	},
 } as const;
+
