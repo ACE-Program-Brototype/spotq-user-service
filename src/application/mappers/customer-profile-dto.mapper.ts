@@ -1,11 +1,8 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { UserEntity } from "@domain/entities/user.entity.ts";
 
-/**
- * Mapper responsible for transforming User domain entities into CustomerProfileResponseDto.
- */
-export const CustomerProfileMapper = {
-	toDto(user: UserEntity): CustomerProfileResponseDto {
+export const CustomerProfileDtoMapper = {
+	toResponse(user: UserEntity): CustomerProfileResponseDto {
 		const dobFormatted = user.profile?.dob
 			? (user.profile.dob.toISOString().split("T")[0] ?? null)
 			: null;

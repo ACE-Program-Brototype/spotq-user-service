@@ -28,9 +28,10 @@ import { AppError } from "@shared/util/app.error.ts";
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
+import type { IUserAuthController } from "./user.auth.controller.interface.ts";
 
 @injectable()
-export class UserAuthController {
+export class UserAuthController implements IUserAuthController {
 	constructor(
 		@inject(TYPES.RegisterUserUseCase)
 		private readonly registerUserUseCase: IRegisterUserUseCase,

@@ -1,8 +1,7 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
 import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
-import { ForbiddenError } from "@domain/errors/forbidden.error.ts";
-import { UnauthorizedError } from "@domain/errors/unauthorized.error.ts";
+import { ForbiddenError, UnauthorizedError } from "@domain/errors/index.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
@@ -23,11 +22,11 @@ describe("CustomerProfileController", () => {
 		phone: "+919876543210",
 		status: "ACTIVE",
 		gender: "MALE",
-		dob: "1990-05-12",
-		location: "Bengaluru",
+		dob: "1990-01-01",
+		location: "Ernakulam",
 		default_address: null,
-		created_at: "2026-01-01T00:00:00.000Z",
-		updated_at: "2026-01-01T00:00:00.000Z",
+		created_at: "2026-01-15T10:00:00.000Z",
+		updated_at: "2026-01-15T10:00:00.000Z",
 	};
 
 	beforeEach(() => {
@@ -92,7 +91,7 @@ describe("CustomerProfileController", () => {
 			expect(mockGetCustomerProfileUseCase.execute).not.toHaveBeenCalled();
 		});
 
-		it("should reject with ForbiddenError when accessed with non-customer role", async () => {
+		it("should throw ForbiddenError when accessed with non-customer role", async () => {
 			mockReq = {
 				user: {
 					userId: "admin-123",
@@ -162,7 +161,7 @@ describe("CustomerProfileController", () => {
 			expect(mockUpdateCustomerProfileUseCase.execute).not.toHaveBeenCalled();
 		});
 
-		it("should reject with ForbiddenError when update accessed with non-customer role", async () => {
+		it("should throw ForbiddenError when update accessed with non-customer role", async () => {
 			mockReq = {
 				user: {
 					userId: "admin-123",

@@ -1,14 +1,16 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
-import { CustomerProfileMapper } from "@application/mappers/customer-profile.mapper.ts";
+import { CustomerProfileDtoMapper } from "@application/mappers/customer-profile-dto.mapper.ts";
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
-import { UserNotFoundError } from "@domain/errors/user-not-found.error.ts";
+import { UserStatus } from "@domain/entities/user.entity.ts";
+import {
+	UserBlockedError,
+	UserInactiveError,
+	UserNotFoundError,
+} from "@domain/errors/index.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { inject, injectable } from "inversify";
 
-/**
- * Use case to retrieve complete profile information for an authenticated customer.
- */
 @injectable()
 export class GetCustomerProfileUseCase implements IGetCustomerProfileUseCase {
 	constructor(
@@ -16,12 +18,6 @@ export class GetCustomerProfileUseCase implements IGetCustomerProfileUseCase {
 		private readonly userRepository: IUserRepository,
 	) {}
 
-	/**
-	 * Executes the retrieval of customer profile by user ID.
-	 *
-	 * @param userId Unique identifier of the authenticated customer
-	 * @returns Complete customer profile response data
-	 */
 	public async execute(userId: string): Promise<CustomerProfileResponseDto> {
 		const user = await this.userRepository.findById(userId);
 
@@ -29,6 +25,14 @@ export class GetCustomerProfileUseCase implements IGetCustomerProfileUseCase {
 			throw new UserNotFoundError();
 		}
 
-		return CustomerProfileMapper.toDto(user);
+		if (user.status === UserStatus.BLOCKED) {
+			throw new UserBlockedError();
+		}
+
+		if (user.status === UserStatus.INACTIVE) {
+			throw new UserInactiveError();
+		}
+
+		return CustomerProfileDtoMapper.toResponse(user);
 	}
 }

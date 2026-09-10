@@ -38,7 +38,6 @@ import { ContainerModule } from "inversify";
 import { USER_TYPES } from "./user.types.ts";
 
 export const userModule = new ContainerModule(({ bind }) => {
-	// Repositories
 	bind<IUserRepository>(USER_TYPES.UserRepository).to(PrismaUserRepository);
 	bind<IRefreshTokenRepository>(USER_TYPES.RefreshTokenRepository).to(
 		PrismaRefreshTokenRepository,
@@ -47,7 +46,6 @@ export const userModule = new ContainerModule(({ bind }) => {
 		PrismaDeviceRepository,
 	);
 
-	// Application Use Cases
 	bind<IRegisterUserUseCase>(USER_TYPES.RegisterUserUseCase).to(
 		RegisterUserUseCase,
 	);
@@ -70,7 +68,6 @@ export const userModule = new ContainerModule(({ bind }) => {
 		USER_TYPES.UpdateCustomerProfileUseCase,
 	).to(UpdateCustomerProfileUseCase);
 
-	// HTTP Controllers & Routers
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,
 	);

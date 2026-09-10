@@ -1,8 +1,7 @@
 import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/get-customer-profile.use-case.interface.ts";
 import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
-import { ForbiddenError } from "@domain/errors/forbidden.error.ts";
-import { UnauthorizedError } from "@domain/errors/unauthorized.error.ts";
+import { ForbiddenError, UnauthorizedError } from "@domain/errors/index.ts";
 import { USER_ROLES } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
@@ -10,12 +9,10 @@ import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
+import type { ICustomerProfileController } from "./customer-profile.controller.interface.ts";
 
-/**
- * Controller handling customer profile HTTP requests.
- */
 @injectable()
-export class CustomerProfileController {
+export class CustomerProfileController implements ICustomerProfileController {
 	constructor(
 		@inject(TYPES.GetCustomerProfileUseCase)
 		private readonly getCustomerProfileUseCase: IGetCustomerProfileUseCase,
@@ -23,12 +20,6 @@ export class CustomerProfileController {
 		private readonly updateCustomerProfileUseCase: IUpdateCustomerProfileUseCase,
 	) {}
 
-	/**
-	 * Retrieves the complete profile for the authenticated customer.
-	 *
-	 * @param req Authenticated HTTP request containing customer context
-	 * @param res HTTP response
-	 */
 	public getProfile = async (
 		req: AuthenticatedRequest,
 		res: Response,
@@ -53,12 +44,6 @@ export class CustomerProfileController {
 		);
 	};
 
-	/**
-	 * Updates permitted personal profile information for the authenticated customer.
-	 *
-	 * @param req Authenticated HTTP request containing customer context and update body
-	 * @param res HTTP response
-	 */
 	public updateProfile = async (
 		req: AuthenticatedRequest,
 		res: Response,

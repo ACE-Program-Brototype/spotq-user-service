@@ -44,6 +44,7 @@ export const DOMAIN_ERRORS = {
 		FORBIDDEN: "FORBIDDEN",
 		INVALID_TOKEN: "INVALID_TOKEN",
 		EMAIL_NOT_VERIFIED: "EMAIL_NOT_VERIFIED",
+		WEAK_PASSWORD: "WEAK_PASSWORD",
 	},
 	MESSAGES: {
 		INVALID_NAME: "Invalid full name provided.",
@@ -66,6 +67,9 @@ export const DOMAIN_ERRORS = {
 		AUTH_HEADER_REQUIRED: "Authorization header with Bearer token is required.",
 		INVALID_OR_EXPIRED_TOKEN: "Invalid or expired access token.",
 		CUSTOMER_ONLY_ACCESS: "Access restricted to customer accounts only.",
+		GOOGLE_AUTH_ACCOUNT_INACTIVE:
+			"Google authentication failed. Account is not active.",
+		WEAK_PASSWORD: "Password is too weak. Please choose a stronger password.",
 	},
 };
 

@@ -14,12 +14,15 @@ describe("AdminResetPasswordUseCase", () => {
 	const mockPasswordHasher: jest.Mocked<IAdminPasswordHasher> = {
 		hashPassword: jest.fn(),
 		verifyPassword: jest.fn(),
+		validateStrongPassword: jest.fn(),
 	};
 
 	let useCase: AdminResetPasswordUseCase;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+
+		mockPasswordHasher.validateStrongPassword.mockReturnValue(true);
 
 		useCase = new AdminResetPasswordUseCase(
 			mockAdminRepository,
@@ -60,6 +63,10 @@ describe("AdminResetPasswordUseCase", () => {
 			email: "admin@test.com",
 			created_at: createdAt,
 		});
+
+		expect(mockPasswordHasher.validateStrongPassword).toHaveBeenCalledWith(
+			"NewPassword123",
+		);
 
 		expect(mockAdminRepository.findById).toHaveBeenCalledWith("admin-123");
 
@@ -108,6 +115,10 @@ describe("AdminResetPasswordUseCase", () => {
 
 		expect(mockAdminRepository.findById).toHaveBeenCalledWith("admin-123");
 
+		expect(mockPasswordHasher.validateStrongPassword).toHaveBeenCalledWith(
+			"NewPassword123",
+		);
+
 		expect(mockPasswordHasher.hashPassword).toHaveBeenCalledWith(
 			"NewPassword123",
 		);
@@ -138,6 +149,10 @@ describe("AdminResetPasswordUseCase", () => {
 		).rejects.toThrow("Hashing failed");
 
 		expect(mockAdminRepository.findById).toHaveBeenCalledWith("admin-123");
+
+		expect(mockPasswordHasher.validateStrongPassword).toHaveBeenCalledWith(
+			"NewPassword123",
+		);
 
 		expect(mockPasswordHasher.hashPassword).toHaveBeenCalledWith(
 			"NewPassword123",

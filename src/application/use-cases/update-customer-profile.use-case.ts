@@ -1,9 +1,14 @@
 import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { UpdateCustomerProfileDto } from "@application/dtos/update-customer-profile.dto.ts";
-import { CustomerProfileMapper } from "@application/mappers/customer-profile.mapper.ts";
+import { CustomerProfileDtoMapper } from "@application/mappers/customer-profile-dto.mapper.ts";
 import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
-import { UserNotFoundError } from "@domain/errors/user-not-found.error.ts";
+import { UserStatus } from "@domain/entities/user.entity.ts";
+import {
+	UserBlockedError,
+	UserInactiveError,
+	UserNotFoundError,
+} from "@domain/errors/index.ts";
 import type {
 	IUserRepository,
 	UpdateUserProfileParams,
@@ -11,9 +16,6 @@ import type {
 import { FullName } from "@domain/value-objects/index.ts";
 import { inject, injectable } from "inversify";
 
-/**
- * Use case to update personal profile information for an authenticated customer.
- */
 @injectable()
 export class UpdateCustomerProfileUseCase
 	implements IUpdateCustomerProfileUseCase
@@ -23,13 +25,6 @@ export class UpdateCustomerProfileUseCase
 		private readonly userRepository: IUserRepository,
 	) {}
 
-	/**
-	 * Executes the update of customer profile data.
-	 *
-	 * @param userId Unique identifier of the authenticated customer
-	 * @param dto Profile fields to be updated
-	 * @returns Complete updated customer profile response data
-	 */
 	public async execute(
 		userId: string,
 		dto: UpdateCustomerProfileDto,
@@ -38,6 +33,14 @@ export class UpdateCustomerProfileUseCase
 
 		if (!existingUser) {
 			throw new UserNotFoundError();
+		}
+
+		if (existingUser.status === UserStatus.BLOCKED) {
+			throw new UserBlockedError();
+		}
+
+		if (existingUser.status === UserStatus.INACTIVE) {
+			throw new UserInactiveError();
 		}
 
 		let updatedFullName: string | undefined;
@@ -69,6 +72,6 @@ export class UpdateCustomerProfileUseCase
 
 		const updatedUser = await this.userRepository.updateProfile(updateParams);
 
-		return CustomerProfileMapper.toDto(updatedUser);
+		return CustomerProfileDtoMapper.toResponse(updatedUser);
 	}
 }
