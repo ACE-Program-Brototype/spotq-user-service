@@ -1,11 +1,13 @@
 import { UpdateCustomerStatusUseCase } from "@application/use-cases/admin/update-customer-status.use-case.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { UserNotFoundError } from "@domain/errors/domain.error.ts";
+import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
 
 describe("UpdateCustomerStatusUseCase", () => {
 	let mockUserRepository: jest.Mocked<IUserRepository>;
+	let mockRefreshTokenRepository: jest.Mocked<IRefreshTokenRepository>;
 	let useCase: UpdateCustomerStatusUseCase;
 
 	const fixedDate = new Date("2026-03-01T10:00:00.000Z");
@@ -54,10 +56,24 @@ describe("UpdateCustomerStatusUseCase", () => {
 			exists: jest.fn(),
 		};
 
-		useCase = new UpdateCustomerStatusUseCase(mockUserRepository);
+		mockRefreshTokenRepository = {
+			save: jest.fn(),
+			findByTokenHash: jest.fn(),
+			revoke: jest.fn(),
+			revokeAllForUser: jest.fn(),
+			findById: jest.fn(),
+			delete: jest.fn(),
+			findAll: jest.fn(),
+			exists: jest.fn(),
+		};
+
+		useCase = new UpdateCustomerStatusUseCase(
+			mockUserRepository,
+			mockRefreshTokenRepository,
+		);
 	});
 
-	it("should block an active customer and return safe response with id, status, and updatedAt", async () => {
+	it("should block an active customer and revoke active refresh tokens", async () => {
 		mockUserRepository.findById.mockResolvedValue(activeUser);
 		mockUserRepository.updateStatus.mockResolvedValue(blockedUser);
 
@@ -70,6 +86,9 @@ describe("UpdateCustomerStatusUseCase", () => {
 		expect(mockUserRepository.updateStatus).toHaveBeenCalledWith(
 			"usr_01HX8Z9Q7K",
 			UserStatus.BLOCKED,
+		);
+		expect(mockRefreshTokenRepository.revokeAllForUser).toHaveBeenCalledWith(
+			"usr_01HX8Z9Q7K",
 		);
 		expect(result).toEqual({
 			id: "usr_01HX8Z9Q7K",
@@ -94,6 +113,7 @@ describe("UpdateCustomerStatusUseCase", () => {
 			"usr_01HX8Z9Q7K",
 			UserStatus.ACTIVE,
 		);
+		expect(mockRefreshTokenRepository.revokeAllForUser).not.toHaveBeenCalled();
 		expect(result).toEqual({
 			id: "usr_01HX8Z9Q7K",
 			status: UserStatus.ACTIVE,
@@ -111,6 +131,7 @@ describe("UpdateCustomerStatusUseCase", () => {
 
 		expect(mockUserRepository.findById).toHaveBeenCalledWith("usr_01HX8Z9Q7K");
 		expect(mockUserRepository.updateStatus).not.toHaveBeenCalled();
+		expect(mockRefreshTokenRepository.revokeAllForUser).not.toHaveBeenCalled();
 		expect(result).toEqual({
 			id: "usr_01HX8Z9Q7K",
 			status: UserStatus.ACTIVE,
@@ -129,5 +150,6 @@ describe("UpdateCustomerStatusUseCase", () => {
 		).rejects.toThrow(UserNotFoundError);
 
 		expect(mockUserRepository.updateStatus).not.toHaveBeenCalled();
+		expect(mockRefreshTokenRepository.revokeAllForUser).not.toHaveBeenCalled();
 	});
 });
