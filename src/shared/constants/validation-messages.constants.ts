@@ -49,4 +49,11 @@ export const VALIDATION_MESSAGES = {
 		DOB_FUTURE: "Date of birth cannot be in the future.",
 		LOCATION_TOO_LONG: "Location must not exceed 100 characters.",
 	},
+	PAGINATION: {
+		INVALID_PAGE: "Invalid pagination page.",
+		INVALID_LIMIT: "Invalid pagination limit.",
+		INVALID_STATUS: "Invalid customer status.",
+		INVALID_SORT_FIELD: "Invalid sort field.",
+		INVALID_SORT_ORDER: "Invalid sort order.",
+	},
 } as const;
