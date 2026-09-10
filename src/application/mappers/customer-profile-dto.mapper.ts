@@ -15,7 +15,6 @@ export const CustomerProfileDtoMapper = {
 			status: user.status,
 			gender: user.profile?.gender ?? null,
 			dob: dobFormatted,
-			location: user.profile?.location ?? null,
 			created_at: user.createdAt.toISOString(),
 			updated_at: user.updatedAt.toISOString(),
 		};

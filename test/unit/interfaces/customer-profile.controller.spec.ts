@@ -23,7 +23,6 @@ describe("CustomerProfileController", () => {
 		status: "ACTIVE",
 		gender: "MALE",
 		dob: "1990-01-01",
-		location: "Ernakulam",
 		created_at: "2026-01-15T10:00:00.000Z",
 		updated_at: "2026-01-15T10:00:00.000Z",
 	};
@@ -114,7 +113,7 @@ describe("CustomerProfileController", () => {
 		it("should return 200 and updated profile payload when update is successful", async () => {
 			const updatePayload = {
 				full_name: "Rahul Sharma",
-				location: "Kochi",
+				gender: "MALE" as const,
 			};
 
 			mockReq = {

@@ -66,10 +66,6 @@ export class UpdateCustomerProfileUseCase
 			updateParams.gender = dto.gender;
 		}
 
-		if (dto.location !== undefined) {
-			updateParams.location = dto.location;
-		}
-
 		const updatedUser = await this.userRepository.updateProfile(updateParams);
 
 		return CustomerProfileDtoMapper.toResponse(updatedUser);

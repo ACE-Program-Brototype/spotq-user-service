@@ -58,7 +58,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 				userId: "user-123",
 				dob: new Date("1995-05-20T00:00:00.000Z"),
 				gender: "FEMALE",
-				location: "Bangalore",
 				createdAt: fixedDate,
 				updatedAt: fixedDate,
 			}),
@@ -71,7 +70,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 			full_name: "Jane Doe",
 			gender: "FEMALE",
 			dob: "1995-05-20",
-			location: "Bangalore",
 		});
 
 		expect(mockUserRepository.findById).toHaveBeenCalledWith("user-123");
@@ -80,7 +78,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 			fullName: "Jane Doe",
 			gender: "FEMALE",
 			dob: new Date("1995-05-20"),
-			location: "Bangalore",
 		});
 		expect(result).toEqual({
 			id: "user-123",
@@ -90,7 +87,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 			status: "ACTIVE",
 			gender: "FEMALE",
 			dob: "1995-05-20",
-			location: "Bangalore",
 			created_at: fixedDate.toISOString(),
 			updated_at: fixedDate.toISOString(),
 		});

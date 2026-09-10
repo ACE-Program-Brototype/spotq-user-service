@@ -1,65 +1,57 @@
-import { VALIDATION_MESSAGES } from "@shared/constants/index.ts";
+import { REGEX } from "@shared/constants/regex.constants.ts";
+import { VALIDATION_MESSAGES } from "@shared/constants/validation-messages.constants.ts";
 import { z } from "zod";
 
-const nameRegex = /^[\p{L}\p{M}]+(?:[' -][\p{L}\p{M}]+)*$/u;
-const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
 /**
- * Validation schema for updating customer profile information.
+ * Zod validation schema for updating customer profile.
+ * - Disallows extraneous / protected keys strictly.
+ * - Validates full_name against allowed alphabet and punctuation patterns.
+ * - Validates dob against ISO date format (YYYY-MM-DD) and ensures it is not a future date.
+ * - Validates gender against allowed enum values.
  */
 export const updateCustomerProfileSchema = z
 	.object({
 		full_name: z
-			.string()
+			.string({
+				invalid_type_error: VALIDATION_MESSAGES.PROFILE.FULL_NAME_STRING,
+			})
 			.trim()
-			.min(1, { message: VALIDATION_MESSAGES.PROFILE.FULL_NAME_REQUIRED })
-			.max(100)
-			.refine((val) => nameRegex.test(val), {
-				message: VALIDATION_MESSAGES.PROFILE.FULL_NAME_INVALID,
-			})
-			.optional(),
-
-		gender: z
-			.enum(["MALE", "FEMALE", "OTHER"], {
-				message: VALIDATION_MESSAGES.PROFILE.GENDER_INVALID,
-			})
-			.nullable()
+			.min(2, VALIDATION_MESSAGES.PROFILE.FULL_NAME_MIN)
+			.max(100, VALIDATION_MESSAGES.PROFILE.FULL_NAME_MAX)
+			.regex(REGEX.NAME, VALIDATION_MESSAGES.PROFILE.FULL_NAME_REGEX)
 			.optional(),
 
 		dob: z
-			.string()
-			.regex(isoDateRegex, {
-				message: VALIDATION_MESSAGES.PROFILE.DOB_INVALID_FORMAT,
+			.string({
+				invalid_type_error: VALIDATION_MESSAGES.PROFILE.DOB_STRING,
 			})
+			.regex(REGEX.ISO_DATE_ONLY, VALIDATION_MESSAGES.PROFILE.DOB_FORMAT)
 			.refine(
 				(val) => {
 					const parsed = new Date(val);
-					if (Number.isNaN(parsed.getTime())) {
-						return false;
-					}
-					if (parsed.toISOString().split("T")[0] !== val) {
-						return false;
-					}
-					const today = new Date();
-					today.setHours(23, 59, 59, 999);
-					return parsed <= today;
+					if (Number.isNaN(parsed.getTime())) return false;
+					const now = new Date();
+					now.setHours(23, 59, 59, 999);
+					return parsed <= now;
 				},
 				{
-					message: VALIDATION_MESSAGES.PROFILE.DOB_FUTURE,
+					message: VALIDATION_MESSAGES.PROFILE.DOB_NON_FUTURE,
 				},
 			)
 			.nullable()
 			.optional(),
 
-		location: z
-			.string()
-			.trim()
-			.max(100, { message: VALIDATION_MESSAGES.PROFILE.LOCATION_TOO_LONG })
+		gender: z
+			.enum(["MALE", "FEMALE", "OTHER"], {
+				errorMap: () => ({
+					message: VALIDATION_MESSAGES.PROFILE.GENDER_ENUM,
+				}),
+			})
 			.nullable()
 			.optional(),
 	})
 	.strict();
 
-export type UpdateCustomerProfileInput = z.infer<
+export type UpdateCustomerProfileSchema = z.infer<
 	typeof updateCustomerProfileSchema
 >;

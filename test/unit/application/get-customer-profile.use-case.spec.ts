@@ -47,7 +47,6 @@ describe("GetCustomerProfileUseCase", () => {
 				userId: "user-uuid-1234",
 				dob: fixedDob,
 				gender: "MALE",
-				location: "Ernakulam, Kerala",
 				createdAt: fixedDate,
 				updatedAt: fixedDate,
 			}),
@@ -66,7 +65,6 @@ describe("GetCustomerProfileUseCase", () => {
 			status: "ACTIVE",
 			gender: "MALE",
 			dob: "1995-05-20",
-			location: "Ernakulam, Kerala",
 			created_at: fixedDate.toISOString(),
 			updated_at: fixedDate.toISOString(),
 		});

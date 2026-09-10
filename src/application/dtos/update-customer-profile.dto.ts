@@ -1,9 +1,8 @@
 /**
- * Data Transfer Object for updating a customer's personal profile information.
+ * Data Transfer Object for updating customer profile.
  */
 export interface UpdateCustomerProfileDto {
 	full_name?: string;
 	gender?: "MALE" | "FEMALE" | "OTHER" | null;
 	dob?: string | null;
-	location?: string | null;
 }
