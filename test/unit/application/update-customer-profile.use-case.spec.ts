@@ -91,7 +91,6 @@ describe("UpdateCustomerProfileUseCase", () => {
 			gender: "FEMALE",
 			dob: "1995-05-20",
 			location: "Bangalore",
-			default_address: null,
 			created_at: fixedDate.toISOString(),
 			updated_at: fixedDate.toISOString(),
 		});

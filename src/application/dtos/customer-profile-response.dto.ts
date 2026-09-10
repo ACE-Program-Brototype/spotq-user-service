@@ -10,7 +10,6 @@ export interface CustomerProfileResponseDto {
 	gender: string | null;
 	dob: string | null;
 	location: string | null;
-	default_address: null;
 	created_at: string;
 	updated_at: string;
 }
