@@ -29,3 +29,34 @@ export const validateRequestBody = (schema: ZodSchema) => {
 		next();
 	};
 };
+
+export const validateRequestQuery = (schema: ZodSchema) => {
+	return (req: Request, res: Response, next: NextFunction): void => {
+		const result = schema.safeParse(req.query);
+
+		if (!result.success) {
+			const firstIssue = result.error.issues[0];
+			const errorMessage = firstIssue
+				? firstIssue.message
+				: "Validation failed.";
+
+			res
+				.status(HttpStatus.UNPROCESSABLE_ENTITY)
+				.json(
+					ApiResponse.fail(
+						errorMessage,
+						HttpStatus.UNPROCESSABLE_ENTITY,
+						"VALIDATION_ERROR",
+					),
+				);
+			return;
+		}
+
+		if (req.query && typeof req.query === "object") {
+			Object.assign(req.query, result.data);
+		}
+		(req as Request & { validatedQuery?: unknown }).validatedQuery =
+			result.data;
+		next();
+	};
+};

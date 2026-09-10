@@ -1,3 +1,4 @@
+export * from "./admin/list-customers.validator.ts";
 export * from "./google-auth.validator.ts";
 export * from "./login.validator.ts";
 export * from "./register-user.validator.ts";
