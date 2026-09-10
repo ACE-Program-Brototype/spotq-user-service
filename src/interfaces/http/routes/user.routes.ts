@@ -11,7 +11,10 @@ import {
 	registerUserSchema,
 	resendEmailOtpSchema,
 	updateCustomerProfileSchema,
+	updateCustomerStatusParamsSchema,
+	updateCustomerStatusSchema,
 	validateRequestBody,
+	validateRequestParams,
 	validateRequestQuery,
 	verifyEmailOtpSchema,
 } from "@interfaces/http/validators/index.ts";
@@ -62,6 +65,22 @@ export class UserRouter {
 			adminAuthMiddleware,
 			validateRequestQuery(listCustomersQuerySchema),
 			this.customerAdminController.listCustomers,
+		);
+
+		this.router.patch(
+			ADMIN_ROUTES.USER_STATUS,
+			adminAuthMiddleware,
+			validateRequestParams(updateCustomerStatusParamsSchema),
+			validateRequestBody(updateCustomerStatusSchema),
+			this.customerAdminController.updateCustomerStatus,
+		);
+
+		this.router.patch(
+			ADMIN_ROUTES.USERS_USER_STATUS,
+			adminAuthMiddleware,
+			validateRequestParams(updateCustomerStatusParamsSchema),
+			validateRequestBody(updateCustomerStatusSchema),
+			this.customerAdminController.updateCustomerStatus,
 		);
 
 		this.router.get(
