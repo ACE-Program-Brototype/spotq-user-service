@@ -1,6 +1,7 @@
 import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
 import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
 import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
+import type { IAdminRefreshTokenUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.refresh-token";
 import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types";
@@ -18,6 +19,8 @@ export class AdminAuthController {
 		private readonly _adminLoginUseCase: IAdminLoginUseCase,
 		@inject(TYPES.AdminLogoutUseCase)
 		private readonly _adminLogoutUseCase: IAdminLogoutUseCase,
+		@inject(TYPES.AdminRefreshTokenUseCase)
+		private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
 		@inject(TYPES.AdminForgotPasswordUseCase)
 		private readonly _adminForgotPasswordUseCase: IAdminForgotPasswordUseCase,
 		@inject(TYPES.AdminForgotPasswordEmailVerifyUseCase)
@@ -43,6 +46,31 @@ export class AdminAuthController {
 			res,
 			{ user, access_token },
 			authConstants.ADMIN_LOGIN_SUCCESS,
+			HttpStatus.OK,
+		);
+	};
+
+	refreshToken = async (req: Request, res: Response): Promise<void> => {
+		const refreshToken =
+			req.cookies?.refreshToken ||
+			req.body?.refreshToken ||
+			(req.headers["x-refresh-token"] as string) ||
+			"";
+
+		const { access_token, refresh_token, user } =
+			await this._adminRefreshTokenUseCase.execute(refreshToken);
+
+		res.cookie("refreshToken", refresh_token, {
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.refreshMaxAge),
+		});
+
+		successResponse(
+			res,
+			{ user, access_token },
+			authConstants.TOKEN_REFRESH_SUCCESS,
 			HttpStatus.OK,
 		);
 	};

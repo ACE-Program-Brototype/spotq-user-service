@@ -25,7 +25,7 @@ import { ResponseMessage } from "@shared/constants/index.ts";
 import { successResponse } from "@shared/response/api-response.model.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import { AppError } from "@shared/util/app.error.ts";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
 import type { IUserAuthController } from "./user.auth.controller.interface.ts";
@@ -195,54 +195,41 @@ export class UserAuthController implements IUserAuthController {
 		sendSuccessResponse(res, responseBody, "Login successful.", HttpStatus.OK);
 	};
 
-	public refresh = async (
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> => {
-		try {
-			const refreshToken =
-				req.body?.refreshToken ||
-				(req as Request & { cookies?: Record<string, string> }).cookies
-					?.refreshToken ||
-				this.getCookie(req, "refreshToken") ||
-				"";
+	public refresh = async (req: Request, res: Response): Promise<void> => {
+		const refreshToken =
+			req.body?.refreshToken ||
+			(req as Request & { cookies?: Record<string, string> }).cookies
+				?.refreshToken ||
+			this.getCookie(req, "refreshToken") ||
+			"";
 
-			const result = await this.refreshTokenUseCase.execute({
-				refreshToken,
-			});
+		const result = await this.refreshTokenUseCase.execute({
+			refreshToken,
+		});
 
-			res.cookie("refreshToken", result.refreshToken, {
-				httpOnly: config.cookie.httpOnly,
-				secure: config.cookie.secure,
-				sameSite: config.cookie.sameSite,
-				maxAge: Number(config.cookie.refreshMaxAge),
-			});
+		res.cookie("refreshToken", result.refreshToken, {
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.refreshMaxAge),
+		});
 
-			const responseBody = {
-				user: {
-					id: result.user.id,
-					full_name: result.user.fullName,
-					email: result.user.email,
-					status: result.user.status,
-				},
-				access_token: result.accessToken,
-			};
+		const responseBody = {
+			user: {
+				id: result.user.id,
+				full_name: result.user.fullName,
+				email: result.user.email,
+				status: result.user.status,
+			},
+			access_token: result.accessToken,
+		};
 
-			sendSuccessResponse(
-				res,
-				responseBody,
-				"Token refreshed successfully.",
-				HttpStatus.OK,
-			);
-		} catch (error) {
-			res.clearCookie("refreshToken", {
-				httpOnly: config.cookie.httpOnly,
-				secure: config.cookie.secure,
-				sameSite: config.cookie.sameSite,
-			});
-			next(error);
-		}
+		sendSuccessResponse(
+			res,
+			responseBody,
+			"Token refreshed successfully.",
+			HttpStatus.OK,
+		);
 	};
 
 	forgotPassword = async (req: Request, res: Response): Promise<void> => {
