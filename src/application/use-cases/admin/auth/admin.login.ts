@@ -9,6 +9,7 @@ import { TYPES } from "@config/di/types.ts";
 import { Admin } from "@domain/entities/admin";
 import { InvalidCredentialsError } from "@domain/errors/invalid.credentials.error";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo";
+import { USER_ROLES } from "@shared/constants/auth.constants";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -38,7 +39,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
 			throw new InvalidCredentialsError();
 		}
 
-		const role = "admin";
+		const role = USER_ROLES.ADMIN;
 
 		const accessToken = this._tokenService.generateAccessToken({
 			sub: user.id,

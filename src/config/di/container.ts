@@ -4,11 +4,13 @@ import type { ITokenService } from "@application/ports/services/IToken.service.t
 import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password.ts";
 import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login.ts";
 import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout.ts";
+import type { IAdminRefreshTokenUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.refresh-token.ts";
 import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password.ts";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password.ts";
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
 import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
+import { AdminRefreshTokenUseCase } from "@application/use-cases/admin/auth/admin.refresh-token.ts";
 import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admin.reset.password.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo.ts";
@@ -40,6 +42,9 @@ container
 container
 	.bind<IAdminLoginUseCase>(TYPES.AdminLoginUseCase)
 	.to(AdminLoginUseCase);
+container
+	.bind<IAdminRefreshTokenUseCase>(TYPES.AdminRefreshTokenUseCase)
+	.to(AdminRefreshTokenUseCase);
 container
 	.bind<AdminAuthController>(TYPES.AdminAuthController)
 	.to(AdminAuthController);
