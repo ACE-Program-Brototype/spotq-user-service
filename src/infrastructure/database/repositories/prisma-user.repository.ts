@@ -5,7 +5,9 @@ import {
 	UserNotFoundError,
 } from "@domain/errors/domain.error.ts";
 import type {
+	CountCustomersParams,
 	CreateUserWithSessionParams,
+	FindCustomersParams,
 	IUserRepository,
 	UpdateUserProfileParams,
 } from "@domain/repositories/user.repository.interface.ts";
@@ -228,5 +230,62 @@ export class PrismaUserRepository
 		}
 
 		return UserMapper.toDomain(result);
+	}
+
+	public async findCustomers(
+		params: FindCustomersParams,
+	): Promise<UserEntity[]> {
+		const where: Prisma.UserWhereInput = {};
+
+		if (params.status) {
+			where.status = params.status as PrismaUserStatus;
+		}
+
+		if (params.search) {
+			const searchTrimmed = params.search.trim();
+			if (searchTrimmed.length > 0) {
+				where.OR = [
+					{ fullname: { contains: searchTrimmed, mode: "insensitive" } },
+					{ email: { contains: searchTrimmed, mode: "insensitive" } },
+				];
+			}
+		}
+
+		const sortDirection =
+			params.sortOrder.toUpperCase() === "ASC" ? "asc" : "desc";
+		const orderBy: Prisma.UserOrderByWithRelationInput[] = [
+			{ createdAt: sortDirection },
+			{ id: "desc" },
+		];
+
+		const records = await prisma.user.findMany({
+			where,
+			skip: params.skip,
+			take: params.take,
+			orderBy,
+			include: { profile: true },
+		});
+
+		return records.map((record) => UserMapper.toDomain(record));
+	}
+
+	public async countCustomers(params: CountCustomersParams): Promise<number> {
+		const where: Prisma.UserWhereInput = {};
+
+		if (params.status) {
+			where.status = params.status as PrismaUserStatus;
+		}
+
+		if (params.search) {
+			const searchTrimmed = params.search.trim();
+			if (searchTrimmed.length > 0) {
+				where.OR = [
+					{ fullname: { contains: searchTrimmed, mode: "insensitive" } },
+					{ email: { contains: searchTrimmed, mode: "insensitive" } },
+				];
+			}
+		}
+
+		return prisma.user.count({ where });
 	}
 }
