@@ -1,17 +1,27 @@
 import { TYPES } from "@config/di/types.ts";
+import type { ICustomerAdminController } from "@interfaces/http/controllers/admin/customer-admin.controller.interface.ts";
 import type { ICustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.interface.ts";
 import type { IUserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.interface.ts";
+import { adminAuthMiddleware } from "@interfaces/http/middlewares/admin.auth.middleware.ts";
 import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
 	googleAuthSchema,
+	listCustomersQuerySchema,
 	loginSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
 	updateCustomerProfileSchema,
+	updateCustomerStatusParamsSchema,
+	updateCustomerStatusSchema,
 	validateRequestBody,
+	validateRequestParams,
+	validateRequestQuery,
 	verifyEmailOtpSchema,
 } from "@interfaces/http/validators/index.ts";
-import { CUSTOMER_ROUTES } from "@shared/constants/routes.constants.ts";
+import {
+	ADMIN_ROUTES,
+	CUSTOMER_ROUTES,
+} from "@shared/constants/routes.constants.ts";
 import { Router } from "express";
 import { inject, injectable } from "inversify";
 import { customerTempTokenCheck } from "../middlewares/customer.auth.middleware";
@@ -35,12 +45,44 @@ export class UserRouter {
 		private readonly userController: IUserAuthController,
 		@inject(TYPES.CustomerProfileController)
 		private readonly profileController: ICustomerProfileController,
+		@inject(TYPES.CustomerAdminController)
+		private readonly customerAdminController: ICustomerAdminController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
 	}
 
 	private registerRoutes(): void {
+		this.router.get(
+			"/",
+			adminAuthMiddleware,
+			validateRequestQuery(listCustomersQuerySchema),
+			this.customerAdminController.listCustomers,
+		);
+
+		this.router.get(
+			ADMIN_ROUTES.USERS,
+			adminAuthMiddleware,
+			validateRequestQuery(listCustomersQuerySchema),
+			this.customerAdminController.listCustomers,
+		);
+
+		this.router.patch(
+			ADMIN_ROUTES.USER_STATUS,
+			adminAuthMiddleware,
+			validateRequestParams(updateCustomerStatusParamsSchema),
+			validateRequestBody(updateCustomerStatusSchema),
+			this.customerAdminController.updateCustomerStatus,
+		);
+
+		this.router.patch(
+			ADMIN_ROUTES.USERS_USER_STATUS,
+			adminAuthMiddleware,
+			validateRequestParams(updateCustomerStatusParamsSchema),
+			validateRequestBody(updateCustomerStatusSchema),
+			this.customerAdminController.updateCustomerStatus,
+		);
+
 		this.router.get(
 			CUSTOMER_ROUTES.PROFILE,
 			authMiddleware,

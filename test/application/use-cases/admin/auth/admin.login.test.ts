@@ -86,12 +86,16 @@ describe("AdminLoginUseCase", () => {
 		);
 
 		expect(mockTokenService.generateAccessToken).toHaveBeenCalledWith({
+			sub: "admin-123",
 			userId: "admin-123",
+			email: "admin@example.com",
 			role: "admin",
 		});
 
 		expect(mockTokenService.generateRefreshToken).toHaveBeenCalledWith({
+			sub: "admin-123",
 			userId: "admin-123",
+			email: "admin@example.com",
 			role: "admin",
 		});
 	});

@@ -1,11 +1,13 @@
-import type { UserEntity } from "@domain/entities/user.entity.ts";
+import type { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import {
 	EmailAlreadyExistsError,
 	PhoneAlreadyExistsError,
 	UserNotFoundError,
 } from "@domain/errors/domain.error.ts";
 import type {
+	CountCustomersParams,
 	CreateUserWithSessionParams,
+	FindCustomersParams,
 	IUserRepository,
 	UpdateUserProfileParams,
 } from "@domain/repositories/user.repository.interface.ts";
@@ -228,5 +230,85 @@ export class PrismaUserRepository
 		}
 
 		return UserMapper.toDomain(result);
+	}
+
+	public async findCustomers(
+		params: FindCustomersParams,
+	): Promise<UserEntity[]> {
+		const where: Prisma.UserWhereInput = {};
+
+		if (params.status) {
+			where.status = params.status as PrismaUserStatus;
+		}
+
+		if (params.search) {
+			const searchTrimmed = params.search.trim();
+			if (searchTrimmed.length > 0) {
+				where.OR = [
+					{ fullname: { contains: searchTrimmed, mode: "insensitive" } },
+					{ email: { contains: searchTrimmed, mode: "insensitive" } },
+				];
+			}
+		}
+
+		const sortDirection =
+			params.sortOrder.toUpperCase() === "ASC" ? "asc" : "desc";
+		const orderBy: Prisma.UserOrderByWithRelationInput[] = [
+			{ createdAt: sortDirection },
+			{ id: "desc" },
+		];
+
+		const records = await prisma.user.findMany({
+			where,
+			skip: params.skip,
+			take: params.take,
+			orderBy,
+			include: { profile: true },
+		});
+
+		return records.map((record) => UserMapper.toDomain(record));
+	}
+
+	public async countCustomers(params: CountCustomersParams): Promise<number> {
+		const where: Prisma.UserWhereInput = {};
+
+		if (params.status) {
+			where.status = params.status as PrismaUserStatus;
+		}
+
+		if (params.search) {
+			const searchTrimmed = params.search.trim();
+			if (searchTrimmed.length > 0) {
+				where.OR = [
+					{ fullname: { contains: searchTrimmed, mode: "insensitive" } },
+					{ email: { contains: searchTrimmed, mode: "insensitive" } },
+				];
+			}
+		}
+
+		return prisma.user.count({ where });
+	}
+
+	public async updateStatus(
+		userId: string,
+		status: UserStatus,
+	): Promise<UserEntity> {
+		try {
+			const updated = await prisma.user.update({
+				where: { id: userId },
+				data: { status: status as PrismaUserStatus },
+				include: { profile: true },
+			});
+
+			return UserMapper.toDomain(updated);
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError &&
+				error.code === "P2025"
+			) {
+				throw new UserNotFoundError();
+			}
+			throw error;
+		}
 	}
 }
