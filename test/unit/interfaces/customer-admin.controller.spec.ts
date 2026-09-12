@@ -22,8 +22,6 @@ describe("CustomerAdminController", () => {
 				email: "jane.doe@example.com",
 				phone: "+919876543210",
 				status: UserStatus.ACTIVE,
-				createdAt: "2026-03-01T10:00:00.000Z",
-				updatedAt: "2026-03-01T10:00:00.000Z",
 			},
 		],
 		total: 1,

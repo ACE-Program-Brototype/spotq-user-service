@@ -9,8 +9,6 @@ export const CustomerListDtoMapper = {
 			email: user.email.getValue(),
 			phone: user.phone ? user.phone.getValue() : null,
 			status: user.status,
-			createdAt: user.createdAt.toISOString(),
-			updatedAt: user.updatedAt.toISOString(),
 		};
 	},
 };

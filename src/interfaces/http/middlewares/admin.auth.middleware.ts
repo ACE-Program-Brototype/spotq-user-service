@@ -38,7 +38,7 @@ export function adminAuthMiddleware(
 
 	const role = getHeaderValue(req.headers["x-user-role"]);
 
-	if (role !== "admin") {
+	if (role?.toLowerCase() !== "admin") {
 		res
 			.status(HttpStatus.FORBIDDEN)
 			.json(

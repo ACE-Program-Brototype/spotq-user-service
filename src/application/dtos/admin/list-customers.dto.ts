@@ -16,8 +16,6 @@ export interface CustomerListItemDto {
 	email: string;
 	phone: string | null;
 	status: UserStatus;
-	createdAt: string;
-	updatedAt: string;
 }
 
 export interface PaginatedCustomersResponseDto {

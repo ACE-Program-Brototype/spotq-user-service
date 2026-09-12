@@ -84,8 +84,6 @@ describe("ListCustomersUseCase", () => {
 					email: "alice@example.com",
 					phone: "+919876543210",
 					status: UserStatus.ACTIVE,
-					createdAt: fixedDate.toISOString(),
-					updatedAt: fixedDate.toISOString(),
 				},
 				{
 					id: "user-2",
@@ -93,8 +91,6 @@ describe("ListCustomersUseCase", () => {
 					email: "bob@example.com",
 					phone: null,
 					status: UserStatus.INACTIVE,
-					createdAt: fixedDate.toISOString(),
-					updatedAt: fixedDate.toISOString(),
 				},
 			],
 			total: 2,
