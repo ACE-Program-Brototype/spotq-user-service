@@ -3,13 +3,20 @@ import { z } from "zod";
 
 export const updateCustomerStatusSchema = z.object({
 	status: z.enum(["ACTIVE", "BLOCKED"], {
-		message: VALIDATION_MESSAGES.STATUS.INVALID_STATUS,
+		error: (issue) => {
+			if (issue.input === undefined) {
+				return VALIDATION_MESSAGES.STATUS.STATUS_REQUIRED;
+			}
+			return VALIDATION_MESSAGES.STATUS.INVALID_STATUS;
+		},
 	}),
 });
 
 export const updateCustomerStatusParamsSchema = z.object({
 	userId: z
-		.string({ required_error: VALIDATION_MESSAGES.STATUS.INVALID_USER_ID })
+		.string({
+			error: () => VALIDATION_MESSAGES.STATUS.INVALID_USER_ID,
+		})
 		.uuid({ message: VALIDATION_MESSAGES.STATUS.INVALID_USER_ID }),
 });
 

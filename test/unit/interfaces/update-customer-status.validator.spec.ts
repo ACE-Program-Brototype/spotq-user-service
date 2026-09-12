@@ -40,13 +40,13 @@ describe("updateCustomerStatusSchema", () => {
 		}
 	});
 
-	it("should reject missing status", () => {
+	it("should reject missing status with STATUS_REQUIRED message", () => {
 		const result = updateCustomerStatusSchema.safeParse({});
 
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0]?.message).toBe(
-				VALIDATION_MESSAGES.STATUS.INVALID_STATUS,
+				VALIDATION_MESSAGES.STATUS.STATUS_REQUIRED,
 			);
 		}
 	});

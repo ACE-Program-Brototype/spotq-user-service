@@ -14,11 +14,11 @@ export const validateRequestBody = (schema: ZodSchema) => {
 				: "Validation failed.";
 
 			res
-				.status(HttpStatus.UNPROCESSABLE_ENTITY)
+				.status(HttpStatus.BAD_REQUEST)
 				.json(
 					ApiResponse.fail(
 						errorMessage,
-						HttpStatus.UNPROCESSABLE_ENTITY,
+						HttpStatus.BAD_REQUEST,
 						"VALIDATION_ERROR",
 					),
 				);
@@ -41,11 +41,11 @@ export const validateRequestQuery = (schema: ZodSchema) => {
 				: "Validation failed.";
 
 			res
-				.status(HttpStatus.UNPROCESSABLE_ENTITY)
+				.status(HttpStatus.BAD_REQUEST)
 				.json(
 					ApiResponse.fail(
 						errorMessage,
-						HttpStatus.UNPROCESSABLE_ENTITY,
+						HttpStatus.BAD_REQUEST,
 						"VALIDATION_ERROR",
 					),
 				);
@@ -72,11 +72,11 @@ export const validateRequestParams = (schema: ZodSchema) => {
 				: "Validation failed.";
 
 			res
-				.status(HttpStatus.UNPROCESSABLE_ENTITY)
+				.status(HttpStatus.BAD_REQUEST)
 				.json(
 					ApiResponse.fail(
 						errorMessage,
-						HttpStatus.UNPROCESSABLE_ENTITY,
+						HttpStatus.BAD_REQUEST,
 						"VALIDATION_ERROR",
 					),
 				);

@@ -4,7 +4,7 @@ import type { IUpdateCustomerStatusUseCase } from "@application/ports/use-cases/
 import { TYPES } from "@config/di/types.ts";
 import type { UserStatus } from "@domain/entities/user.entity.ts";
 import { ForbiddenError, UnauthorizedError } from "@domain/errors/index.ts";
-import { USER_ROLES } from "@shared/constants/auth.constants.ts";
+import { authConstants, USER_ROLES } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
@@ -37,7 +37,7 @@ export class CustomerAdminController implements ICustomerAdminController {
 			req.user.role.toLowerCase() !== USER_ROLES.ADMIN &&
 			req.user.role !== USER_ROLES.PLATFORM_ADMIN
 		) {
-			throw new ForbiddenError();
+			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 
 		const query =
@@ -70,7 +70,7 @@ export class CustomerAdminController implements ICustomerAdminController {
 			req.user.role.toLowerCase() !== USER_ROLES.ADMIN &&
 			req.user.role !== USER_ROLES.PLATFORM_ADMIN
 		) {
-			throw new ForbiddenError();
+			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 
 		const targetUserId = req.params.userId;
