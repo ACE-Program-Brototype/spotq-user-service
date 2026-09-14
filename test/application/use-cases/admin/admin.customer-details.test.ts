@@ -47,12 +47,7 @@ describe("GET /admin/customers/:id - Admin Customer Details Integration Tests", 
 
 		expect(prisma.user.findUnique).toHaveBeenCalledWith({
 			where: { id: validUuid },
-			select: {
-				id: true,
-				fullname: true,
-				email: true,
-				status: true,
-			},
+			include: { profile: true },
 		});
 	});
 
@@ -117,12 +112,7 @@ describe("GET /admin/customers/:id - Admin Customer Details Integration Tests", 
 
 		expect(prisma.user.findUnique).toHaveBeenCalledWith({
 			where: { id: validUuid },
-			select: {
-				id: true,
-				fullname: true,
-				email: true,
-				status: true,
-			},
+			include: { profile: true },
 		});
 	});
 });
