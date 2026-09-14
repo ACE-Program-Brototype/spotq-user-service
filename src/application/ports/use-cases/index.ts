@@ -1,4 +1,5 @@
 export * from "./admin/list-customers.use-case.interface.ts";
+export * from "./admin/update-customer-status.use-case.interface.ts";
 export * from "./base.use-case.interface.ts";
 export * from "./get-customer-profile.use-case.interface.ts";
 export * from "./google-auth.use-case.interface.ts";

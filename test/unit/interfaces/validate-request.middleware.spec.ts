@@ -1,5 +1,6 @@
 import {
 	validateRequestBody,
+	validateRequestParams,
 	validateRequestQuery,
 } from "@interfaces/http/validators/validate-request.middleware.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
@@ -85,6 +86,42 @@ describe("validate-request.middleware", () => {
 			).toEqual({
 				name: "Alice",
 			});
+		});
+	});
+
+	describe("validateRequestParams", () => {
+		const paramSchema = z.object({
+			userId: z.string().uuid({ message: "Invalid user ID." }),
+		});
+
+		it("should call next() and assign validatedParams on success", () => {
+			mockReq.params = { userId: "123e4567-e89b-12d3-a456-426614174000" };
+			const middleware = validateRequestParams(paramSchema);
+
+			middleware(mockReq as Request, mockRes as Response, mockNext);
+
+			expect(mockNext).toHaveBeenCalled();
+			expect(
+				(mockReq as Request & { validatedParams?: unknown }).validatedParams,
+			).toEqual({ userId: "123e4567-e89b-12d3-a456-426614174000" });
+		});
+
+		it("should return 400 Bad Request on invalid params", () => {
+			mockReq.params = { userId: "invalid-uuid" };
+			const middleware = validateRequestParams(paramSchema);
+
+			middleware(mockReq as Request, mockRes as Response, mockNext);
+
+			expect(mockNext).not.toHaveBeenCalled();
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+			expect(mockRes.json).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: false,
+					statusCode: HttpStatus.BAD_REQUEST,
+					error: "VALIDATION_ERROR",
+					message: "Invalid user ID.",
+				}),
+			);
 		});
 	});
 });

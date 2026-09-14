@@ -10,6 +10,8 @@ import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import {
 	EmailNotVerifiedError,
 	InvalidCredentialsError,
+	UserBlockedError,
+	UserInactiveError,
 } from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
@@ -157,7 +159,7 @@ describe("LoginUseCase", () => {
 		);
 	});
 
-	it("should throw AccountBlockedError if user status is BLOCKED", async () => {
+	it("should throw UserBlockedError if user status is BLOCKED", async () => {
 		const user = createMockUser(UserStatus.BLOCKED);
 		mockUserRepository.findByEmail.mockResolvedValue(user);
 		mockPasswordHasher.compare.mockResolvedValue(true);
@@ -167,7 +169,7 @@ describe("LoginUseCase", () => {
 				email: "jane.doe@example.com",
 				password: "password123",
 			}),
-		).rejects.toThrow(InvalidCredentialsError);
+		).rejects.toThrow(UserBlockedError);
 
 		expect(mockLogger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({ event: "LOGIN_BLOCKED_ACCOUNT" }),
@@ -175,7 +177,7 @@ describe("LoginUseCase", () => {
 		);
 	});
 
-	it("should throw AccountInactiveError if user status is INACTIVE", async () => {
+	it("should throw UserInactiveError if user status is INACTIVE", async () => {
 		const user = createMockUser(UserStatus.INACTIVE);
 		mockUserRepository.findByEmail.mockResolvedValue(user);
 		mockPasswordHasher.compare.mockResolvedValue(true);
@@ -185,7 +187,7 @@ describe("LoginUseCase", () => {
 				email: "jane.doe@example.com",
 				password: "password123",
 			}),
-		).rejects.toThrow(InvalidCredentialsError);
+		).rejects.toThrow(UserInactiveError);
 
 		expect(mockLogger.warn).toHaveBeenCalledWith(
 			expect.objectContaining({ event: "LOGIN_INACTIVE_ACCOUNT" }),
