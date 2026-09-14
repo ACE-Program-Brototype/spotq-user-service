@@ -44,9 +44,11 @@ export const DOMAIN_ERRORS = {
 		FORBIDDEN: "FORBIDDEN",
 		INVALID_TOKEN: "INVALID_TOKEN",
 		EMAIL_NOT_VERIFIED: "EMAIL_NOT_VERIFIED",
+		CUSTOMER_NOT_FOUND: "CUSTOMER_NOT_FOUND",
 		WEAK_PASSWORD: "WEAK_PASSWORD",
 	},
 	MESSAGES: {
+		CUSTOMER_NOT_FOUND: "Customer not found.",
 		INVALID_NAME: "Invalid full name provided.",
 		INVALID_EMAIL: "Invalid email address provided.",
 		INVALID_PHONE_NUMBER: "Invalid Indian phone number provided.",
