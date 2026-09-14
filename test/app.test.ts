@@ -148,7 +148,7 @@ describe("User Service Integration & Unit Tests", () => {
 		it("should allow PLATFORM_ADMIN role on GET /users through router and middleware", async () => {
 			const findManySpy = jest
 				.spyOn(prisma.user, "findMany")
-				.mockResolvedValue([] as any);
+				.mockResolvedValue([]);
 			const countSpy = jest.spyOn(prisma.user, "count").mockResolvedValue(0);
 
 			const res = await request(app)

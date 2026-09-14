@@ -1,3 +1,4 @@
+import { config } from "@config/env.ts";
 import { UserStatus } from "@domain/entities/user.entity.ts";
 import { listCustomersQuerySchema } from "@interfaces/http/validators/admin/list-customers.validator.ts";
 import { VALIDATION_MESSAGES } from "@shared/constants/validation-messages.constants.ts";
@@ -65,9 +66,9 @@ describe("listCustomersQuerySchema", () => {
 		expect(resultNegative.success).toBe(false);
 	});
 
-	it("should reject limit exceeding 100", () => {
+	it("should reject limit exceeding configured maxLimit", () => {
 		const result = listCustomersQuerySchema.safeParse({
-			limit: "150",
+			limit: (config.pagination.users.maxLimit + 1).toString(),
 		});
 
 		expect(result.success).toBe(false);
