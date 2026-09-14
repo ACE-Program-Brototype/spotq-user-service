@@ -32,11 +32,7 @@ export class CustomerAdminController implements ICustomerAdminController {
 			throw new UnauthorizedError();
 		}
 
-		if (
-			req.user?.role &&
-			req.user.role.toLowerCase() !== USER_ROLES.ADMIN &&
-			req.user.role !== USER_ROLES.PLATFORM_ADMIN
-		) {
+		if (req.user?.role && req.user.role.toLowerCase() !== USER_ROLES.ADMIN) {
 			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 
@@ -65,11 +61,7 @@ export class CustomerAdminController implements ICustomerAdminController {
 			throw new UnauthorizedError();
 		}
 
-		if (
-			req.user?.role &&
-			req.user.role.toLowerCase() !== USER_ROLES.ADMIN &&
-			req.user.role !== USER_ROLES.PLATFORM_ADMIN
-		) {
+		if (req.user?.role && req.user.role.toLowerCase() !== USER_ROLES.ADMIN) {
 			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 

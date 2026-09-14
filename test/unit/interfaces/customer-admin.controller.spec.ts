@@ -92,12 +92,12 @@ describe("CustomerAdminController", () => {
 			});
 		});
 
-		it("should return 200 for platform admin role", async () => {
+		it("should return 200 for uppercase ADMIN role", async () => {
 			mockReq = {
 				user: {
-					userId: "platform-admin-123",
-					email: "platform@spotq.com",
-					role: "PLATFORM_ADMIN",
+					userId: "admin-123",
+					email: "admin@spotq.com",
+					role: "ADMIN",
 				},
 				query: {},
 			};
