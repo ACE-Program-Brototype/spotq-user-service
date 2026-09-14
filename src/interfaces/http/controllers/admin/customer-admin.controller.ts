@@ -27,11 +27,12 @@ export class CustomerAdminController implements ICustomerAdminController {
 			throw new UnauthorizedError();
 		}
 
-		if (
-			req.user?.role &&
-			req.user.role.toLowerCase() !== USER_ROLES.ADMIN &&
-			req.user.role !== USER_ROLES.PLATFORM_ADMIN
-		) {
+		const userRole = req.user?.role?.toUpperCase();
+		const isAllowedAdmin =
+			userRole === USER_ROLES.ADMIN.toUpperCase() ||
+			userRole === USER_ROLES.PLATFORM_ADMIN.toUpperCase();
+
+		if (req.user?.role && !isAllowedAdmin) {
 			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 
