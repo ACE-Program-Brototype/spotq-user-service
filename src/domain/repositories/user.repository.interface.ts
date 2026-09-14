@@ -41,5 +41,9 @@ export interface IUserRepository extends IBaseRepository<UserEntity> {
 	updateProfile(params: UpdateUserProfileParams): Promise<UserEntity>;
 	findCustomers(params: FindCustomersParams): Promise<UserEntity[]>;
 	countCustomers(params: CountCustomersParams): Promise<number>;
-	updateStatus(userId: string, status: UserStatus): Promise<UserEntity>;
+	updateStatus(
+		userId: string,
+		status: UserStatus,
+		revokeTokens?: boolean,
+	): Promise<UserEntity>;
 }

@@ -292,12 +292,24 @@ export class PrismaUserRepository
 	public async updateStatus(
 		userId: string,
 		status: UserStatus,
+		revokeTokens = false,
 	): Promise<UserEntity> {
 		try {
-			const updated = await prisma.user.update({
-				where: { id: userId },
-				data: { status: status as PrismaUserStatus },
-				include: { profile: true },
+			const updated = await prisma.$transaction(async (tx) => {
+				const user = await tx.user.update({
+					where: { id: userId },
+					data: { status: status as PrismaUserStatus },
+					include: { profile: true },
+				});
+
+				if (revokeTokens) {
+					await tx.refreshToken.updateMany({
+						where: { userId },
+						data: { revokedAt: new Date() },
+					});
+				}
+
+				return user;
 			});
 
 			return UserMapper.toDomain(updated);

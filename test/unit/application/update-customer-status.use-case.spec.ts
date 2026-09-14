@@ -1,13 +1,11 @@
 import { UpdateCustomerStatusUseCase } from "@application/use-cases/admin/update-customer-status.use-case.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { UserNotFoundError } from "@domain/errors/domain.error.ts";
-import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
 
 describe("UpdateCustomerStatusUseCase", () => {
 	let mockUserRepository: jest.Mocked<IUserRepository>;
-	let mockRefreshTokenRepository: jest.Mocked<IRefreshTokenRepository>;
 	let useCase: UpdateCustomerStatusUseCase;
 
 	const fixedDate = new Date("2026-03-01T10:00:00.000Z");
@@ -56,24 +54,10 @@ describe("UpdateCustomerStatusUseCase", () => {
 			exists: jest.fn(),
 		};
 
-		mockRefreshTokenRepository = {
-			save: jest.fn(),
-			findByTokenHash: jest.fn(),
-			revoke: jest.fn(),
-			revokeAllForUser: jest.fn(),
-			findById: jest.fn(),
-			delete: jest.fn(),
-			findAll: jest.fn(),
-			exists: jest.fn(),
-		};
-
-		useCase = new UpdateCustomerStatusUseCase(
-			mockUserRepository,
-			mockRefreshTokenRepository,
-		);
+		useCase = new UpdateCustomerStatusUseCase(mockUserRepository);
 	});
 
-	it("should block an active customer and revoke active refresh tokens", async () => {
+	it("should block an active customer and revoke active refresh tokens atomically in transaction", async () => {
 		mockUserRepository.findById.mockResolvedValue(activeUser);
 		mockUserRepository.updateStatus.mockResolvedValue(blockedUser);
 
@@ -86,9 +70,7 @@ describe("UpdateCustomerStatusUseCase", () => {
 		expect(mockUserRepository.updateStatus).toHaveBeenCalledWith(
 			"usr_01HX8Z9Q7K",
 			UserStatus.BLOCKED,
-		);
-		expect(mockRefreshTokenRepository.revokeAllForUser).toHaveBeenCalledWith(
-			"usr_01HX8Z9Q7K",
+			true,
 		);
 		expect(result).toEqual({
 			id: "usr_01HX8Z9Q7K",
@@ -99,7 +81,7 @@ describe("UpdateCustomerStatusUseCase", () => {
 		expect(result).not.toHaveProperty("password");
 	});
 
-	it("should unblock a blocked customer and return active status", async () => {
+	it("should unblock a blocked customer without revoking refresh tokens", async () => {
 		mockUserRepository.findById.mockResolvedValue(blockedUser);
 		mockUserRepository.updateStatus.mockResolvedValue(activeUser);
 
@@ -112,8 +94,8 @@ describe("UpdateCustomerStatusUseCase", () => {
 		expect(mockUserRepository.updateStatus).toHaveBeenCalledWith(
 			"usr_01HX8Z9Q7K",
 			UserStatus.ACTIVE,
+			false,
 		);
-		expect(mockRefreshTokenRepository.revokeAllForUser).not.toHaveBeenCalled();
 		expect(result).toEqual({
 			id: "usr_01HX8Z9Q7K",
 			status: UserStatus.ACTIVE,
@@ -131,7 +113,6 @@ describe("UpdateCustomerStatusUseCase", () => {
 
 		expect(mockUserRepository.findById).toHaveBeenCalledWith("usr_01HX8Z9Q7K");
 		expect(mockUserRepository.updateStatus).not.toHaveBeenCalled();
-		expect(mockRefreshTokenRepository.revokeAllForUser).not.toHaveBeenCalled();
 		expect(result).toEqual({
 			id: "usr_01HX8Z9Q7K",
 			status: UserStatus.ACTIVE,
@@ -150,6 +131,19 @@ describe("UpdateCustomerStatusUseCase", () => {
 		).rejects.toThrow(UserNotFoundError);
 
 		expect(mockUserRepository.updateStatus).not.toHaveBeenCalled();
-		expect(mockRefreshTokenRepository.revokeAllForUser).not.toHaveBeenCalled();
+	});
+
+	it("should propagate repository error when transaction fails", async () => {
+		mockUserRepository.findById.mockResolvedValue(activeUser);
+		mockUserRepository.updateStatus.mockRejectedValue(
+			new Error("Database transaction failed"),
+		);
+
+		await expect(
+			useCase.execute({
+				userId: "usr_01HX8Z9Q7K",
+				status: UserStatus.BLOCKED,
+			}),
+		).rejects.toThrow("Database transaction failed");
 	});
 });
