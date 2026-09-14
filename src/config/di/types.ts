@@ -13,6 +13,8 @@ export const TYPES = {
 		"AdminForgotPasswordEmailVerifyUseCase",
 	),
 	AdminResetPasswordUseCase: Symbol.for("AdminResetPasswordUseCase"),
+	GetAdminCustomerDetailsUseCase: Symbol.for("GetAdminCustomerDetailsUseCase"),
+	AdminCustomerController: Symbol.for("AdminCustomerController"),
 	TokenServices: Symbol.for("TokenServices"),
 	OtpServices: Symbol.for("OtpServices"),
 	EmailQueueProducers: Symbol.for("EmailQueueProducers"),
