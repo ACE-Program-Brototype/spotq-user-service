@@ -1,5 +1,7 @@
-import type { PaginatedCustomersResponseDto } from "@application/dtos/admin/list-customers.dto.ts";
-import type { UpdateCustomerStatusResponseDto } from "@application/dtos/admin/update-customer-status.dto.ts";
+import type {
+	PaginatedCustomersResponseDto,
+	UpdateCustomerStatusResponseDto,
+} from "@application/dtos/index.ts";
 import type { IListCustomersUseCase } from "@application/ports/use-cases/admin/list-customers.use-case.interface.ts";
 import type { IUpdateCustomerStatusUseCase } from "@application/ports/use-cases/admin/update-customer-status.use-case.interface.ts";
 import { UserStatus } from "@domain/entities/user.entity.ts";
@@ -11,34 +13,34 @@ import { ResponseMessage } from "@shared/constants/response-messages.constants.t
 import type { Response } from "express";
 
 describe("CustomerAdminController", () => {
+	let controller: CustomerAdminController;
 	let mockListCustomersUseCase: jest.Mocked<IListCustomersUseCase>;
 	let mockUpdateCustomerStatusUseCase: jest.Mocked<IUpdateCustomerStatusUseCase>;
-	let controller: CustomerAdminController;
 	let mockReq: Partial<AuthenticatedRequest>;
 	let mockRes: Partial<Response>;
 
 	const mockPaginatedData: PaginatedCustomersResponseDto = {
-		items: [
+		customers: [
 			{
-				id: "user-123",
-				fullname: "Jane Doe",
-				email: "jane.doe@example.com",
+				id: "usr_01HX8Z9Q7K",
+				name: "Alice Johnson",
+				email: "alice@example.com",
 				phone: "+919876543210",
 				status: UserStatus.ACTIVE,
-				createdAt: "2026-03-01T10:00:00.000Z",
-				updatedAt: "2026-03-01T10:00:00.000Z",
 			},
 		],
-		total: 1,
-		page: 1,
-		limit: 20,
-		totalPages: 1,
+		pagination: {
+			page: 1,
+			limit: 20,
+			total: 1,
+			totalPages: 1,
+		},
 	};
 
 	const mockStatusUpdateData: UpdateCustomerStatusResponseDto = {
 		id: "usr_01HX8Z9Q7K",
 		status: UserStatus.BLOCKED,
-		updatedAt: "2026-07-14T10:12:00.000Z",
+		updatedAt: "2026-07-14T10:00:00.000Z",
 	};
 
 	beforeEach(() => {
@@ -98,6 +100,30 @@ describe("CustomerAdminController", () => {
 					userId: "admin-123",
 					email: "admin@spotq.com",
 					role: "ADMIN",
+				},
+				query: {},
+			};
+
+			await controller.listCustomers(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+			);
+
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
+			expect(mockRes.json).toHaveBeenCalledWith(
+				expect.objectContaining({
+					success: true,
+					data: mockPaginatedData,
+				}),
+			);
+		});
+
+		it("should return 200 for platform admin role", async () => {
+			mockReq = {
+				user: {
+					userId: "platform-admin-123",
+					email: "platform@spotq.com",
+					role: "PLATFORM_ADMIN",
 				},
 				query: {},
 			};
@@ -225,6 +251,29 @@ describe("CustomerAdminController", () => {
 				data: unblockData,
 				statusCode: HttpStatus.OK,
 			});
+		});
+
+		it("should allow platform admin role to update customer status", async () => {
+			mockReq = {
+				user: {
+					userId: "platform-admin-123",
+					email: "platform@spotq.com",
+					role: "PLATFORM_ADMIN",
+				},
+				params: {
+					userId: "usr_01HX8Z9Q7K",
+				},
+				body: {
+					status: "BLOCKED",
+				},
+			};
+
+			await controller.updateCustomerStatus(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+			);
+
+			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
 		});
 
 		it("should throw UnauthorizedError when unauthenticated", async () => {

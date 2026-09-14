@@ -1,3 +1,4 @@
+import { config } from "@config/env.ts";
 import { VALIDATION_MESSAGES } from "@shared/constants/validation-messages.constants.ts";
 import { z } from "zod";
 
@@ -26,7 +27,9 @@ export const listCustomersQuerySchema = z.object({
 			})
 			.int({ message: VALIDATION_MESSAGES.PAGINATION.INVALID_LIMIT })
 			.positive({ message: VALIDATION_MESSAGES.PAGINATION.INVALID_LIMIT })
-			.max(100, { message: VALIDATION_MESSAGES.PAGINATION.INVALID_LIMIT })
+			.max(config.pagination.users.maxLimit, {
+				message: VALIDATION_MESSAGES.PAGINATION.INVALID_LIMIT,
+			})
 			.optional(),
 	),
 	sortBy: z

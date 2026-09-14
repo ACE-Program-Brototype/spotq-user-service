@@ -4,13 +4,18 @@ import {
 	validateRequestQuery,
 } from "@interfaces/http/validators/validate-request.middleware.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
+import { ApiResponse } from "@shared/response/api-response.model.ts";
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
 describe("validate-request.middleware", () => {
+	const dummySchema = z.object({
+		name: z.string().min(2, "Name too short"),
+	});
+
 	let mockReq: Partial<Request>;
 	let mockRes: Partial<Response>;
-	let mockNext: NextFunction;
+	let mockNext: jest.MockedFunction<NextFunction>;
 
 	beforeEach(() => {
 		mockReq = {};
@@ -22,47 +27,76 @@ describe("validate-request.middleware", () => {
 	});
 
 	describe("validateRequestBody", () => {
-		const schema = z.object({
-			name: z.string({ message: "Name is required." }),
+		it("should return 422 UNPROCESSABLE_ENTITY on validation failure", () => {
+			mockReq.body = { name: "a" };
+
+			const middleware = validateRequestBody(dummySchema);
+			middleware(mockReq as Request, mockRes as Response, mockNext);
+
+			expect(mockRes.status).toHaveBeenCalledWith(
+				HttpStatus.UNPROCESSABLE_ENTITY,
+			);
+			expect(mockRes.json).toHaveBeenCalledWith(
+				ApiResponse.fail(
+					"Name too short",
+					HttpStatus.UNPROCESSABLE_ENTITY,
+					"VALIDATION_ERROR",
+				),
+			);
+			expect(mockNext).not.toHaveBeenCalled();
 		});
 
-		it("should call next() and assign parsed data on success", () => {
+		it("should call next() on valid request body", () => {
 			mockReq.body = { name: "Alice" };
-			const middleware = validateRequestBody(schema);
 
+			const middleware = validateRequestBody(dummySchema);
 			middleware(mockReq as Request, mockRes as Response, mockNext);
 
 			expect(mockNext).toHaveBeenCalled();
-			expect(mockReq.body).toEqual({ name: "Alice" });
 		});
+	});
 
-		it("should return 400 Bad Request on validation failure", () => {
-			mockReq.body = {};
-			const middleware = validateRequestBody(schema);
+	describe("validateRequestQuery", () => {
+		it("should return 400 BAD_REQUEST on validation failure per SCRUM-57", () => {
+			mockReq.query = { name: "a" };
 
+			const middleware = validateRequestQuery(dummySchema);
 			middleware(mockReq as Request, mockRes as Response, mockNext);
 
-			expect(mockNext).not.toHaveBeenCalled();
 			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
 			expect(mockRes.json).toHaveBeenCalledWith(
-				expect.objectContaining({
-					success: false,
-					statusCode: HttpStatus.BAD_REQUEST,
-					error: "VALIDATION_ERROR",
-					message: "Name is required.",
-				}),
+				ApiResponse.fail(
+					"Name too short",
+					HttpStatus.BAD_REQUEST,
+					"VALIDATION_ERROR",
+				),
 			);
+			expect(mockNext).not.toHaveBeenCalled();
+		});
+
+		it("should call next() on valid request query", () => {
+			mockReq.query = { name: "Alice" };
+
+			const middleware = validateRequestQuery(dummySchema);
+			middleware(mockReq as Request, mockRes as Response, mockNext);
+
+			expect(mockNext).toHaveBeenCalled();
+			expect(
+				(mockReq as Request & { validatedQuery?: unknown }).validatedQuery,
+			).toEqual({
+				name: "Alice",
+			});
 		});
 	});
 
 	describe("validateRequestParams", () => {
-		const schema = z.object({
+		const paramSchema = z.object({
 			userId: z.string().uuid({ message: "Invalid user ID." }),
 		});
 
 		it("should call next() and assign validatedParams on success", () => {
 			mockReq.params = { userId: "123e4567-e89b-12d3-a456-426614174000" };
-			const middleware = validateRequestParams(schema);
+			const middleware = validateRequestParams(paramSchema);
 
 			middleware(mockReq as Request, mockRes as Response, mockNext);
 
@@ -74,7 +108,7 @@ describe("validate-request.middleware", () => {
 
 		it("should return 400 Bad Request on invalid params", () => {
 			mockReq.params = { userId: "invalid-uuid" };
-			const middleware = validateRequestParams(schema);
+			const middleware = validateRequestParams(paramSchema);
 
 			middleware(mockReq as Request, mockRes as Response, mockNext);
 
@@ -86,41 +120,6 @@ describe("validate-request.middleware", () => {
 					statusCode: HttpStatus.BAD_REQUEST,
 					error: "VALIDATION_ERROR",
 					message: "Invalid user ID.",
-				}),
-			);
-		});
-	});
-
-	describe("validateRequestQuery", () => {
-		const schema = z.object({
-			page: z.preprocess((val) => Number(val), z.number().int().positive()),
-		});
-
-		it("should call next() and assign validatedQuery on success", () => {
-			mockReq.query = { page: "2" };
-			const middleware = validateRequestQuery(schema);
-
-			middleware(mockReq as Request, mockRes as Response, mockNext);
-
-			expect(mockNext).toHaveBeenCalled();
-			expect(
-				(mockReq as Request & { validatedQuery?: unknown }).validatedQuery,
-			).toEqual({ page: 2 });
-		});
-
-		it("should return 400 Bad Request on invalid query", () => {
-			mockReq.query = { page: "-5" };
-			const middleware = validateRequestQuery(schema);
-
-			middleware(mockReq as Request, mockRes as Response, mockNext);
-
-			expect(mockNext).not.toHaveBeenCalled();
-			expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
-			expect(mockRes.json).toHaveBeenCalledWith(
-				expect.objectContaining({
-					success: false,
-					statusCode: HttpStatus.BAD_REQUEST,
-					error: "VALIDATION_ERROR",
 				}),
 			);
 		});

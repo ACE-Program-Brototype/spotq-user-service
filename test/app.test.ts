@@ -144,6 +144,42 @@ describe("User Service Integration & Unit Tests", () => {
 				}),
 			);
 		});
+
+		it("should allow PLATFORM_ADMIN role on GET /users through router and middleware", async () => {
+			const findManySpy = jest
+				.spyOn(prisma.user, "findMany")
+				.mockResolvedValue([]);
+			const countSpy = jest.spyOn(prisma.user, "count").mockResolvedValue(0);
+
+			const res = await request(app)
+				.get("/users")
+				.set("x-user-id", "platform-admin-123")
+				.set("x-user-role", "PLATFORM_ADMIN");
+
+			expect(res.status).toBe(200);
+			expect(res.body).toEqual(
+				expect.objectContaining({
+					success: true,
+					data: expect.objectContaining({
+						items: [],
+						total: 0,
+					}),
+				}),
+			);
+
+			findManySpy.mockRestore();
+			countSpy.mockRestore();
+		});
+
+		it("should reject customer role on GET /users with 403", async () => {
+			const res = await request(app)
+				.get("/users")
+				.set("x-user-id", "customer-123")
+				.set("x-user-role", "customer");
+
+			expect(res.status).toBe(403);
+			expect(res.body.success).toBe(false);
+		});
 	});
 
 	describe("IHealthCheckable Services (PrismaService, RedisService, BullMQService)", () => {

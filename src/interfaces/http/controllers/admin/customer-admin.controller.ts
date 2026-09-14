@@ -1,4 +1,3 @@
-import type { ListCustomersQueryDto } from "@application/dtos/admin/list-customers.dto.ts";
 import type { IListCustomersUseCase } from "@application/ports/use-cases/admin/list-customers.use-case.interface.ts";
 import type { IUpdateCustomerStatusUseCase } from "@application/ports/use-cases/admin/update-customer-status.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
@@ -32,16 +31,19 @@ export class CustomerAdminController implements ICustomerAdminController {
 			throw new UnauthorizedError();
 		}
 
-		if (req.user?.role && req.user.role.toLowerCase() !== USER_ROLES.ADMIN) {
+		const userRole = req.user?.role?.toUpperCase();
+		const isAllowedAdmin =
+			userRole === USER_ROLES.ADMIN.toUpperCase() ||
+			userRole === USER_ROLES.PLATFORM_ADMIN.toUpperCase();
+
+		if (req.user?.role && !isAllowedAdmin) {
 			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 
 		const query =
 			(req as AuthenticatedRequest & { validatedQuery?: unknown })
 				.validatedQuery || req.query;
-		const result = await this.listCustomersUseCase.execute(
-			query as unknown as ListCustomersQueryDto,
-		);
+		const result = await this.listCustomersUseCase.execute(query);
 
 		sendSuccessResponse(
 			res,
@@ -61,7 +63,12 @@ export class CustomerAdminController implements ICustomerAdminController {
 			throw new UnauthorizedError();
 		}
 
-		if (req.user?.role && req.user.role.toLowerCase() !== USER_ROLES.ADMIN) {
+		const userRole = req.user?.role?.toUpperCase();
+		const isAllowedAdmin =
+			userRole === USER_ROLES.ADMIN.toUpperCase() ||
+			userRole === USER_ROLES.PLATFORM_ADMIN.toUpperCase();
+
+		if (req.user?.role && !isAllowedAdmin) {
 			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 

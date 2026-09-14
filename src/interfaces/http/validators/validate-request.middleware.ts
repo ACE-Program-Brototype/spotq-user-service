@@ -14,11 +14,11 @@ export const validateRequestBody = (schema: ZodSchema) => {
 				: "Validation failed.";
 
 			res
-				.status(HttpStatus.BAD_REQUEST)
+				.status(HttpStatus.UNPROCESSABLE_ENTITY)
 				.json(
 					ApiResponse.fail(
 						errorMessage,
-						HttpStatus.BAD_REQUEST,
+						HttpStatus.UNPROCESSABLE_ENTITY,
 						"VALIDATION_ERROR",
 					),
 				);
