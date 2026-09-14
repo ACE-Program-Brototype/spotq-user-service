@@ -14,6 +14,7 @@ export const USER_TYPES = {
 	RefreshTokenUseCase: Symbol.for("RefreshTokenUseCase"),
 	GetCustomerProfileUseCase: Symbol.for("GetCustomerProfileUseCase"),
 	UpdateCustomerProfileUseCase: Symbol.for("UpdateCustomerProfileUseCase"),
+	ListCustomersUseCase: Symbol.for("ListCustomersUseCase"),
 
 	// Forgot/Reset Password Use Cases
 	CustomerForgotPasswordUseCase: Symbol.for("CustomerForgotPasswordUseCase"),
@@ -25,5 +26,6 @@ export const USER_TYPES = {
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),
 	CustomerProfileController: Symbol.for("CustomerProfileController"),
+	CustomerAdminController: Symbol.for("CustomerAdminController"),
 	UserRouter: Symbol.for("UserRouter"),
 };

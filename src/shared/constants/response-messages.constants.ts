@@ -14,4 +14,5 @@ export const ResponseMessage = {
 	LOGOUT_SUCCESS: "Logged out successfully.",
 	CUSTOMER_PROFILE_FETCH_SUCCESS: "Customer profile retrieved successfully.",
 	CUSTOMER_PROFILE_UPDATE_SUCCESS: "Customer profile updated successfully.",
+	CUSTOMERS_FETCH_SUCCESS: "Customers retrieved successfully.",
 } as const;

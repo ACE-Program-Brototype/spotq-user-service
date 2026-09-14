@@ -94,4 +94,16 @@ export const config = {
 			max: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_MAX,
 		},
 	},
+
+	pagination: {
+		users: {
+			defaultPage: env.USERS_DEFAULT_PAGE,
+			defaultLimit: env.USERS_DEFAULT_LIMIT,
+			maxLimit: env.USERS_MAX_LIMIT,
+			defaultSortBy: env.USERS_DEFAULT_SORT_BY,
+			defaultSortOrder: env.USERS_DEFAULT_SORT_ORDER.toUpperCase() as
+				| "ASC"
+				| "DESC",
+		},
+	},
 } as const;
