@@ -1,7 +1,7 @@
 import { container, TYPES } from "@config/di";
 import type { JwtTokenService } from "@infrastructure/services/token";
 import { HttpStatus, ResponseMessage } from "@shared/constants";
-import { authConstants } from "@shared/constants/auth.constants";
+import { authConstants, USER_ROLES } from "@shared/constants/auth.constants";
 import { ApiResponse } from "@shared/response/api-response.model.ts";
 import { AppError } from "@shared/util/app.error";
 import type { NextFunction, Request, Response } from "express";
@@ -37,8 +37,12 @@ export function adminAuthMiddleware(
 	}
 
 	const role = getHeaderValue(req.headers["x-user-role"]);
+	const normalizedRole = role?.toUpperCase();
+	const isAllowedAdmin =
+		normalizedRole === USER_ROLES.ADMIN.toUpperCase() ||
+		normalizedRole === USER_ROLES.PLATFORM_ADMIN.toUpperCase();
 
-	if (role !== "admin") {
+	if (!isAllowedAdmin) {
 		res
 			.status(HttpStatus.FORBIDDEN)
 			.json(

@@ -11,6 +11,8 @@ import { UserStatus } from "@domain/entities/user.entity.ts";
 import {
 	EmailNotVerifiedError,
 	InvalidCredentialsError,
+	UserBlockedError,
+	UserInactiveError,
 } from "@domain/errors/domain.error.ts";
 import type {
 	IDeviceRepository,
@@ -102,7 +104,7 @@ export class LoginUseCase implements ILoginUseCase {
 					{ event: "LOGIN_BLOCKED_ACCOUNT", userId: user.id },
 					"Login failed: Account is blocked",
 				);
-				throw new InvalidCredentialsError();
+				throw new UserBlockedError();
 			}
 
 			if (user.status === UserStatus.INACTIVE) {
@@ -110,7 +112,7 @@ export class LoginUseCase implements ILoginUseCase {
 					{ event: "LOGIN_INACTIVE_ACCOUNT", userId: user.id },
 					"Login failed: Account is inactive",
 				);
-				throw new InvalidCredentialsError();
+				throw new UserInactiveError();
 			}
 
 			// 4. Device Handling
@@ -177,7 +179,9 @@ export class LoginUseCase implements ILoginUseCase {
 		} catch (error) {
 			if (
 				error instanceof InvalidCredentialsError ||
-				error instanceof EmailNotVerifiedError
+				error instanceof EmailNotVerifiedError ||
+				error instanceof UserBlockedError ||
+				error instanceof UserInactiveError
 			) {
 				throw error;
 			}

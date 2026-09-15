@@ -132,6 +132,50 @@ describe("admin.auth.middleware", () => {
 			expect(mockReq.userId).toBe("admin-123");
 			expect(mockNext).toHaveBeenCalled();
 		});
+
+		it("should accept uppercase ADMIN role case-insensitively", () => {
+			mockReq.headers = {
+				"x-user-id": "admin-456",
+				"x-user-role": "ADMIN",
+				"x-user-email": "admin@example.com",
+			};
+
+			adminAuthMiddleware(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+				mockNext,
+			);
+
+			expect(mockReq.user).toEqual({
+				userId: "admin-456",
+				email: "admin@example.com",
+				role: "ADMIN",
+			});
+			expect(mockReq.userId).toBe("admin-456");
+			expect(mockNext).toHaveBeenCalled();
+		});
+
+		it("should accept PLATFORM_ADMIN role", () => {
+			mockReq.headers = {
+				"x-user-id": "platform-123",
+				"x-user-role": "PLATFORM_ADMIN",
+				"x-user-email": "platform@example.com",
+			};
+
+			adminAuthMiddleware(
+				mockReq as AuthenticatedRequest,
+				mockRes as Response,
+				mockNext,
+			);
+
+			expect(mockReq.user).toEqual({
+				userId: "platform-123",
+				email: "platform@example.com",
+				role: "PLATFORM_ADMIN",
+			});
+			expect(mockReq.userId).toBe("platform-123");
+			expect(mockNext).toHaveBeenCalled();
+		});
 	});
 
 	describe("adminTempTokenCheck", () => {

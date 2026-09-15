@@ -15,5 +15,16 @@ export const ADMIN_AUTH_ROUTES = {
 	FORGOT_PASSWORD: "/forgot-password",
 	FORGOT_PASSWORD_VERIFY: "/forgot-password/verify",
 	FORGOT_PASSWORD_RESEND_OTP: "/forgot-password/resend-otp",
-	RESET_PASSWORD: "/reset-password",
+	RESET_PASSWORD: "/reset-password"
+}
+
+export const ADMIN_ROUTES = {
+	USERS: "/users",
+	CUSTOMERS: "/customers",
+	USER_STATUS: "/:userId/status",
+	USERS_USER_STATUS: "/users/:userId/status",
+} as const;
+
+export const USER_ROUTES = {
+	USERS: "/users",
 } as const;
