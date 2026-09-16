@@ -19,6 +19,7 @@ export const ADMIN_AUTH_ROUTES = {
 };
 
 export const ADMIN_ROUTES = {
+	ROOT: "/",
 	USERS: "/users",
 	CUSTOMERS: "/customers",
 	USER_STATUS: "/:userId/status",

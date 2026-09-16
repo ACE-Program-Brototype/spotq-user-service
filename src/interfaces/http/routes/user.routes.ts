@@ -54,6 +54,13 @@ export class UserRouter {
 
 	private registerRoutes(): void {
 		this.router.get(
+			ADMIN_ROUTES.ROOT,
+			adminAuthMiddleware,
+			validateRequestQuery(listCustomersQuerySchema),
+			this.customerAdminController.listCustomers,
+		);
+
+		this.router.get(
 			ADMIN_ROUTES.USERS,
 			adminAuthMiddleware,
 			validateRequestQuery(listCustomersQuerySchema),
