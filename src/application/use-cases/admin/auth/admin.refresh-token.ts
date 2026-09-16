@@ -22,32 +22,38 @@ export class AdminRefreshTokenUseCase implements IAdminRefreshTokenUseCase {
 			throw new InvalidTokenError("Missing refresh token.");
 		}
 
-		let decoded: { userId?: string; role?: string };
+		let decoded: { userId?: string; sub?: string; role?: string };
 		try {
 			decoded = this._tokenService.verifyRefreshToken<{
 				userId?: string;
+				sub?: string;
 				role?: string;
 			}>(refreshToken.trim());
 		} catch {
 			throw new InvalidTokenError("Invalid or expired refresh token.");
 		}
 
-		if (!decoded?.userId || decoded?.role !== "admin") {
+		const userId = decoded.sub || decoded.userId;
+		if (!userId || decoded?.role !== "admin") {
 			throw new InvalidTokenError("Invalid admin refresh token.");
 		}
 
-		const user = await this._adminAuthRepo.findById(decoded.userId);
+		const user = await this._adminAuthRepo.findById(userId);
 		if (!user) {
 			throw new InvalidTokenError("Admin user not found.");
 		}
 
 		const role = "admin";
 		const newAccessToken = this._tokenService.generateAccessToken({
+			sub: user.id,
 			userId: user.id,
+			email: user.email,
 			role,
 		});
 		const newRefreshToken = this._tokenService.generateRefreshToken({
+			sub: user.id,
 			userId: user.id,
+			email: user.email,
 			role,
 		});
 

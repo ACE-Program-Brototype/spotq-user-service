@@ -21,7 +21,9 @@ export function adminAuthMiddleware(
 	res: Response,
 	next: NextFunction,
 ): void {
-	let userId = getHeaderValue(req.headers["x-user-id"]);
+	let userId =
+		getHeaderValue(req.headers["x-user-id"]) ||
+		getHeaderValue(req.headers["x-user-sub"]);
 	let role = getHeaderValue(req.headers["x-user-role"]);
 	let email = getHeaderValue(req.headers["x-user-email"]);
 
@@ -34,12 +36,13 @@ export function adminAuthMiddleware(
 					TYPES.TokenServices,
 				);
 				const decoded = tokenService.verifyAccessToken<{
+					sub?: string;
 					userId?: string;
 					role?: string;
 					email?: string;
 				}>(token);
 
-				userId = decoded.userId;
+				userId = decoded.sub || decoded.userId;
 				role = decoded.role || "admin";
 				email = decoded.email;
 			} catch {
@@ -61,7 +64,8 @@ export function adminAuthMiddleware(
 		return;
 	}
 
-	if (role !== "admin") {
+	const normalizedRole = role?.toLowerCase();
+	if (normalizedRole !== "admin" && normalizedRole !== "platform_admin") {
 		res
 			.status(HttpStatus.FORBIDDEN)
 			.json(

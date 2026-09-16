@@ -107,8 +107,8 @@ const envSchema = z.object({
 	COOKIE_SECURE: z
 		.string()
 		.transform((val) => val === "true")
-		.default(true),
-	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("strict"),
+		.default(process.env.NODE_ENV === "production"),
+	COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("lax"),
 	COOKIE_REFRESH_MAX_AGE: z.string().default("604800000"),
 	COOKIE_TEMP_MAX_AGE: z.string().default("900000"),
 

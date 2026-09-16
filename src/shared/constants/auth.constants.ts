@@ -25,6 +25,22 @@ export const authConstants = {
 	GATEWAY_UNAUTHORIZED:
 		"Unauthorized: Missing user authentication from API Gateway.",
 	ADMIN_FORBIDDEN: "Forbidden: Access denied. Admin role required.",
+	ADMIN_LOGIN_SUCCESS: "Admin logged in successfully.",
+	ADMIN_LOGOUT_SUCCESS: "Admin logged out successfully.",
+	FORGOT_PASSWORD_VERIFICATION_OTP_SUCCESS:
+		"OTP sent for password reset verification.",
+	FORGOT_PASSWORD_VERIFICATION_OTP_RESEND_SUCCESS:
+		"OTP resent successfully for password reset verification.",
+	EMAIL_VERIFIED_SUCCESS: "Email verified successfully.",
+	USER_NOT_FOUND: "User not found.",
+	MISSING_TOKEN: "Authentication token is missing.",
+	INVALID_TOKEN: "Invalid authentication token.",
+	INVALID_USER: "Invalid user or unauthorized.",
+	INVALID_EMAIL: "Invalid email address format.",
+	PASSWORD_TOO_SHORT: "Password is too short.",
+	ADMIN_PASSWORD_TOO_SHORT:
+		"Admin password must be at least 15 characters long.",
+	PASSWORD_TOO_LONG: "Password must not exceed maximum length.",
 };
 
 export const USER_ROLES = {

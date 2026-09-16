@@ -30,7 +30,9 @@ export function authMiddleware(
 	res: Response,
 	next: NextFunction,
 ): void {
-	let userId = getHeaderValue(req.headers["x-user-id"]);
+	let userId =
+		getHeaderValue(req.headers["x-user-id"]) ||
+		getHeaderValue(req.headers["x-user-sub"]);
 	let role = getHeaderValue(req.headers["x-user-role"]);
 	let email = getHeaderValue(req.headers["x-user-email"]);
 
@@ -43,12 +45,13 @@ export function authMiddleware(
 					TYPES.TokenServices,
 				);
 				const decoded = tokenService.verifyAccessToken<{
+					sub?: string;
 					userId?: string;
 					role?: string;
 					email?: string;
 				}>(token);
 
-				userId = decoded.userId;
+				userId = decoded.sub || decoded.userId;
 				role = decoded.role;
 				email = decoded.email;
 			} catch {
