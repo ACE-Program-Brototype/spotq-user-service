@@ -21,7 +21,32 @@ export function adminAuthMiddleware(
 	res: Response,
 	next: NextFunction,
 ): void {
-	const userId = getHeaderValue(req.headers["x-user-id"]);
+	let userId = getHeaderValue(req.headers["x-user-id"]);
+	let role = getHeaderValue(req.headers["x-user-role"]);
+	let email = getHeaderValue(req.headers["x-user-email"]);
+
+	if (!userId) {
+		const authHeader = req.headers.authorization;
+		if (authHeader?.startsWith("Bearer ")) {
+			const token = authHeader.substring(7).trim();
+			try {
+				const tokenService = container.get<JwtTokenService>(
+					TYPES.TokenServices,
+				);
+				const decoded = tokenService.verifyAccessToken<{
+					userId?: string;
+					role?: string;
+					email?: string;
+				}>(token);
+
+				userId = decoded.userId;
+				role = decoded.role || "admin";
+				email = decoded.email;
+			} catch {
+				// Invalid token fallback handled by userId check below
+			}
+		}
+	}
 
 	if (!userId) {
 		res
@@ -36,8 +61,6 @@ export function adminAuthMiddleware(
 		return;
 	}
 
-	const role = getHeaderValue(req.headers["x-user-role"]);
-
 	if (role !== "admin") {
 		res
 			.status(HttpStatus.FORBIDDEN)
@@ -50,8 +73,6 @@ export function adminAuthMiddleware(
 			);
 		return;
 	}
-
-	const email = getHeaderValue(req.headers["x-user-email"]);
 
 	req.user = {
 		userId,

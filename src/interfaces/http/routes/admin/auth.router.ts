@@ -22,6 +22,8 @@ const adminAuthController = container.get<AdminAuthController>(
 );
 
 router.post("/login", validate(loginValidator), adminAuthController.login);
+router.post("/refresh-token", adminAuthController.refreshToken);
+router.post("/refresh", adminAuthController.refreshToken);
 router.post("/logout", adminAuthController.logout);
 router.post(
 	"/forgot-password",

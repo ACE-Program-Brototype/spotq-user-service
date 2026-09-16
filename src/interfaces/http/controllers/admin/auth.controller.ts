@@ -1,6 +1,7 @@
 import type { IAdminForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.forgot-password";
 import type { IAdminLoginUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.login";
 import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.logout";
+import type { IAdminRefreshTokenUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.refresh-token";
 import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password";
 import { TYPES } from "@config/di/types";
@@ -24,6 +25,8 @@ export class AdminAuthController {
 		private readonly _adminForgotPasswordVerifyEmailUseCase: IAdminVerifyEmailForgotPasswordUseCase,
 		@inject(TYPES.AdminResetPasswordUseCase)
 		private readonly _adminResetPasswordUseCase: IAdminResetPasswordUseCase,
+		@inject(TYPES.AdminRefreshTokenUseCase)
+		private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
 	) {}
 
 	login = async (req: Request, res: Response): Promise<void> => {
@@ -43,6 +46,29 @@ export class AdminAuthController {
 			res,
 			{ user, access_token },
 			authConstants.ADMIN_LOGIN_SUCCESS,
+			HttpStatus.OK,
+		);
+	};
+
+	refreshToken = async (req: Request, res: Response): Promise<void> => {
+		const tokenFromCookie = req.cookies?.refreshToken;
+		const tokenFromBody = req.body?.refreshToken;
+		const refreshToken = tokenFromCookie || tokenFromBody || "";
+
+		const { access_token, refresh_token, user } =
+			await this._adminRefreshTokenUseCase.execute(refreshToken);
+
+		res.cookie("refreshToken", refresh_token, {
+			httpOnly: config.cookie.httpOnly,
+			secure: config.cookie.secure,
+			sameSite: config.cookie.sameSite,
+			maxAge: Number(config.cookie.refreshMaxAge),
+		});
+
+		successResponse(
+			res,
+			{ user, access_token },
+			"Token refreshed successfully.",
 			HttpStatus.OK,
 		);
 	};
