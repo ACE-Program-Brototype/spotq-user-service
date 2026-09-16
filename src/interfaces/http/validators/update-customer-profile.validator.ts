@@ -12,20 +12,19 @@ import { z } from "zod";
 export const updateCustomerProfileSchema = z
 	.object({
 		full_name: z
-			.string({
-				invalid_type_error: VALIDATION_MESSAGES.PROFILE.FULL_NAME_STRING,
-			})
+			.string({ message: VALIDATION_MESSAGES.PROFILE.FULL_NAME_INVALID })
 			.trim()
-			.min(2, VALIDATION_MESSAGES.PROFILE.FULL_NAME_MIN)
-			.max(100, VALIDATION_MESSAGES.PROFILE.FULL_NAME_MAX)
-			.regex(REGEX.NAME, VALIDATION_MESSAGES.PROFILE.FULL_NAME_REGEX)
+			.min(2, VALIDATION_MESSAGES.FULL_NAME.MIN)
+			.max(100, VALIDATION_MESSAGES.FULL_NAME.MAX)
+			.regex(REGEX.NAME, VALIDATION_MESSAGES.PROFILE.FULL_NAME_INVALID)
 			.optional(),
 
 		dob: z
-			.string({
-				invalid_type_error: VALIDATION_MESSAGES.PROFILE.DOB_STRING,
-			})
-			.regex(REGEX.ISO_DATE_ONLY, VALIDATION_MESSAGES.PROFILE.DOB_FORMAT)
+			.string({ message: VALIDATION_MESSAGES.PROFILE.DOB_INVALID_FORMAT })
+			.regex(
+				REGEX.ISO_DATE_ONLY,
+				VALIDATION_MESSAGES.PROFILE.DOB_INVALID_FORMAT,
+			)
 			.refine(
 				(val) => {
 					const parsed = new Date(val);
@@ -35,7 +34,7 @@ export const updateCustomerProfileSchema = z
 					return parsed <= now;
 				},
 				{
-					message: VALIDATION_MESSAGES.PROFILE.DOB_NON_FUTURE,
+					message: VALIDATION_MESSAGES.PROFILE.DOB_FUTURE,
 				},
 			)
 			.nullable()
@@ -43,9 +42,7 @@ export const updateCustomerProfileSchema = z
 
 		gender: z
 			.enum(["MALE", "FEMALE", "OTHER"], {
-				errorMap: () => ({
-					message: VALIDATION_MESSAGES.PROFILE.GENDER_ENUM,
-				}),
+				message: VALIDATION_MESSAGES.PROFILE.GENDER_INVALID,
 			})
 			.nullable()
 			.optional(),

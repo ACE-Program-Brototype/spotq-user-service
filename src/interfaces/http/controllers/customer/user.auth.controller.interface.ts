@@ -1,5 +1,5 @@
 import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 export interface IUserAuthController {
 	register(req: Request, res: Response): Promise<void>;
@@ -8,7 +8,7 @@ export interface IUserAuthController {
 	logout(req: AuthenticatedRequest, res: Response): Promise<void>;
 	googleAuth(req: Request, res: Response): Promise<void>;
 	login(req: Request, res: Response): Promise<void>;
-	refresh(req: Request, res: Response): Promise<void>;
+	refresh(req: Request, res: Response, next?: NextFunction): Promise<void>;
 	forgotPassword(req: Request, res: Response): Promise<void>;
 	forgotPasswordEmailVerify(req: Request, res: Response): Promise<void>;
 	verifyOtpResend(req: Request, res: Response): Promise<void>;

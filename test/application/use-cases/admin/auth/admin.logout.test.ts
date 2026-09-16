@@ -1,4 +1,4 @@
-import type { IAdminTokenService } from "@application/ports/services/index.ts";
+import type { ITokenService } from "@application/ports/services/index.ts";
 import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout";
 
 describe("AdminLogoutUseCase", () => {
@@ -7,7 +7,7 @@ describe("AdminLogoutUseCase", () => {
 		isRevoked: jest.fn(),
 	};
 
-	const mockTokenService: jest.Mocked<IAdminTokenService> = {
+	const mockTokenService: jest.Mocked<ITokenService> = {
 		generateAccessToken: jest.fn(),
 		generateRefreshToken: jest.fn(),
 		generateTempToken: jest.fn(),
