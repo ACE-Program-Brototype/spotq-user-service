@@ -358,9 +358,7 @@ describe("UserAuthController", () => {
 			refreshToken: "old_refresh_token",
 		};
 
-		const nextFn = jest.fn();
-
-		await controller.refresh(mockReq as Request, mockRes as Response, nextFn);
+		await controller.refresh(mockReq as Request, mockRes as Response);
 
 		expect(mockRefreshTokenUseCase.execute).toHaveBeenCalledWith({
 			refreshToken: "old_refresh_token",
@@ -389,7 +387,7 @@ describe("UserAuthController", () => {
 		);
 	});
 
-	it("should clear cookie and call next when refresh token fails", async () => {
+	it("should propagate error when refresh token fails", async () => {
 		const error = new Error("Invalid token");
 		(mockRefreshTokenUseCase.execute as jest.Mock).mockRejectedValue(error);
 
@@ -397,14 +395,8 @@ describe("UserAuthController", () => {
 			refreshToken: "invalid_refresh_token",
 		};
 
-		const nextFn = jest.fn();
-
-		await controller.refresh(mockReq as Request, mockRes as Response, nextFn);
-
-		expect(mockRes.clearCookie).toHaveBeenCalledWith(
-			"refreshToken",
-			expect.any(Object),
-		);
-		expect(nextFn).toHaveBeenCalledWith(error);
+		await expect(
+			controller.refresh(mockReq as Request, mockRes as Response),
+		).rejects.toThrow("Invalid token");
 	});
 });

@@ -46,6 +46,9 @@ container
 	.bind<IAdminLoginUseCase>(TYPES.AdminLoginUseCase)
 	.to(AdminLoginUseCase);
 container
+	.bind<IAdminRefreshTokenUseCase>(TYPES.AdminRefreshTokenUseCase)
+	.to(AdminRefreshTokenUseCase);
+container
 	.bind<AdminAuthController>(TYPES.AdminAuthController)
 	.to(AdminAuthController);
 
@@ -78,9 +81,6 @@ container
 container
 	.bind<IAdminResetPasswordUseCase>(TYPES.AdminResetPasswordUseCase)
 	.to(AdminResetPasswordUseCase);
-container
-	.bind<IAdminRefreshTokenUseCase>(TYPES.AdminRefreshTokenUseCase)
-	.to(AdminRefreshTokenUseCase);
 
 container
 	.bind<IPasswordHashService>(TYPES.PasswordService)

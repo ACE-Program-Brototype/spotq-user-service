@@ -4,12 +4,14 @@ import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/cust
 import {
 	GetCustomerProfileUseCase,
 	GoogleAuthUseCase,
+	ListCustomersUseCase,
 	LoginUseCase,
 	LogoutUseCase,
 	RefreshTokenUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
 	UpdateCustomerProfileUseCase,
+	UpdateCustomerStatusUseCase,
 	VerifyEmailOtpUseCase,
 } from "@application/use-cases/index.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
@@ -20,18 +22,21 @@ import {
 	PrismaRefreshTokenRepository,
 	PrismaUserRepository,
 } from "@infrastructure/database/repositories/index.ts";
+import { CustomerAdminController } from "@interfaces/http/controllers/admin/customer-admin.controller.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
 import type {
 	IGetCustomerProfileUseCase,
 	IGoogleAuthUseCase,
+	IListCustomersUseCase,
 	ILoginUseCase,
 	ILogoutUseCase,
 	IRefreshTokenUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IUpdateCustomerProfileUseCase,
+	IUpdateCustomerStatusUseCase,
 	IVerifyEmailOtpUseCase,
 } from "@ports/use-cases/index.ts";
 import { ContainerModule } from "inversify";
@@ -67,12 +72,21 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<IUpdateCustomerProfileUseCase>(
 		USER_TYPES.UpdateCustomerProfileUseCase,
 	).to(UpdateCustomerProfileUseCase);
+	bind<IListCustomersUseCase>(USER_TYPES.ListCustomersUseCase).to(
+		ListCustomersUseCase,
+	);
+	bind<IUpdateCustomerStatusUseCase>(USER_TYPES.UpdateCustomerStatusUseCase).to(
+		UpdateCustomerStatusUseCase,
+	);
 
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,
 	);
 	bind<CustomerProfileController>(USER_TYPES.CustomerProfileController).to(
 		CustomerProfileController,
+	);
+	bind<CustomerAdminController>(USER_TYPES.CustomerAdminController).to(
+		CustomerAdminController,
 	);
 	bind<UserRouter>(USER_TYPES.UserRouter).to(UserRouter);
 

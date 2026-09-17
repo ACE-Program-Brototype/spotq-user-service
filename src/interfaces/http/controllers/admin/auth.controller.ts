@@ -12,6 +12,7 @@ import { successResponse } from "@shared/response/api-response.model";
 import { AppError } from "@shared/util/app.error";
 import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
+
 @injectable()
 export class AdminAuthController {
 	constructor(
@@ -19,14 +20,14 @@ export class AdminAuthController {
 		private readonly _adminLoginUseCase: IAdminLoginUseCase,
 		@inject(TYPES.AdminLogoutUseCase)
 		private readonly _adminLogoutUseCase: IAdminLogoutUseCase,
+		@inject(TYPES.AdminRefreshTokenUseCase)
+		private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
 		@inject(TYPES.AdminForgotPasswordUseCase)
 		private readonly _adminForgotPasswordUseCase: IAdminForgotPasswordUseCase,
 		@inject(TYPES.AdminForgotPasswordEmailVerifyUseCase)
 		private readonly _adminForgotPasswordVerifyEmailUseCase: IAdminVerifyEmailForgotPasswordUseCase,
 		@inject(TYPES.AdminResetPasswordUseCase)
 		private readonly _adminResetPasswordUseCase: IAdminResetPasswordUseCase,
-		@inject(TYPES.AdminRefreshTokenUseCase)
-		private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
 	) {}
 
 	login = async (req: Request, res: Response): Promise<void> => {
@@ -51,9 +52,11 @@ export class AdminAuthController {
 	};
 
 	refreshToken = async (req: Request, res: Response): Promise<void> => {
-		const tokenFromCookie = req.cookies?.refreshToken;
-		const tokenFromBody = req.body?.refreshToken;
-		const refreshToken = tokenFromCookie || tokenFromBody || "";
+		const refreshToken =
+			req.cookies?.refreshToken ||
+			req.body?.refreshToken ||
+			(req.headers["x-refresh-token"] as string) ||
+			"";
 
 		const { access_token, refresh_token, user } =
 			await this._adminRefreshTokenUseCase.execute(refreshToken);

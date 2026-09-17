@@ -55,4 +55,16 @@ export const VALIDATION_MESSAGES = {
 	CUSTOMER: {
 		INVALID_ID_FORMAT: "Invalid customer ID format.",
 	},
+	PAGINATION: {
+		INVALID_PAGE: "Invalid pagination page.",
+		INVALID_LIMIT: "Invalid pagination limit.",
+		INVALID_STATUS: "Invalid customer status.",
+		INVALID_SORT_FIELD: "Invalid sort field.",
+		INVALID_SORT_ORDER: "Invalid sort order.",
+	},
+	STATUS: {
+		INVALID_STATUS: "Invalid customer status.",
+		STATUS_REQUIRED: "Status is required.",
+		INVALID_USER_ID: "Invalid user ID.",
+	},
 } as const;

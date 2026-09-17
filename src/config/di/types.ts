@@ -6,6 +6,7 @@ export const TYPES = {
 	// AUTH
 	AdminAuthRepository: Symbol.for("AdminAuthRepository"),
 	AdminLoginUseCase: Symbol.for("AdminLoginUseCase"),
+	AdminRefreshTokenUseCase: Symbol.for("AdminRefreshTokenUseCase"),
 	AdminAuthController: Symbol.for("AdminAuthController"),
 	AdminLogoutUseCase: Symbol.for("AdminLogoutUseCase"),
 	AdminForgotPasswordUseCase: Symbol.for("AdminForgotPasswordUseCase"),
@@ -13,7 +14,6 @@ export const TYPES = {
 		"AdminForgotPasswordEmailVerifyUseCase",
 	),
 	AdminResetPasswordUseCase: Symbol.for("AdminResetPasswordUseCase"),
-	AdminRefreshTokenUseCase: Symbol.for("AdminRefreshTokenUseCase"),
 	GetAdminCustomerDetailsUseCase: Symbol.for("GetAdminCustomerDetailsUseCase"),
 	AdminCustomerController: Symbol.for("AdminCustomerController"),
 	TokenServices: Symbol.for("TokenServices"),

@@ -117,7 +117,7 @@ describe("GET /admin/customers/:id - Admin Customer Details Integration Tests", 
 
 		expect(res.status).toBe(400);
 		expect(res.body.success).toBe(false);
-		expect(res.body.code).toBe("BAD_REQUEST");
+		expect(res.body.code).toBe("VALIDATION_ERROR");
 		expect(res.body.message).toBe("Invalid customer ID format.");
 		expect(prisma.user.findUnique).not.toHaveBeenCalled();
 	});

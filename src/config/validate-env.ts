@@ -136,6 +136,15 @@ const envSchema = z.object({
 		.number()
 		.positive()
 		.default(5),
+
+	// User Listing Pagination & Sorting Configuration
+	USERS_DEFAULT_PAGE: z.coerce.number().positive().default(1),
+	USERS_DEFAULT_LIMIT: z.coerce.number().positive().default(20),
+	USERS_MAX_LIMIT: z.coerce.number().positive().default(100),
+	USERS_DEFAULT_SORT_BY: z.string().default("createdAt"),
+	USERS_DEFAULT_SORT_ORDER: z
+		.enum(["ASC", "DESC", "asc", "desc"])
+		.default("DESC"),
 });
 
 export const validateEnv = () => {

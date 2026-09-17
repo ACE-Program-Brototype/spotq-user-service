@@ -26,13 +26,13 @@ export class JwtTokenService implements ITokenService {
 	}
 
 	generateAccessToken(payload: object): string {
-		const claims = {
-			sub:
-				(payload as { sub?: string; userId?: string }).sub ||
-				(payload as { userId?: string }).userId,
-			...(payload as object),
+		const raw = payload as Record<string, unknown>;
+		const sub = raw.sub || raw.userId;
+		const finalPayload = {
+			...raw,
+			...(sub ? { sub } : {}),
 		};
-		return jwt.sign(claims, config.jwt.access.privateKey, {
+		return jwt.sign(finalPayload, config.jwt.access.privateKey, {
 			algorithm: config.jwt.access.algorithm,
 			keyid: config.jwt.access.keyId,
 			expiresIn: this.accessExpiresIn,
