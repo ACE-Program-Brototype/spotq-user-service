@@ -54,22 +54,14 @@ describe("GetAdminCustomerDetailsUseCase", () => {
 
 		expect(result).toEqual({
 			id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-			full_name: "Jane Doe",
 			fullName: "Jane Doe",
-			fullname: "Jane Doe",
 			email: "jane.doe@example.com",
 			phone: null,
 			status: "ACTIVE",
-			is_email_verified: true,
 			isEmailVerified: true,
-			gender: null,
-			dob: null,
 			location: null,
-			avatar_url: null,
 			avatarUrl: null,
-			created_at: createdAt.toISOString(),
 			createdAt: createdAt.toISOString(),
-			updated_at: updatedAt.toISOString(),
 			updatedAt: updatedAt.toISOString(),
 		});
 	});
