@@ -20,11 +20,9 @@ export class GetAdminCustomerDetailsUseCase
 		if (!user) {
 			throw new CustomerNotFoundError();
 		}
-
-		// TODO: Customer order details will be integrated from Order Service in the future.
 		return {
 			id: user.id,
-			fullname: user.fullName.getValue(),
+			full_name: user.fullName.getValue(),
 			email: user.email.getValue(),
 			status: user.status,
 		};

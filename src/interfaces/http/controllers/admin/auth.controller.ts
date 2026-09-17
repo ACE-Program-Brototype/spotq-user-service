@@ -68,7 +68,7 @@ export class AdminAuthController {
 		successResponse(
 			res,
 			{ user, access_token },
-			"Token refreshed successfully.",
+			authConstants.TOKEN_REFRESH_SUCCESS,
 			HttpStatus.OK,
 		);
 	};

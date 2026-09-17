@@ -14,7 +14,7 @@ export const authConstants = {
 	INVALID_REFRESH_TOKEN: "Invalid refresh token",
 	REFRESH_TOKEN_MISSING: "Refresh token missing",
 	USER_BLOCKED_OR_INACTIVE: "User is blocked or inactive",
-	TOKEN_REFRESH_SUCCESS: "Access token refreshed successfully",
+	TOKEN_REFRESH_SUCCESS: "Token refreshed successfully.",
 	AUTHENTICATION_FAILED: "Authentication failed",
 	ADMIN_LOGGED_IN: "Admin logged in successfully.",
 	INVALID_CREDENTIALS: "Invalid email or password.",

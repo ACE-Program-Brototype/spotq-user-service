@@ -1,4 +1,5 @@
 import { HttpStatus } from "@shared/constants/http.constants.ts";
+import { VALIDATION_MESSAGES } from "@shared/constants/index.ts";
 import { ApiResponse } from "@shared/response/api-response.model.ts";
 import type { NextFunction, Request, Response } from "express";
 import type { ZodSchema } from "zod";
@@ -11,7 +12,7 @@ export const validateRequestParams = (schema: ZodSchema) => {
 			const firstIssue = result.error.issues[0];
 			const errorMessage = firstIssue
 				? firstIssue.message
-				: "Invalid request parameters.";
+				: VALIDATION_MESSAGES.PARAMS.INVALID;
 
 			res
 				.status(HttpStatus.BAD_REQUEST)

@@ -1,4 +1,5 @@
 import { container, TYPES } from "@config/di/index.ts";
+import { logger } from "@infrastructure/logger/logger.ts";
 import type { JwtTokenService } from "@infrastructure/services/token.ts";
 import { authConstants } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
@@ -54,8 +55,11 @@ export function authMiddleware(
 				userId = decoded.sub || decoded.userId;
 				role = decoded.role;
 				email = decoded.email;
-			} catch {
-				// Invalid token fallback handled by userId check below
+			} catch (error) {
+				logger.warn(
+					{ err: error },
+					"Failed to verify Bearer token in authMiddleware",
+				);
 			}
 		}
 	}

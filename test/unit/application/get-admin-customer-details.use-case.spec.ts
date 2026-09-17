@@ -1,6 +1,7 @@
 import { GetAdminCustomerDetailsUseCase } from "@application/use-cases/admin/get-admin-customer-details.use-case.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { CustomerNotFoundError } from "@domain/errors/index.ts";
+import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { Email } from "@domain/value-objects/email.vo.ts";
 import { FullName } from "@domain/value-objects/full-name.vo.ts";
 
@@ -26,13 +27,14 @@ describe("GetAdminCustomerDetailsUseCase", () => {
 	});
 
 	it("should return customer details when customer exists", async () => {
-		const mockUserEntity = new UserEntity({
+		const mockUserEntity = UserEntity.reconstitute({
 			id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-			fullName: new FullName("Jane Doe"),
-			email: new Email("jane.doe@example.com"),
+			fullName: FullName.create("Jane Doe"),
+			email: Email.create("jane.doe@example.com"),
 			phone: null,
 			passwordHash: "hashed_password",
 			status: UserStatus.ACTIVE,
+			isEmailVerified: true,
 			createdAt: new Date("2026-01-15T10:00:00Z"),
 			updatedAt: new Date("2026-01-15T10:00:00Z"),
 		});
@@ -49,7 +51,7 @@ describe("GetAdminCustomerDetailsUseCase", () => {
 
 		expect(result).toEqual({
 			id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-			fullname: "Jane Doe",
+			full_name: "Jane Doe",
 			email: "jane.doe@example.com",
 			status: "ACTIVE",
 		});

@@ -14,7 +14,7 @@ describe("AdminCustomerController", () => {
 
 	const mockCustomerDetails: AdminCustomerDetailsResponseDto = {
 		id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-		fullname: "Jane Doe",
+		full_name: "Jane Doe",
 		email: "jane.doe@example.com",
 		status: "ACTIVE",
 	};

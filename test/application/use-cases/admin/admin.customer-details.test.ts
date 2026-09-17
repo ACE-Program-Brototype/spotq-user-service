@@ -1,6 +1,6 @@
 import { prisma } from "@infrastructure/database/prisma/prisma.ts";
+import app from "@src/app.ts";
 import request from "supertest";
-import app from "../../../../src/app.ts";
 
 jest.mock("@infrastructure/database/prisma/prisma.ts", () => ({
 	prisma: {
@@ -38,7 +38,7 @@ describe("GET /admin/customers/:id - Admin Customer Details Integration Tests", 
 			message: "Customer details retrieved successfully.",
 			data: {
 				id: validUuid,
-				fullname: "Alice Smith",
+				full_name: "Alice Smith",
 				email: "alice.smith@example.com",
 				status: "ACTIVE",
 			},
