@@ -12,6 +12,7 @@ import { successResponse } from "@shared/response/api-response.model";
 import { AppError } from "@shared/util/app.error";
 import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
+
 @injectable()
 export class AdminAuthController {
 	constructor(

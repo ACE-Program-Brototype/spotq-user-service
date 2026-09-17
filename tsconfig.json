@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"paths": {
+			"@src/*": ["./src/*"],
 			"@domain/*": ["./src/domain/*"],
 			"@application/*": ["./src/application/*"],
 			"@dtos/*": ["./src/application/dtos/*"],

@@ -7,12 +7,14 @@ import type { IAdminLogoutUseCase } from "@application/ports/use-cases/admin/aut
 import type { IAdminRefreshTokenUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.refresh-token.ts";
 import type { IAdminResetPasswordUseCase } from "@application/ports/use-cases/admin/auth/IAdmin.reset.password.ts";
 import type { IAdminVerifyEmailForgotPasswordUseCase } from "@application/ports/use-cases/admin/auth/IVerify.email.forgot-password.ts";
+import type { IGetAdminCustomerDetailsUseCase } from "@application/ports/use-cases/admin/get-admin-customer-details.use-case.interface.ts";
 import { AdminForgotPasswordUseCase } from "@application/use-cases/admin/auth/admin.forgot-password.ts";
 import { AdminLoginUseCase } from "@application/use-cases/admin/auth/admin.login.ts";
 import { AdminLogoutUseCase } from "@application/use-cases/admin/auth/admin.logout.ts";
 import { AdminRefreshTokenUseCase } from "@application/use-cases/admin/auth/admin.refresh-token.ts";
 import { AdminResetPasswordUseCase } from "@application/use-cases/admin/auth/admin.reset.password.ts";
 import { VerifyForgotPasswordEmailUseCase } from "@application/use-cases/admin/auth/verify.email.forgot-password.ts";
+import { GetAdminCustomerDetailsUseCase } from "@application/use-cases/admin/get-admin-customer-details.use-case.ts";
 import type { IAdminAuthRepository } from "@domain/repository/admin/IAdmin.auth.repo.ts";
 import type { IEmailQueueProducer } from "@domain/repository/shared/IEmail.queue.producer.ts";
 import type { IOtpService } from "@domain/repository/shared/IOtp.service.ts";
@@ -24,6 +26,7 @@ import { BcryptPasswordHasher } from "@infrastructure/services/password.ts";
 import { RedisOtpService } from "@infrastructure/services/redis.otp.ts";
 import { JwtTokenService } from "@infrastructure/services/token.ts";
 import { AdminAuthController } from "@interfaces/http/controllers/admin/auth.controller.ts";
+import { AdminCustomerController } from "@interfaces/http/controllers/admin/customer.controller.ts";
 import { Container } from "inversify";
 import { healthModule } from "./health/health.module.ts";
 import { infrastructureModule } from "./infrastructure/infrastructure.module.ts";
@@ -48,6 +51,13 @@ container
 container
 	.bind<AdminAuthController>(TYPES.AdminAuthController)
 	.to(AdminAuthController);
+
+container
+	.bind<IGetAdminCustomerDetailsUseCase>(TYPES.GetAdminCustomerDetailsUseCase)
+	.to(GetAdminCustomerDetailsUseCase);
+container
+	.bind<AdminCustomerController>(TYPES.AdminCustomerController)
+	.to(AdminCustomerController);
 
 container
 	.bind<IRefreshTokenRepository>(TYPES.RefreshTokenRepositories)

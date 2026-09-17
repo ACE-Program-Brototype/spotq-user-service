@@ -5,6 +5,7 @@ const config: Config = {
 	setupFiles: ["<rootDir>/test/setup-env.ts"],
 	extensionsToTreatAsEsm: [".ts"],
 	moduleNameMapper: {
+		"^@src/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/$1",
 		"^@domain/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/domain/$1",
 		"^@application/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/application/$1",
 		"^@dtos/(.*?)(?:\\.ts|\\.js)?$": "<rootDir>/src/application/dtos/$1",

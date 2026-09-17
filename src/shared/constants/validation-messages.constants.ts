@@ -49,6 +49,12 @@ export const VALIDATION_MESSAGES = {
 		DOB_FUTURE: "Date of birth cannot be in the future.",
 		LOCATION_TOO_LONG: "Location must not exceed 100 characters.",
 	},
+	PARAMS: {
+		INVALID: "Invalid request parameters.",
+	},
+	CUSTOMER: {
+		INVALID_ID_FORMAT: "Invalid customer ID format.",
+	},
 	PAGINATION: {
 		INVALID_PAGE: "Invalid pagination page.",
 		INVALID_LIMIT: "Invalid pagination limit.",

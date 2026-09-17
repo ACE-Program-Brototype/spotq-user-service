@@ -1,6 +1,7 @@
 export * from "./account-blocked.error.ts";
 export * from "./account-inactive.error.ts";
 export * from "./base.error.ts";
+export * from "./customer-not-found.error.ts";
 export * from "./email-already-exists.error.ts";
 export * from "./email-already-registered.error.ts";
 export * from "./email-not-verified.error.ts";
