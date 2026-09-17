@@ -15,8 +15,22 @@ describe("AdminCustomerController", () => {
 	const mockCustomerDetails: AdminCustomerDetailsResponseDto = {
 		id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
 		full_name: "Jane Doe",
+		fullName: "Jane Doe",
+		fullname: "Jane Doe",
 		email: "jane.doe@example.com",
+		phone: "+919876543210",
 		status: "ACTIVE",
+		is_email_verified: true,
+		isEmailVerified: true,
+		gender: "Female",
+		dob: "1995-08-15",
+		location: "Mumbai, India",
+		avatar_url: null,
+		avatarUrl: null,
+		created_at: "2026-01-15T10:00:00.000Z",
+		createdAt: "2026-01-15T10:00:00.000Z",
+		updated_at: "2026-01-15T10:00:00.000Z",
+		updatedAt: "2026-01-15T10:00:00.000Z",
 	};
 
 	beforeEach(() => {

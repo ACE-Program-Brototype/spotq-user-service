@@ -17,11 +17,28 @@ describe("GET /admin/customers/:id - Admin Customer Details Integration Tests", 
 
 	it("should return 200 OK with customer details when requested by an admin with valid UUID", async () => {
 		const validUuid = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+		const createdAt = new Date("2026-01-15T10:00:00.000Z");
+		const updatedAt = new Date("2026-01-16T12:30:00.000Z");
 		const mockCustomerData = {
 			id: validUuid,
 			fullname: "Alice Smith",
 			email: "alice.smith@example.com",
+			phone: "+919876543210",
+			passwordHash: "hashed_pwd",
+			googleId: null,
 			status: "ACTIVE",
+			isEmailVerified: true,
+			createdAt,
+			updatedAt,
+			profile: {
+				id: "prof-uuid-1",
+				userId: validUuid,
+				dob: new Date("1995-05-20T00:00:00.000Z"),
+				gender: "Female",
+				location: "Bangalore, India",
+				createdAt,
+				updatedAt,
+			},
 		};
 
 		(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockCustomerData);
@@ -39,8 +56,22 @@ describe("GET /admin/customers/:id - Admin Customer Details Integration Tests", 
 			data: {
 				id: validUuid,
 				full_name: "Alice Smith",
+				fullName: "Alice Smith",
+				fullname: "Alice Smith",
 				email: "alice.smith@example.com",
+				phone: "+919876543210",
 				status: "ACTIVE",
+				is_email_verified: true,
+				isEmailVerified: true,
+				gender: "Female",
+				dob: "1995-05-20",
+				location: "Bangalore, India",
+				avatar_url: null,
+				avatarUrl: null,
+				created_at: createdAt.toISOString(),
+				createdAt: createdAt.toISOString(),
+				updated_at: updatedAt.toISOString(),
+				updatedAt: updatedAt.toISOString(),
 			},
 			statusCode: 200,
 		});

@@ -1,4 +1,5 @@
 import type { AdminCustomerDetailsResponseDto } from "@application/dtos/admin/admin-customer-details.dto.ts";
+import { AdminCustomerDetailsMapper } from "@application/mappers/admin/admin-customer-details.mapper.ts";
 import type { IGetAdminCustomerDetailsUseCase } from "@application/ports/use-cases/admin/get-admin-customer-details.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { CustomerNotFoundError } from "@domain/errors/index.ts";
@@ -20,11 +21,6 @@ export class GetAdminCustomerDetailsUseCase
 		if (!user) {
 			throw new CustomerNotFoundError();
 		}
-		return {
-			id: user.id,
-			full_name: user.fullName.getValue(),
-			email: user.email.getValue(),
-			status: user.status,
-		};
+		return AdminCustomerDetailsMapper.toResponse(user);
 	}
 }
