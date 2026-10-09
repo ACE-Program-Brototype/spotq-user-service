@@ -29,6 +29,7 @@ import {
 	forgotPasswordRateLimit,
 	forgotPasswordResendRateLimit,
 	forgotPasswordVerifyRateLimit,
+	resendEmailOtpRateLimit,
 } from "../middlewares/rate.limit.middleware";
 import {
 	forgotPasswordValidate,
@@ -117,6 +118,14 @@ export class UserRouter {
 		this.router.post(
 			"/resend-email-otp",
 			validateRequestBody(resendEmailOtpSchema),
+			resendEmailOtpRateLimit,
+			this.userController.resendEmailOtp,
+		);
+
+		this.router.post(
+			"/email-verification/resend",
+			validateRequestBody(resendEmailOtpSchema),
+			resendEmailOtpRateLimit,
 			this.userController.resendEmailOtp,
 		);
 

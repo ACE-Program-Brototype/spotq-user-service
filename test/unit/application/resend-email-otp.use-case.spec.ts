@@ -5,7 +5,10 @@ import type {
 } from "@application/ports/services/index.ts";
 import { ResendEmailOtpUseCase } from "@application/use-cases/resend-email-otp.use-case.ts";
 import { UserEntity } from "@domain/entities/user.entity.ts";
-import { UserNotFoundError } from "@domain/errors/domain.error.ts";
+import {
+	EmailAlreadyVerifiedError,
+	UserNotFoundError,
+} from "@domain/errors/domain.error.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
 
@@ -70,6 +73,27 @@ describe("ResendEmailOtpUseCase", () => {
 			email: "john.doe@example.com",
 			otp: "654321",
 		});
+	});
+
+	it("should throw EmailAlreadyVerifiedError when user is already verified", async () => {
+		const verifiedUser = UserEntity.create({
+			id: "usr-123",
+			fullName: FullName.create("John Doe"),
+			phone: PhoneNumber.create("+919876543210"),
+			email: Email.create("john.doe@example.com"),
+			passwordHash: "hash",
+			isEmailVerified: true,
+		});
+		mockUserRepository.findByEmail.mockResolvedValue(verifiedUser);
+
+		await expect(
+			useCase.execute({ email: "john.doe@example.com" }),
+		).rejects.toThrow(EmailAlreadyVerifiedError);
+
+		expect(mockOtpService.generateAndStoreOtp).not.toHaveBeenCalled();
+		expect(
+			mockEmailQueueProducer.queueVerificationEmail,
+		).not.toHaveBeenCalled();
 	});
 
 	it("should throw UserNotFoundError when user is not found", async () => {

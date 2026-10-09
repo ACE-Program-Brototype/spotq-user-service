@@ -43,12 +43,9 @@ const createEmailRateLimiter = ({
 
 		keyGenerator: (req: Request) => {
 			const email = req.body?.email?.toLowerCase()?.trim();
-
-			if (!email) {
-				throw new Error("Email is required for rate limiting");
-			}
-
-			return `${prefix}:${email}`;
+			return email
+				? `${prefix}:${email}`
+				: `${prefix}:ip:${req.ip || "unknown"}`;
 		},
 
 		...(isTestEnvironment
@@ -88,6 +85,14 @@ export const createForgotPasswordVerifyRateLimit = () =>
 		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD_VERIFY,
 	});
 
+export const createResendEmailOtpRateLimit = () =>
+	createEmailRateLimiter({
+		prefix: "customer:resend-email-otp",
+		windowMs: config.rateLimit.resendEmailOtp.windowMs,
+		limit: config.rateLimit.resendEmailOtp.max,
+		message: RATE_LIMIT_ERRORS.RESEND_EMAIL_OTP,
+	});
+
 export const forgotPasswordRateLimit = createDeferredRateLimiter(
 	createForgotPasswordRateLimit,
 );
@@ -98,4 +103,8 @@ export const forgotPasswordResendRateLimit = createDeferredRateLimiter(
 
 export const forgotPasswordVerifyRateLimit = createDeferredRateLimiter(
 	createForgotPasswordVerifyRateLimit,
+);
+
+export const resendEmailOtpRateLimit = createDeferredRateLimiter(
+	createResendEmailOtpRateLimit,
 );

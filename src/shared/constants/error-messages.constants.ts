@@ -44,6 +44,7 @@ export const DOMAIN_ERRORS = {
 		FORBIDDEN: "FORBIDDEN",
 		INVALID_TOKEN: "INVALID_TOKEN",
 		EMAIL_NOT_VERIFIED: "EMAIL_NOT_VERIFIED",
+		EMAIL_ALREADY_VERIFIED: "EMAIL_ALREADY_VERIFIED",
 		CUSTOMER_NOT_FOUND: "CUSTOMER_NOT_FOUND",
 		WEAK_PASSWORD: "WEAK_PASSWORD",
 	},
@@ -57,6 +58,8 @@ export const DOMAIN_ERRORS = {
 		EMAIL_ALREADY_EXISTS: "An account with this email already exists.",
 		EMAIL_NOT_VERIFIED:
 			"Email is not verified. Please verify your email first.",
+		EMAIL_ALREADY_VERIFIED:
+			"This email address is already verified. Please sign in.",
 		PHONE_ALREADY_EXISTS: "An account with this phone number already exists.",
 		USER_NOT_FOUND: "User not found.",
 		OTP_INVALID: "Invalid OTP provided.",
@@ -82,4 +85,6 @@ export const RATE_LIMIT_ERRORS = {
 		"Too many OTP resend requests. Please try again after 5 minutes.",
 	FORGOT_PASSWORD_VERIFY:
 		"Too many OTP verification attempts. Please try again after 5 minutes.",
+	RESEND_EMAIL_OTP:
+		"Too many verification requests. Please try again after 5 minutes.",
 } as const;
