@@ -4,10 +4,8 @@ import type {
 	IOtpService,
 } from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
-import {
-	EmailAlreadyVerifiedError,
-	UserNotFoundError,
-} from "@domain/errors/domain.error.ts";
+import { UserStatus } from "@domain/entities/user.entity.ts";
+import { UserBlockedError } from "@domain/errors/domain.error.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
 import { Email } from "@domain/value-objects/email.vo.ts";
 import type { IResendEmailOtpUseCase } from "@ports/use-cases/index.ts";
@@ -38,15 +36,39 @@ export class ResendEmailOtpUseCase implements IResendEmailOtpUseCase {
 
 		const user = await this.userRepository.findByEmail(email);
 		if (!user) {
-			throw new UserNotFoundError();
+			this.logger.warn(
+				{ email: email.getValue(), event: "RESEND_OTP_USER_NOT_FOUND" },
+				"Resend OTP requested for non-existent user",
+			);
+			return {
+				success: true,
+				message: ResponseMessage.OTP_RESENT,
+			};
+		}
+
+		if (user.status === UserStatus.BLOCKED) {
+			throw new UserBlockedError();
 		}
 
 		if (user.isEmailVerified) {
-			throw new EmailAlreadyVerifiedError();
+			this.logger.info(
+				{
+					email: email.getValue(),
+					userId: user.id,
+					event: "RESEND_OTP_ALREADY_VERIFIED",
+				},
+				"Resend OTP skipped because account email is already verified",
+			);
+			return {
+				success: true,
+				message: ResponseMessage.OTP_RESENT,
+			};
 		}
 
+		// Generate new OTP (this resets attempt count and invalidates previous OTP)
 		const otp = await this.otpService.generateAndStoreOtp(email.getValue());
 
+		// Queue email delivery
 		await this.emailQueueProducer.queueVerificationEmail({
 			email: email.getValue(),
 			otp,

@@ -42,11 +42,47 @@ const createEmailRateLimiter = ({
 		legacyHeaders: false,
 
 		keyGenerator: (req: Request) => {
-			const email = req.body?.email?.toLowerCase()?.trim();
+			const email =
+				typeof req.body?.email === "string"
+					? req.body.email.toLowerCase().trim()
+					: null;
 			return email
 				? `${prefix}:${email}`
 				: `${prefix}:ip:${req.ip || "unknown"}`;
 		},
+
+		...(isTestEnvironment
+			? {}
+			: {
+					store: new RedisStore({ sendCommand: redisSendCommand }),
+				}),
+
+		message: {
+			success: false,
+			message,
+		},
+	});
+};
+
+const createIpRateLimiter = ({
+	prefix,
+	windowMs,
+	limit,
+	message,
+}: {
+	prefix: string;
+	windowMs: number;
+	limit: number;
+	message: string;
+}) => {
+	return rateLimit({
+		windowMs,
+		limit,
+
+		standardHeaders: "draft-7",
+		legacyHeaders: false,
+
+		keyGenerator: (req: Request) => `${prefix}:ip:${req.ip || "unknown"}`,
 
 		...(isTestEnvironment
 			? {}
@@ -93,6 +129,14 @@ export const createResendEmailOtpRateLimit = () =>
 		message: RATE_LIMIT_ERRORS.RESEND_EMAIL_OTP,
 	});
 
+export const createResendEmailOtpIpRateLimit = () =>
+	createIpRateLimiter({
+		prefix: "customer:resend-email-otp",
+		windowMs: config.rateLimit.resendEmailOtp.windowMs,
+		limit: config.rateLimit.resendEmailOtp.max * 5,
+		message: RATE_LIMIT_ERRORS.RESEND_EMAIL_OTP,
+	});
+
 export const forgotPasswordRateLimit = createDeferredRateLimiter(
 	createForgotPasswordRateLimit,
 );
@@ -107,4 +151,8 @@ export const forgotPasswordVerifyRateLimit = createDeferredRateLimiter(
 
 export const resendEmailOtpRateLimit = createDeferredRateLimiter(
 	createResendEmailOtpRateLimit,
+);
+
+export const resendEmailOtpIpRateLimit = createDeferredRateLimiter(
+	createResendEmailOtpIpRateLimit,
 );
