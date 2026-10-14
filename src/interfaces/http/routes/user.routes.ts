@@ -20,6 +20,7 @@ import {
 } from "@interfaces/http/validators/index.ts";
 import {
 	ADMIN_ROUTES,
+	AUTH_ROUTES,
 	CUSTOMER_ROUTES,
 } from "@shared/constants/routes.constants.ts";
 import { Router } from "express";
@@ -29,6 +30,8 @@ import {
 	forgotPasswordRateLimit,
 	forgotPasswordResendRateLimit,
 	forgotPasswordVerifyRateLimit,
+	resendEmailOtpIpRateLimit,
+	resendEmailOtpRateLimit,
 } from "../middlewares/rate.limit.middleware";
 import {
 	forgotPasswordValidate,
@@ -103,62 +106,76 @@ export class UserRouter {
 		);
 
 		this.router.post(
-			"/register",
+			AUTH_ROUTES.REGISTER,
 			validateRequestBody(registerUserSchema),
 			this.userController.register,
 		);
 
 		this.router.post(
-			"/verify-email",
+			AUTH_ROUTES.VERIFY_EMAIL,
 			validateRequestBody(verifyEmailOtpSchema),
 			this.userController.verifyEmail,
 		);
 
 		this.router.post(
-			"/resend-email-otp",
+			AUTH_ROUTES.RESEND_EMAIL_OTP,
 			validateRequestBody(resendEmailOtpSchema),
+			resendEmailOtpIpRateLimit,
+			resendEmailOtpRateLimit,
 			this.userController.resendEmailOtp,
 		);
 
-		this.router.post("/logout", authMiddleware, this.userController.logout);
+		this.router.post(
+			AUTH_ROUTES.EMAIL_VERIFICATION_RESEND,
+			validateRequestBody(resendEmailOtpSchema),
+			resendEmailOtpIpRateLimit,
+			resendEmailOtpRateLimit,
+			this.userController.resendEmailOtp,
+		);
 
 		this.router.post(
-			"/oauth/google",
+			AUTH_ROUTES.LOGOUT,
+			authMiddleware,
+			this.userController.logout,
+		);
+
+		this.router.post(
+			AUTH_ROUTES.GOOGLE_OAUTH,
 			validateRequestBody(googleAuthSchema),
 			this.userController.googleAuth,
 		);
 
 		this.router.post(
-			"/login",
+			AUTH_ROUTES.LOGIN,
 			validateRequestBody(loginSchema),
 			this.userController.login,
 		);
 
-		this.router.post("/refresh-token", this.userController.refresh);
+		this.router.post(AUTH_ROUTES.REFRESH_TOKEN, this.userController.refresh);
 
 		this.router.post(
-			"/forgot-password",
+			AUTH_ROUTES.FORGOT_PASSWORD,
 			validateRequestBody(forgotPasswordValidate),
 			forgotPasswordRateLimit,
 			this.userController.forgotPassword,
 		);
 
 		this.router.post(
-			"/forgot-password/verify",
+			AUTH_ROUTES.FORGOT_PASSWORD_VERIFY,
 			validateRequestBody(forgotPasswordVerifyValidate),
 			forgotPasswordVerifyRateLimit,
 			this.userController.forgotPasswordEmailVerify,
 		);
 
 		this.router.post(
-			"/forgot-password/resend-otp",
+			AUTH_ROUTES.FORGOT_PASSWORD_RESEND_OTP,
 			validateRequestBody(forgotPasswordValidate),
 			forgotPasswordResendRateLimit,
 			this.userController.verifyOtpResend,
 		);
 
 		this.router.post(
-			"/reset-password",
+			AUTH_ROUTES.RESET_PASSWORD,
 			customerTempTokenCheck,
 			validateRequestBody(passwordValidate),
 			this.userController.resetPassword,

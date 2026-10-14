@@ -93,6 +93,10 @@ export const config = {
 			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_WINDOW_MS,
 			max: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_MAX,
 		},
+		resendEmailOtp: {
+			windowMs: env.RATE_LIMIT_RESEND_EMAIL_OTP_WINDOW_MS,
+			max: env.RATE_LIMIT_RESEND_EMAIL_OTP_MAX,
+		},
 	},
 
 	pagination: {

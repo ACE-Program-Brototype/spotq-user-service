@@ -26,6 +26,21 @@ export const ADMIN_ROUTES = {
 	USERS_USER_STATUS: "/users/:userId/status",
 } as const;
 
+export const AUTH_ROUTES = {
+	REGISTER: "/register",
+	VERIFY_EMAIL: "/verify-email",
+	RESEND_EMAIL_OTP: "/resend-email-otp",
+	EMAIL_VERIFICATION_RESEND: "/email-verification/resend",
+	LOGOUT: "/logout",
+	GOOGLE_OAUTH: "/oauth/google",
+	LOGIN: "/login",
+	REFRESH_TOKEN: "/refresh-token",
+	FORGOT_PASSWORD: "/forgot-password",
+	FORGOT_PASSWORD_VERIFY: "/forgot-password/verify",
+	FORGOT_PASSWORD_RESEND_OTP: "/forgot-password/resend-otp",
+	RESET_PASSWORD: "/reset-password",
+} as const;
+
 export const USER_ROUTES = {
 	USERS: "/users",
 } as const;

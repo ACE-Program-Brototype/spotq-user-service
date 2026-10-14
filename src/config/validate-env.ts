@@ -137,6 +137,12 @@ const envSchema = z.object({
 		.positive()
 		.default(5),
 
+	RATE_LIMIT_RESEND_EMAIL_OTP_WINDOW_MS: z.coerce
+		.number()
+		.positive()
+		.default(5 * 60 * 1000),
+	RATE_LIMIT_RESEND_EMAIL_OTP_MAX: z.coerce.number().positive().default(3),
+
 	// User Listing Pagination & Sorting Configuration
 	USERS_DEFAULT_PAGE: z.coerce.number().positive().default(1),
 	USERS_DEFAULT_LIMIT: z.coerce.number().positive().default(20),
