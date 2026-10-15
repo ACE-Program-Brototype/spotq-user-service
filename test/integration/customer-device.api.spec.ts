@@ -13,7 +13,7 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 		it("should return 401 Unauthorized when no authentication is provided", async () => {
 			const res = await request(app).post("/me/devices").send({
 				device_id: "device_abc123",
-				fcm_token: "fcm_test_token",
+				fid: "fid_test_token",
 				platform: "ANDROID",
 			});
 
@@ -26,7 +26,7 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 				.set("x-user-id", customerId)
 				.set("x-user-role", "customer")
 				.send({
-					fcm_token: "fcm_test_token",
+					fid: "fid_test_token",
 					platform: "ANDROID",
 				});
 
@@ -54,7 +54,7 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 				id: "99999999-9999-9999-9999-999999999999",
 				userId: customerId,
 				deviceId: "device_abc123",
-				fcmToken: "FCM_DEVICE_TOKEN",
+				fid: "FID_DEVICE_TOKEN",
 				deviceName: "Pixel 7",
 				platform: "ANDROID",
 				appVersion: "1.0.0",
@@ -70,7 +70,7 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 				.set("x-user-role", "customer")
 				.send({
 					device_id: "device_abc123",
-					fcm_token: "FCM_DEVICE_TOKEN",
+					fid: "FID_DEVICE_TOKEN",
 					platform: "ANDROID",
 					app_version: "1.0.0",
 					device_name: "Pixel 7",
@@ -97,7 +97,7 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 					id: "99999999-9999-9999-9999-999999999999",
 					userId: customerId,
 					deviceId: "device_1",
-					fcmToken: "token_1",
+					fid: "token_1",
 					deviceName: "Pixel 7",
 					platform: "ANDROID",
 					appVersion: "1.0.0",

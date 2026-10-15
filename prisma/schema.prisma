@@ -83,7 +83,7 @@ model Device {
   id          String         @id @default(uuid()) @db.Uuid
   userId      String         @map("user_id") @db.Uuid
   deviceId    String?        @map("device_id")
-  fcmToken    String?        @map("fcm_token")
+  fid         String?        @map("fid")
   deviceName  String?        @map("device_name")
   platform    Platform       @map("platform")
   appVersion  String?        @map("app_version")

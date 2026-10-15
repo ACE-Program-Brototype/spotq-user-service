@@ -9,7 +9,7 @@ describe("DeviceMapper", () => {
 		id: "device-uuid-1",
 		userId: "user-uuid-1",
 		deviceId: "client_device_1",
-		fcmToken: "fcm_token_1",
+		fid: "fid_token_1",
 		deviceName: "Pixel 8",
 		platform: "ANDROID",
 		appVersion: "1.0.0",
@@ -26,7 +26,7 @@ describe("DeviceMapper", () => {
 		expect(entity.id).toBe("device-uuid-1");
 		expect(entity.userId).toBe("user-uuid-1");
 		expect(entity.deviceId).toBe("client_device_1");
-		expect(entity.fcmToken).toBe("fcm_token_1");
+		expect(entity.fid).toBe("fid_token_1");
 		expect(entity.deviceName).toBe("Pixel 8");
 		expect(entity.platform).toBe("ANDROID");
 		expect(entity.appVersion).toBe("1.0.0");
@@ -41,7 +41,7 @@ describe("DeviceMapper", () => {
 			id: "device-uuid-1",
 			userId: "user-uuid-1",
 			deviceId: "client_device_1",
-			fcmToken: "fcm_token_1",
+			fid: "fid_token_1",
 			deviceName: "Pixel 8",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
@@ -61,7 +61,7 @@ describe("DeviceMapper", () => {
 			id: "device-uuid-1",
 			userId: "user-uuid-1",
 			deviceId: "client_device_1",
-			fcmToken: "fcm_token_1",
+			fid: "fid_token_1",
 			deviceName: "Pixel 8",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
@@ -81,7 +81,7 @@ describe("DeviceMapper", () => {
 			id: "device-uuid-1",
 			userId: "user-uuid-1",
 			deviceId: "client_device_1",
-			fcmToken: "fcm_token_1",
+			fid: "fid_token_1",
 			deviceName: "Pixel 8",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
@@ -95,7 +95,7 @@ describe("DeviceMapper", () => {
 
 		expect(updateInput).toEqual({
 			deviceId: "client_device_1",
-			fcmToken: "fcm_token_1",
+			fid: "fid_token_1",
 			deviceName: "Pixel 8",
 			platform: "ANDROID",
 			appVersion: "1.0.0",

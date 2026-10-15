@@ -93,7 +93,7 @@ describe("RegisterUserUseCase", () => {
 				device: {
 					deviceName: "iPhone 15",
 					platform: "IOS",
-					fcmToken: "fcm_token_xyz",
+					fid: "fid_token_xyz",
 				},
 			}),
 		).resolves.toBeUndefined();

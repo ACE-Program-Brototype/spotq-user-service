@@ -34,7 +34,7 @@ export class CustomerDeviceController implements ICustomerDeviceController {
 		const result = await this.registerDeviceUseCase.execute({
 			userId,
 			deviceId: body.deviceId,
-			fcmToken: body.fcmToken,
+			fid: body.fid,
 			platform: body.platform,
 			appVersion: body.appVersion,
 			deviceName: body.deviceName,

@@ -3,7 +3,7 @@ import type { PlatformType } from "@domain/entities/device.entity.ts";
 export interface RegisterDeviceDto {
 	deviceName?: string;
 	platform?: PlatformType;
-	fcmToken?: string;
+	fid?: string;
 }
 
 export interface RegisterUserDto {

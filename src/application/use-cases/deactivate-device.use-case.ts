@@ -25,14 +25,14 @@ export class DeactivateDeviceUseCase implements IDeactivateDeviceUseCase {
 				},
 				"Device token deactivated successfully",
 			);
-		} else if (dto.fcmToken) {
-			await this.deviceRepository.deactivateByFcmToken(dto.fcmToken);
+		} else if (dto.fid) {
+			await this.deviceRepository.deactivateByFid(dto.fid);
 			this.logger.info(
 				{
-					fcmToken: dto.fcmToken,
+					fid: dto.fid,
 					event: "DEVICE_TOKEN_DEACTIVATED",
 				},
-				"Device FCM token marked inactive",
+				"Device FID marked inactive",
 			);
 		}
 	}

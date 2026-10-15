@@ -18,9 +18,9 @@ describe("RegisterDeviceUseCase", () => {
 			findByUserIdAndDeviceId: jest.fn(),
 			findByUserIdAndPlatform: jest.fn(),
 			findActiveByUserId: jest.fn(),
-			findByFcmToken: jest.fn(),
+			findByFid: jest.fn(),
 			deactivate: jest.fn(),
-			deactivateByFcmToken: jest.fn(),
+			deactivateByFid: jest.fn(),
 		} as unknown as jest.Mocked<IDeviceRepository>;
 
 		mockIdGenerator = {
@@ -46,7 +46,7 @@ describe("RegisterDeviceUseCase", () => {
 		const result = await useCase.execute({
 			userId: "user-123",
 			deviceId: "device_abc123",
-			fcmToken: "fcm_token_xyz",
+			fid: "fid_token_xyz",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
 			deviceName: "Pixel 7",
@@ -66,7 +66,7 @@ describe("RegisterDeviceUseCase", () => {
 		expect(savedDevice?.id).toBe("generated-uuid-123");
 		expect(savedDevice?.userId).toBe("user-123");
 		expect(savedDevice?.deviceId).toBe("device_abc123");
-		expect(savedDevice?.fcmToken).toBe("fcm_token_xyz");
+		expect(savedDevice?.fid).toBe("fid_token_xyz");
 		expect(savedDevice?.platform).toBe("ANDROID");
 		expect(savedDevice?.isActive).toBe(true);
 	});
@@ -76,7 +76,7 @@ describe("RegisterDeviceUseCase", () => {
 			id: "existing-uuid-999",
 			userId: "user-123",
 			deviceId: "device_abc123",
-			fcmToken: "old_fcm_token",
+			fid: "old_fid_token",
 			deviceName: "Old Phone",
 			platform: "ANDROID",
 			appVersion: "0.9.0",
@@ -88,7 +88,7 @@ describe("RegisterDeviceUseCase", () => {
 		const result = await useCase.execute({
 			userId: "user-123",
 			deviceId: "device_abc123",
-			fcmToken: "new_refreshed_fcm_token",
+			fid: "new_refreshed_fid_token",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
 			deviceName: "Pixel 7 Updated",
@@ -103,7 +103,7 @@ describe("RegisterDeviceUseCase", () => {
 		});
 
 		expect(mockDeviceRepository.save).toHaveBeenCalledWith(existing);
-		expect(existing.fcmToken).toBe("new_refreshed_fcm_token");
+		expect(existing.fid).toBe("new_refreshed_fid_token");
 		expect(existing.isActive).toBe(true);
 		expect(existing.appVersion).toBe("1.0.0");
 	});
@@ -113,7 +113,7 @@ describe("RegisterDeviceUseCase", () => {
 			id: "existing-uuid-999",
 			userId: "user-123",
 			deviceId: "device_abc123",
-			fcmToken: "existing_fcm_token",
+			fid: "existing_fid_token",
 			deviceName: "Pixel 7",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
@@ -137,7 +137,7 @@ describe("RegisterDeviceUseCase", () => {
 		});
 
 		expect(mockDeviceRepository.save).toHaveBeenCalledWith(existing);
-		expect(existing.fcmToken).toBe("existing_fcm_token");
+		expect(existing.fid).toBe("existing_fid_token");
 		expect(existing.deviceName).toBe("Pixel 7");
 		expect(existing.appVersion).toBe("1.0.0");
 		expect(existing.isActive).toBe(true);

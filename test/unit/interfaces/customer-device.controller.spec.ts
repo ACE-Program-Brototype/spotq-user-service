@@ -49,7 +49,7 @@ describe("CustomerDeviceController", () => {
 			user: { userId: "user-123" },
 			body: {
 				deviceId: "device_abc123",
-				fcmToken: "token_123",
+				fid: "token_123",
 				platform: "ANDROID",
 				appVersion: "1.0.0",
 				deviceName: "Pixel 7",
@@ -69,7 +69,7 @@ describe("CustomerDeviceController", () => {
 		expect(mockRegisterDeviceUseCase.execute).toHaveBeenCalledWith({
 			userId: "user-123",
 			deviceId: "device_abc123",
-			fcmToken: "token_123",
+			fid: "token_123",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
 			deviceName: "Pixel 7",
@@ -96,7 +96,7 @@ describe("CustomerDeviceController", () => {
 
 		mockGetCustomerDevicesUseCase.execute.mockResolvedValue([
 			{
-				id: "id-1",
+				deviceRegistrationId: "id-1",
 				deviceId: "device_abc123",
 				platform: "ANDROID",
 				deviceName: "Pixel 7",

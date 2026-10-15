@@ -6,6 +6,7 @@
 
 */
 -- AlterTable
+ALTER TABLE "devices" RENAME COLUMN "fcm_token" TO "fid";
 ALTER TABLE "devices" ADD COLUMN     "app_version" TEXT,
 ADD COLUMN     "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "device_id" TEXT,

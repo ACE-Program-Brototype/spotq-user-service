@@ -10,7 +10,7 @@ describe("registerUserSchema", () => {
 			device: {
 				deviceName: "iPhone 15",
 				platform: "IOS",
-				fcmToken: "sample-fcm-token",
+				fid: "sample-fid-token",
 			},
 		};
 

@@ -12,7 +12,7 @@ export interface IDeviceRepository extends IBaseRepository<DeviceEntity> {
 		platform: PlatformType,
 	): Promise<DeviceEntity | null>;
 	findActiveByUserId(userId: string): Promise<DeviceEntity[]>;
-	findByFcmToken(fcmToken: string): Promise<DeviceEntity | null>;
+	findByFid(fid: string): Promise<DeviceEntity | null>;
 	deactivate(userId: string, deviceId: string): Promise<void>;
-	deactivateByFcmToken(fcmToken: string): Promise<void>;
+	deactivateByFid(fid: string): Promise<void>;
 }

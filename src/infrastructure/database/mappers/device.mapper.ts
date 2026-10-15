@@ -10,7 +10,7 @@ export const DeviceMapper = {
 			id: raw.id,
 			userId: raw.userId,
 			deviceId: raw.deviceId,
-			fcmToken: raw.fcmToken,
+			fid: raw.fid,
 			deviceName: raw.deviceName,
 			platform: raw.platform as PlatformType,
 			appVersion: raw.appVersion,
@@ -26,7 +26,7 @@ export const DeviceMapper = {
 			id: entity.id,
 			userId: entity.userId,
 			deviceId: entity.deviceId ?? null,
-			fcmToken: entity.fcmToken ?? null,
+			fid: entity.fid ?? null,
 			deviceName: entity.deviceName ?? null,
 			platform: entity.platform,
 			appVersion: entity.appVersion ?? null,
@@ -44,7 +44,7 @@ export const DeviceMapper = {
 	toUpdateInput(entity: DeviceEntity): Prisma.DeviceUncheckedUpdateInput {
 		return {
 			deviceId: entity.deviceId ?? null,
-			fcmToken: entity.fcmToken ?? null,
+			fid: entity.fid ?? null,
 			deviceName: entity.deviceName ?? null,
 			platform: entity.platform,
 			appVersion: entity.appVersion ?? null,

@@ -8,7 +8,7 @@ describe("registerDeviceSchema", () => {
 	it("should parse valid snake_case payload from mobile client", () => {
 		const result = registerDeviceSchema.safeParse({
 			device_id: "device_abc123",
-			fcm_token: "FCM_DEVICE_TOKEN",
+			fid: "FID_DEVICE_TOKEN",
 			platform: "ANDROID",
 			app_version: "1.0.0",
 			device_name: "Pixel 7",
@@ -18,7 +18,7 @@ describe("registerDeviceSchema", () => {
 		if (result.success) {
 			expect(result.data).toEqual({
 				deviceId: "device_abc123",
-				fcmToken: "FCM_DEVICE_TOKEN",
+				fid: "FID_DEVICE_TOKEN",
 				platform: "ANDROID",
 				appVersion: "1.0.0",
 				deviceName: "Pixel 7",
@@ -29,7 +29,7 @@ describe("registerDeviceSchema", () => {
 	it("should parse valid camelCase payload", () => {
 		const result = registerDeviceSchema.safeParse({
 			deviceId: "device_abc123",
-			fcmToken: "FCM_DEVICE_TOKEN",
+			fid: "FID_DEVICE_TOKEN",
 			platform: "IOS",
 			appVersion: "2.1.0",
 			deviceName: "iPhone 15 Pro",
@@ -39,7 +39,7 @@ describe("registerDeviceSchema", () => {
 		if (result.success) {
 			expect(result.data).toEqual({
 				deviceId: "device_abc123",
-				fcmToken: "FCM_DEVICE_TOKEN",
+				fid: "FID_DEVICE_TOKEN",
 				platform: "IOS",
 				appVersion: "2.1.0",
 				deviceName: "iPhone 15 Pro",
@@ -49,7 +49,7 @@ describe("registerDeviceSchema", () => {
 
 	it("should fail when device_id / deviceId is missing with constant error message", () => {
 		const result = registerDeviceSchema.safeParse({
-			fcm_token: "FCM_DEVICE_TOKEN",
+			fid: "FID_DEVICE_TOKEN",
 			platform: "ANDROID",
 		});
 

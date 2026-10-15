@@ -14,9 +14,9 @@ describe("GetCustomerDevicesUseCase & DeactivateDeviceUseCase", () => {
 			findByUserIdAndDeviceId: jest.fn(),
 			findByUserIdAndPlatform: jest.fn(),
 			findActiveByUserId: jest.fn(),
-			findByFcmToken: jest.fn(),
+			findByFid: jest.fn(),
 			deactivate: jest.fn().mockResolvedValue(undefined),
-			deactivateByFcmToken: jest.fn().mockResolvedValue(undefined),
+			deactivateByFid: jest.fn().mockResolvedValue(undefined),
 		} as unknown as jest.Mocked<IDeviceRepository>;
 
 		mockLogger = {
@@ -32,7 +32,7 @@ describe("GetCustomerDevicesUseCase & DeactivateDeviceUseCase", () => {
 				id: "id-1",
 				userId: "usr-1",
 				deviceId: "device_1",
-				fcmToken: "token_1",
+				fid: "token_1",
 				platform: "ANDROID",
 				deviceName: "Galaxy S23",
 				appVersion: "1.0",
@@ -41,7 +41,7 @@ describe("GetCustomerDevicesUseCase & DeactivateDeviceUseCase", () => {
 				id: "id-2",
 				userId: "usr-1",
 				deviceId: "device_2",
-				fcmToken: "token_2",
+				fid: "token_2",
 				platform: "IOS",
 				deviceName: "iPhone 15",
 				appVersion: "1.0",
@@ -81,7 +81,7 @@ describe("GetCustomerDevicesUseCase & DeactivateDeviceUseCase", () => {
 			);
 		});
 
-		it("should deactivate device by fcmToken", async () => {
+		it("should deactivate device by fid", async () => {
 			const useCase = new DeactivateDeviceUseCase(
 				mockDeviceRepository,
 				mockLogger,
@@ -89,11 +89,11 @@ describe("GetCustomerDevicesUseCase & DeactivateDeviceUseCase", () => {
 
 			await useCase.execute({
 				userId: "usr-1",
-				fcmToken: "invalid_fcm_token_123",
+				fid: "invalid_fid_token_123",
 			});
 
-			expect(mockDeviceRepository.deactivateByFcmToken).toHaveBeenCalledWith(
-				"invalid_fcm_token_123",
+			expect(mockDeviceRepository.deactivateByFid).toHaveBeenCalledWith(
+				"invalid_fid_token_123",
 			);
 		});
 	});

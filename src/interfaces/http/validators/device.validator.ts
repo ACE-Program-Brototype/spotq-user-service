@@ -14,8 +14,7 @@ export const registerDeviceSchema = z
 			.min(1, VALIDATION_MESSAGES.DEVICE.DEVICE_ID_REQUIRED)
 			.max(255)
 			.optional(),
-		fcm_token: z.string().max(500).optional().nullable(),
-		fcmToken: z.string().max(500).optional().nullable(),
+		fid: z.string().max(500).optional().nullable(),
 		platform: z.enum(PLATFORMS, {
 			message: VALIDATION_MESSAGES.DEVICE.PLATFORM_INVALID,
 		}),
@@ -30,7 +29,7 @@ export const registerDeviceSchema = z
 	})
 	.transform((data) => ({
 		deviceId: (data.device_id || data.deviceId) as string,
-		fcmToken: data.fcm_token !== undefined ? data.fcm_token : data.fcmToken,
+		fid: data.fid,
 		platform: data.platform,
 		appVersion:
 			data.app_version !== undefined ? data.app_version : data.appVersion,

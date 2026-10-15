@@ -5,14 +5,14 @@ describe("DeviceEntity", () => {
 		const device = DeviceEntity.create({
 			id: "dev-1",
 			userId: "usr-1",
-			fcmToken: "fcm-token-123",
+			fid: "fid-token-123",
 			deviceName: "iPhone 15",
 			platform: "IOS",
 		});
 
 		expect(device.id).toBe("dev-1");
 		expect(device.userId).toBe("usr-1");
-		expect(device.fcmToken).toBe("fcm-token-123");
+		expect(device.fid).toBe("fid-token-123");
 		expect(device.deviceName).toBe("iPhone 15");
 		expect(device.platform).toBe("IOS");
 		expect(device.isActive).toBe(true);
@@ -26,7 +26,7 @@ describe("DeviceEntity", () => {
 			id: "dev-uuid-1",
 			userId: "usr-1",
 			deviceId: "device_abc123",
-			fcmToken: "fcm-token-abc",
+			fid: "fid-token-abc",
 			deviceName: "Pixel 7",
 			platform: "ANDROID",
 			appVersion: "1.0.0",
@@ -37,12 +37,12 @@ describe("DeviceEntity", () => {
 		expect(device.isActive).toBe(true);
 	});
 
-	it("should update FCM token and refresh lastLogin and isActive", () => {
+	it("should update FID and refresh lastLogin and isActive", () => {
 		const device = DeviceEntity.create({
 			id: "dev-1",
 			userId: "usr-1",
 			deviceId: "device-1",
-			fcmToken: "old-token",
+			fid: "old-token",
 			deviceName: "Pixel 8",
 			platform: "ANDROID",
 		});
@@ -50,8 +50,8 @@ describe("DeviceEntity", () => {
 		device.deactivate();
 		expect(device.isActive).toBe(false);
 
-		device.updateFcmToken("new-token-456");
-		expect(device.fcmToken).toBe("new-token-456");
+		device.updateFid("new-token-456");
+		expect(device.fid).toBe("new-token-456");
 		expect(device.isActive).toBe(true);
 	});
 
@@ -60,7 +60,7 @@ describe("DeviceEntity", () => {
 			id: "dev-1",
 			userId: "usr-1",
 			deviceId: "device-1",
-			fcmToken: "old-token",
+			fid: "old-token",
 			deviceName: "Old Phone",
 			platform: "ANDROID",
 		});
@@ -69,13 +69,13 @@ describe("DeviceEntity", () => {
 		expect(device.isActive).toBe(false);
 
 		device.updateDeviceInfo({
-			fcmToken: "refreshed-fcm-token",
+			fid: "refreshed-fid-token",
 			deviceName: "New Phone",
 			platform: "ANDROID",
 			appVersion: "2.0.0",
 		});
 
-		expect(device.fcmToken).toBe("refreshed-fcm-token");
+		expect(device.fid).toBe("refreshed-fid-token");
 		expect(device.deviceName).toBe("New Phone");
 		expect(device.appVersion).toBe("2.0.0");
 		expect(device.isActive).toBe(true);
@@ -101,7 +101,7 @@ describe("DeviceEntity", () => {
 			id: "dev-2",
 			userId: "usr-2",
 			deviceId: "device_xyz",
-			fcmToken: null,
+			fid: null,
 			deviceName: null,
 			platform: "WEB",
 			appVersion: "1.2.3",
@@ -113,7 +113,7 @@ describe("DeviceEntity", () => {
 
 		expect(device.id).toBe("dev-2");
 		expect(device.deviceId).toBe("device_xyz");
-		expect(device.fcmToken).toBeNull();
+		expect(device.fid).toBeNull();
 		expect(device.deviceName).toBeNull();
 		expect(device.appVersion).toBe("1.2.3");
 		expect(device.isActive).toBe(true);

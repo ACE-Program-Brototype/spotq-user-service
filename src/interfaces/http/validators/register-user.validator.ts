@@ -66,7 +66,7 @@ export const registerUserSchema = z.object({
 		.object({
 			deviceName: z.string().max(100).optional(),
 			platform: z.enum(["ANDROID", "IOS", "WEB"]).optional(),
-			fcmToken: z.string().max(500).optional(),
+			fid: z.string().max(500).optional(),
 		})
 		.optional(),
 });

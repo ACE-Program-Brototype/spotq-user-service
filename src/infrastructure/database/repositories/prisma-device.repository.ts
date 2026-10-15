@@ -62,9 +62,9 @@ export class PrismaDeviceRepository
 		return records.map(DeviceMapper.toDomain);
 	}
 
-	public async findByFcmToken(fcmToken: string): Promise<DeviceEntity | null> {
+	public async findByFid(fid: string): Promise<DeviceEntity | null> {
 		const record = await prisma.device.findFirst({
-			where: { fcmToken },
+			where: { fid },
 		});
 
 		return record ? DeviceMapper.toDomain(record) : null;
@@ -77,9 +77,9 @@ export class PrismaDeviceRepository
 		});
 	}
 
-	public async deactivateByFcmToken(fcmToken: string): Promise<void> {
+	public async deactivateByFid(fid: string): Promise<void> {
 		await prisma.device.updateMany({
-			where: { fcmToken },
+			where: { fid },
 			data: { isActive: false, updatedAt: new Date() },
 		});
 	}

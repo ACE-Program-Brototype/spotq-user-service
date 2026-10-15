@@ -5,7 +5,7 @@ export interface DeviceProps {
 	id: string;
 	userId: string;
 	deviceId?: string | null;
-	fcmToken?: string | null;
+	fid?: string | null;
 	deviceName?: string | null;
 	platform: PlatformType;
 	appVersion?: string | null;
@@ -26,7 +26,7 @@ export class DeviceEntity {
 		id: string;
 		userId: string;
 		deviceId?: string | null;
-		fcmToken?: string | null;
+		fid?: string | null;
 		deviceName?: string | null;
 		platform: PlatformType;
 		appVersion?: string | null;
@@ -37,7 +37,7 @@ export class DeviceEntity {
 			id: params.id,
 			userId: params.userId,
 			deviceId: params.deviceId ?? null,
-			fcmToken: params.fcmToken ?? null,
+			fid: params.fid ?? null,
 			deviceName: params.deviceName ?? null,
 			platform: params.platform,
 			appVersion: params.appVersion ?? null,
@@ -60,7 +60,7 @@ export class DeviceEntity {
 			id: props.id,
 			userId: props.userId,
 			deviceId: props.deviceId ?? null,
-			fcmToken: props.fcmToken ?? null,
+			fid: props.fid ?? null,
 			deviceName: props.deviceName ?? null,
 			platform: props.platform,
 			appVersion: props.appVersion ?? null,
@@ -83,8 +83,8 @@ export class DeviceEntity {
 		return this._props.deviceId;
 	}
 
-	public get fcmToken(): string | null | undefined {
-		return this._props.fcmToken;
+	public get fid(): string | null | undefined {
+		return this._props.fid;
 	}
 
 	public get deviceName(): string | null | undefined {
@@ -115,21 +115,21 @@ export class DeviceEntity {
 		return this._props.updatedAt;
 	}
 
-	public updateFcmToken(fcmToken: string | null): void {
-		this._props.fcmToken = fcmToken;
+	public updateFid(fid: string | null): void {
+		this._props.fid = fid;
 		this._props.isActive = true;
 		this._props.lastLogin = new Date();
 		this._props.updatedAt = new Date();
 	}
 
 	public updateDeviceInfo(params: {
-		fcmToken?: string | null;
+		fid?: string | null;
 		deviceName?: string | null;
 		platform?: PlatformType;
 		appVersion?: string | null;
 	}): void {
-		if (params.fcmToken !== undefined) {
-			this._props.fcmToken = params.fcmToken;
+		if (params.fid !== undefined) {
+			this._props.fid = params.fid;
 		}
 		if (params.deviceName !== undefined) {
 			this._props.deviceName = params.deviceName;

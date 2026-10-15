@@ -34,7 +34,7 @@ export class RegisterDeviceUseCase implements IRegisterDeviceUseCase {
 
 		if (device) {
 			device.updateDeviceInfo({
-				fcmToken: dto.fcmToken,
+				fid: dto.fid,
 				deviceName: dto.deviceName,
 				platform: dto.platform,
 				appVersion: dto.appVersion,
@@ -55,7 +55,7 @@ export class RegisterDeviceUseCase implements IRegisterDeviceUseCase {
 				id,
 				userId: dto.userId,
 				deviceId: dto.deviceId,
-				fcmToken: dto.fcmToken ?? null,
+				fid: dto.fid ?? null,
 				deviceName: dto.deviceName ?? null,
 				platform: dto.platform,
 				appVersion: dto.appVersion ?? null,
