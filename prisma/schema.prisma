@@ -82,14 +82,21 @@ model RefreshToken {
 model Device {
   id          String         @id @default(uuid()) @db.Uuid
   userId      String         @map("user_id") @db.Uuid
+  deviceId    String?        @map("device_id")
   fcmToken    String?        @map("fcm_token")
   deviceName  String?        @map("device_name")
   platform    Platform       @map("platform")
+  appVersion  String?        @map("app_version")
+  isActive    Boolean        @default(true) @map("is_active")
   lastLogin   DateTime       @default(now()) @map("last_login") @db.Timestamptz(3)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
 
+  @@unique([userId, deviceId])
   @@index([userId])
   @@map("devices")
 }
+

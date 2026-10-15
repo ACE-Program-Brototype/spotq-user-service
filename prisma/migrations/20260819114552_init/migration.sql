@@ -5,7 +5,7 @@ CREATE TYPE "UserStatus" AS ENUM ('ACTIVE');
 CREATE TYPE "Platform" AS ENUM ('ANDROID', 'IOS', 'WEB');
 
 -- CreateTable
-CREATE TABLE "platform_admins" (
+CREATE TABLE IF NOT EXISTS "platform_admins" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE "devices" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "platform_admins_email_key" ON "platform_admins"("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "platform_admins_email_key" ON "platform_admins"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");

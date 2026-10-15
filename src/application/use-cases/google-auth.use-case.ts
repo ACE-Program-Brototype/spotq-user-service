@@ -5,13 +5,11 @@ import type {
 } from "@application/ports/services/index.ts";
 import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
 import { TYPES } from "@config/di/types.ts";
-import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { UserProfileEntity } from "@domain/entities/user-profile.entity.ts";
 import { UserBlockedError } from "@domain/errors/domain.error.ts";
 import type {
-	IDeviceRepository,
 	IRefreshTokenRepository,
 	IUserRepository,
 } from "@domain/repositories/index.ts";
@@ -34,8 +32,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 		private readonly tokenService: ITokenService,
 		@inject(TYPES.GoogleAuthService)
 		private readonly googleAuthService: IGoogleAuthService,
-		@inject(TYPES.DeviceRepository)
-		private readonly deviceRepository: IDeviceRepository,
 		@inject(TYPES.RefreshTokenRepository)
 		private readonly refreshTokenRepository: IRefreshTokenRepository,
 		@inject(TYPES.IdGenerator)
@@ -108,25 +104,11 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			}
 		}
 
-		const deviceData = dto.device;
-		let deviceEntity: DeviceEntity | null = null;
-		let deviceId: string | null = null;
 		const refreshTokenData = this.tokenService.generateRefreshToken();
 
 		if (isNewUser) {
 			const userId = this.idGenerator.generateUuid();
 			const fullName = FullName.create(googlePayload.name);
-
-			if (deviceData) {
-				deviceId = this.idGenerator.generateUuid();
-				deviceEntity = DeviceEntity.create({
-					id: deviceId,
-					userId,
-					fcmToken: deviceData.fcmToken,
-					deviceName: deviceData.deviceName,
-					platform: deviceData.platform ?? "WEB",
-				});
-			}
 
 			const profileEntity = UserProfileEntity.create({
 				id: this.idGenerator.generateUuid(),
@@ -147,15 +129,14 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 			const refreshTokenEntity = RefreshTokenEntity.create({
 				id: this.idGenerator.generateUuid(),
 				userId,
-				deviceId,
 				tokenHash: refreshTokenData.tokenHash,
 				expiresAt: refreshTokenData.expiresAt,
 			});
 
-			// Atomically create User + Profile + Device + RefreshToken Session
+			// Atomically create User + Profile + RefreshToken Session
 			finalUser = await this.userRepository.createWithSession({
 				user: userEntity,
-				device: deviceEntity,
+				device: null,
 				refreshToken: refreshTokenEntity,
 			});
 
@@ -164,38 +145,9 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 				"Google user registered successfully",
 			);
 		} else {
-			// Existing Google User login
-			// Handle device registration / update
-			if (deviceData?.platform) {
-				const existingDevice =
-					await this.deviceRepository.findByUserIdAndPlatform(
-						finalUser.id,
-						deviceData.platform,
-					);
-
-				if (existingDevice) {
-					existingDevice.updateFcmToken(deviceData.fcmToken ?? null);
-					existingDevice.updateLastLogin();
-					await this.deviceRepository.save(existingDevice);
-					deviceId = existingDevice.id;
-				} else {
-					deviceId = this.idGenerator.generateUuid();
-					const newDevice = DeviceEntity.create({
-						id: deviceId,
-						userId: finalUser.id,
-						fcmToken: deviceData.fcmToken,
-						deviceName: deviceData.deviceName,
-						platform: deviceData.platform,
-					});
-					await this.deviceRepository.save(newDevice);
-					deviceId = newDevice.id;
-				}
-			}
-
 			const refreshTokenEntity = RefreshTokenEntity.create({
 				id: this.idGenerator.generateUuid(),
 				userId: finalUser.id,
-				deviceId,
 				tokenHash: refreshTokenData.tokenHash,
 				expiresAt: refreshTokenData.expiresAt,
 			});

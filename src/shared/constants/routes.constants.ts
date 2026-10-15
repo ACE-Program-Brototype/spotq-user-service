@@ -6,6 +6,8 @@ export const Routes = {
 export const CUSTOMER_ROUTES = {
 	PROFILE: "/profile",
 	ME: "/me",
+	DEVICES: "/me/devices",
+	DEVICE_BY_ID: "/me/devices/:deviceId",
 } as const;
 
 export const ADMIN_AUTH_ROUTES = {

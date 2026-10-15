@@ -1,13 +1,16 @@
 import { TYPES } from "@config/di/types.ts";
 import type { ICustomerAdminController } from "@interfaces/http/controllers/admin/customer-admin.controller.interface.ts";
+import type { ICustomerDeviceController } from "@interfaces/http/controllers/customer/customer-device.controller.interface.ts";
 import type { ICustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.interface.ts";
 import type { IUserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.interface.ts";
 import { adminAuthMiddleware } from "@interfaces/http/middlewares/admin.auth.middleware.ts";
 import { authMiddleware } from "@interfaces/http/middlewares/auth.middleware.ts";
 import {
+	deactivateDeviceParamSchema,
 	googleAuthSchema,
 	listCustomersQuerySchema,
 	loginSchema,
+	registerDeviceSchema,
 	registerUserSchema,
 	resendEmailOtpSchema,
 	updateCustomerProfileSchema,
@@ -50,6 +53,8 @@ export class UserRouter {
 		private readonly profileController: ICustomerProfileController,
 		@inject(TYPES.CustomerAdminController)
 		private readonly customerAdminController: ICustomerAdminController,
+		@inject(TYPES.CustomerDeviceController)
+		private readonly customerDeviceController: ICustomerDeviceController,
 	) {
 		this.router = Router();
 		this.registerRoutes();
@@ -103,6 +108,26 @@ export class UserRouter {
 			CUSTOMER_ROUTES.ME,
 			authMiddleware,
 			this.profileController.getProfile,
+		);
+
+		this.router.post(
+			CUSTOMER_ROUTES.DEVICES,
+			authMiddleware,
+			validateRequestBody(registerDeviceSchema),
+			this.customerDeviceController.registerDevice,
+		);
+
+		this.router.get(
+			CUSTOMER_ROUTES.DEVICES,
+			authMiddleware,
+			this.customerDeviceController.getDevices,
+		);
+
+		this.router.delete(
+			CUSTOMER_ROUTES.DEVICE_BY_ID,
+			authMiddleware,
+			validateRequestParams(deactivateDeviceParamSchema),
+			this.customerDeviceController.deactivateDevice,
 		);
 
 		this.router.post(

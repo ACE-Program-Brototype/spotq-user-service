@@ -2,12 +2,15 @@ import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.f
 import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
 import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
 import {
+	DeactivateDeviceUseCase,
+	GetCustomerDevicesUseCase,
 	GetCustomerProfileUseCase,
 	GoogleAuthUseCase,
 	ListCustomersUseCase,
 	LoginUseCase,
 	LogoutUseCase,
 	RefreshTokenUseCase,
+	RegisterDeviceUseCase,
 	RegisterUserUseCase,
 	ResendEmailOtpUseCase,
 	UpdateCustomerProfileUseCase,
@@ -23,16 +26,20 @@ import {
 	PrismaUserRepository,
 } from "@infrastructure/database/repositories/index.ts";
 import { CustomerAdminController } from "@interfaces/http/controllers/admin/customer-admin.controller.ts";
+import { CustomerDeviceController } from "@interfaces/http/controllers/customer/customer-device.controller.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
 import type {
+	IDeactivateDeviceUseCase,
+	IGetCustomerDevicesUseCase,
 	IGetCustomerProfileUseCase,
 	IGoogleAuthUseCase,
 	IListCustomersUseCase,
 	ILoginUseCase,
 	ILogoutUseCase,
 	IRefreshTokenUseCase,
+	IRegisterDeviceUseCase,
 	IRegisterUserUseCase,
 	IResendEmailOtpUseCase,
 	IUpdateCustomerProfileUseCase,
@@ -79,11 +86,24 @@ export const userModule = new ContainerModule(({ bind }) => {
 		UpdateCustomerStatusUseCase,
 	);
 
+	bind<IRegisterDeviceUseCase>(USER_TYPES.RegisterDeviceUseCase).to(
+		RegisterDeviceUseCase,
+	);
+	bind<IGetCustomerDevicesUseCase>(USER_TYPES.GetCustomerDevicesUseCase).to(
+		GetCustomerDevicesUseCase,
+	);
+	bind<IDeactivateDeviceUseCase>(USER_TYPES.DeactivateDeviceUseCase).to(
+		DeactivateDeviceUseCase,
+	);
+
 	bind<UserAuthController>(USER_TYPES.UserAuthController).to(
 		UserAuthController,
 	);
 	bind<CustomerProfileController>(USER_TYPES.CustomerProfileController).to(
 		CustomerProfileController,
+	);
+	bind<CustomerDeviceController>(USER_TYPES.CustomerDeviceController).to(
+		CustomerDeviceController,
 	);
 	bind<CustomerAdminController>(USER_TYPES.CustomerAdminController).to(
 		CustomerAdminController,

@@ -3,10 +3,11 @@ import type {
 	ITokenService,
 } from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
+import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import type { ILogoutUseCase } from "@ports/use-cases/index.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
-import { inject, injectable } from "inversify";
+import { inject, injectable, optional } from "inversify";
 import type { LogoutDto, LogoutResultDto } from "../dtos/logout.dto.ts";
 
 @injectable()
@@ -18,12 +19,27 @@ export class LogoutUseCase implements ILogoutUseCase {
 		private readonly tokenService: ITokenService,
 		@inject(TYPES.Logger)
 		private readonly logger: ILogger,
+		@inject(TYPES.DeviceRepository)
+		@optional()
+		private readonly deviceRepository?: IDeviceRepository,
 	) {}
 
 	public async execute(dto: LogoutDto): Promise<LogoutResultDto> {
 		if (dto.refreshToken) {
 			const tokenHash = this.tokenService.hashToken(dto.refreshToken.trim());
 			await this.refreshTokenRepository.revoke(tokenHash, new Date());
+		}
+
+		if (dto.deviceId && this.deviceRepository) {
+			await this.deviceRepository.deactivate(dto.userId, dto.deviceId);
+			this.logger.info(
+				{
+					userId: dto.userId,
+					deviceId: dto.deviceId,
+					event: "DEVICE_DEACTIVATED_ON_LOGOUT",
+				},
+				"Device deactivated on logout",
+			);
 		}
 
 		this.logger.info(

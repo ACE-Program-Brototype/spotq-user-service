@@ -1,64 +1,55 @@
-# ---------- Builder ----------
+# ==========================================
+# Stage 1: Build & Dependencies
+# ==========================================
 FROM node:22-alpine AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV CI=true
-ENV TZ="UTC"
-
-RUN corepack enable
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN corepack enable
 
+# 1. Install all dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
+# 2. Generate Prisma Client
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 RUN pnpm exec prisma generate
 
-COPY . .
+# 3. Copy source and compile ESM bundle
+COPY tsconfig.json tsup.config.ts ./
+COPY src ./src/
+RUN pnpm build
 
-RUN rm -rf dist && pnpm build
+# 4. Prune dev dependencies for production
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm prune --prod
 
-# ---------- Production ----------
-FROM node:22-alpine
+# ==========================================
+# Stage 2: Production Runtime
+# ==========================================
+FROM node:22-alpine AS runner
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-ENV TZ="UTC"
-
-RUN corepack enable
+ENV NODE_ENV="production" \
+    TZ="UTC"
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy Infisical binary directly from official image (fast, reproducible, no wget/apk scripts)
+COPY --from=infisical/cli:latest /bin/infisical /usr/local/bin/infisical
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --prod --frozen-lockfile
+# Copy only production dependencies & compiled bundle with non-root ownership
+COPY --chown=node:node package.json ./
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/dist ./dist
+COPY --chown=node:node --from=builder /app/prisma ./prisma
+COPY --chown=node:node .infisical.json ./
 
-COPY prisma ./prisma
-COPY prisma.config.ts ./
-
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm exec prisma generate
-
-COPY --from=builder /app/dist ./dist
-COPY .infisical.json .
-
-RUN apk add --no-cache bash wget
-
-# Install Infisical
-RUN wget -qO- 'https://artifacts-cli.infisical.com/setup.apk.sh' | sh
-
-RUN apk update && apk add --no-cache infisical
-
-# Give ownership of the app directory
-RUN chown -R node:node /app
-
-# Switch to the non-root user
 USER node
 
 EXPOSE 3000

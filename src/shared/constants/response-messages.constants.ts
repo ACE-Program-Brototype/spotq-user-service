@@ -20,4 +20,7 @@ export const ResponseMessage = {
 	CUSTOMER_STATUS_UPDATE_SUCCESS: "Customer status updated successfully.",
 	CUSTOMER_BLOCKED_SUCCESS: "Customer blocked successfully.",
 	CUSTOMER_UNBLOCKED_SUCCESS: "Customer unblocked successfully.",
+	DEVICE_REGISTERED_SUCCESS: "Device registered successfully",
+	CUSTOMER_DEVICES_FETCH_SUCCESS: "Customer devices retrieved successfully",
+	DEVICE_DEACTIVATED_SUCCESS: "Device deactivated successfully",
 } as const;

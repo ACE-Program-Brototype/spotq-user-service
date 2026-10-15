@@ -12,7 +12,6 @@ import {
 	UserNotFoundError,
 } from "@domain/errors/domain.error.ts";
 import type {
-	IDeviceRepository,
 	IRefreshTokenRepository,
 	IUserRepository,
 } from "@domain/repositories/index.ts";
@@ -20,7 +19,6 @@ import { Email, FullName, PhoneNumber } from "@domain/value-objects/index.ts";
 
 describe("VerifyEmailOtpUseCase", () => {
 	let mockUserRepository: jest.Mocked<IUserRepository>;
-	let mockDeviceRepository: jest.Mocked<IDeviceRepository>;
 	let mockRefreshTokenRepository: jest.Mocked<IRefreshTokenRepository>;
 	let mockTokenService: jest.Mocked<ITokenService>;
 	let mockOtpService: jest.Mocked<IOtpService>;
@@ -40,16 +38,6 @@ describe("VerifyEmailOtpUseCase", () => {
 			delete: jest.fn(),
 			find: jest.fn(),
 		} as unknown as jest.Mocked<IUserRepository>;
-
-		mockDeviceRepository = {
-			findByUserIdAndPlatform: jest.fn(),
-			save: jest.fn(),
-			create: jest.fn(),
-			update: jest.fn(),
-			delete: jest.fn(),
-			findById: jest.fn(),
-			find: jest.fn(),
-		} as unknown as jest.Mocked<IDeviceRepository>;
 
 		mockRefreshTokenRepository = {
 			save: jest.fn(),
@@ -83,14 +71,12 @@ describe("VerifyEmailOtpUseCase", () => {
 
 		mockLogger = {
 			info: jest.fn(),
-
 			error: jest.fn(),
 			warn: jest.fn(),
 		} as unknown as jest.Mocked<ILogger>;
 
 		useCase = new VerifyEmailOtpUseCase(
 			mockUserRepository,
-			mockDeviceRepository,
 			mockRefreshTokenRepository,
 			mockTokenService,
 			mockOtpService,
@@ -132,33 +118,6 @@ describe("VerifyEmailOtpUseCase", () => {
 			userId: "usr-123",
 			email: "john.doe@example.com",
 		});
-	});
-
-	it("should handle device when device is provided in DTO", async () => {
-		mockOtpService.verifyOtp.mockResolvedValue(true);
-
-		const fakeUser = UserEntity.create({
-			id: "usr-123",
-			fullName: FullName.create("John Doe"),
-			phone: PhoneNumber.create("+919876543210"),
-			email: Email.create("john.doe@example.com"),
-			passwordHash: "bcrypt_hashed_password",
-		});
-		mockUserRepository.findByEmail.mockResolvedValue(fakeUser);
-		mockDeviceRepository.findByUserIdAndPlatform.mockResolvedValue(null);
-
-		const result = await useCase.execute({
-			email: "john.doe@example.com",
-			otp: "123456",
-			device: {
-				deviceName: "Pixel 8",
-				platform: "ANDROID",
-				fcmToken: "fcm_token_123",
-			},
-		});
-
-		expect(result.accessToken).toBe("mock_access_token");
-		expect(mockDeviceRepository.save).toHaveBeenCalled();
 	});
 
 	it("should throw UserNotFoundError if user is not found in database", async () => {

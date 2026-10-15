@@ -5,7 +5,6 @@ import type {
 	ITokenService,
 } from "@application/ports/services/index.ts";
 import { LoginUseCase } from "@application/use-cases/login.use-case.ts";
-import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import {
 	EmailNotVerifiedError,
@@ -14,7 +13,6 @@ import {
 	UserInactiveError,
 } from "@domain/errors/domain.error.ts";
 import type {
-	IDeviceRepository,
 	IRefreshTokenRepository,
 	IUserRepository,
 } from "@domain/repositories/index.ts";
@@ -25,7 +23,6 @@ describe("LoginUseCase", () => {
 	let mockUserRepository: jest.Mocked<IUserRepository>;
 	let mockTokenService: jest.Mocked<ITokenService>;
 	let mockPasswordHasher: jest.Mocked<IPasswordHasher>;
-	let mockDeviceRepository: jest.Mocked<IDeviceRepository>;
 	let mockRefreshTokenRepository: jest.Mocked<IRefreshTokenRepository>;
 	let mockLogger: jest.Mocked<ILogger>;
 	let mockIdGenerator: jest.Mocked<IIdGenerator>;
@@ -52,11 +49,6 @@ describe("LoginUseCase", () => {
 			hash: jest.fn(),
 			compare: jest.fn(),
 		} as unknown as jest.Mocked<IPasswordHasher>;
-		mockDeviceRepository = {
-			save: jest.fn(),
-			findByUserIdAndPlatform: jest.fn(),
-			findById: jest.fn(),
-		} as unknown as jest.Mocked<IDeviceRepository>;
 		mockRefreshTokenRepository = {
 			save: jest.fn(),
 			findByTokenHash: jest.fn(),
@@ -75,7 +67,6 @@ describe("LoginUseCase", () => {
 
 		useCase = new LoginUseCase(
 			mockUserRepository,
-			mockDeviceRepository,
 			mockRefreshTokenRepository,
 			mockPasswordHasher,
 			mockTokenService,
@@ -218,66 +209,5 @@ describe("LoginUseCase", () => {
 				password: "wrongpassword",
 			}),
 		).rejects.toThrow(InvalidCredentialsError);
-	});
-
-	it("should register a new device when device information is optional but supplied", async () => {
-		const user = createMockUser();
-		mockUserRepository.findByEmail.mockResolvedValue(user);
-		mockPasswordHasher.compare.mockResolvedValue(true);
-		mockDeviceRepository.findByUserIdAndPlatform.mockResolvedValue(null);
-
-		await useCase.execute({
-			email: "jane.doe@example.com",
-			password: "password123",
-			device: {
-				deviceName: "My Phone",
-				platform: "IOS",
-				fcmToken: "fcm-token-1",
-			},
-		});
-
-		expect(mockDeviceRepository.save).toHaveBeenCalledWith(
-			expect.objectContaining({
-				userId: "user-id-abc",
-				deviceName: "My Phone",
-				platform: "IOS",
-				fcmToken: "fcm-token-1",
-			}),
-		);
-	});
-
-	it("should update an existing device when it already exists", async () => {
-		const user = createMockUser();
-		mockUserRepository.findByEmail.mockResolvedValue(user);
-		mockPasswordHasher.compare.mockResolvedValue(true);
-
-		const existingDevice = DeviceEntity.reconstitute({
-			id: "device-id-xyz",
-			userId: "user-id-abc",
-			deviceName: "Old Phone",
-			platform: "IOS",
-			fcmToken: "old-fcm-token",
-			lastLogin: new Date(Date.now() - 50000),
-		});
-		mockDeviceRepository.findByUserIdAndPlatform.mockResolvedValue(
-			existingDevice,
-		);
-
-		await useCase.execute({
-			email: "jane.doe@example.com",
-			password: "password123",
-			device: {
-				deviceName: "New Phone",
-				platform: "IOS",
-				fcmToken: "new-fcm-token",
-			},
-		});
-
-		expect(mockDeviceRepository.save).toHaveBeenCalledWith(
-			expect.objectContaining({
-				id: "device-id-xyz",
-				fcmToken: "new-fcm-token",
-			}),
-		);
 	});
 });
