@@ -3,7 +3,7 @@ import { InvalidOtpError } from "@domain/errors/invalid.otp.error";
 import { OtpExpiredError } from "@domain/errors/otp.expired.error";
 import { ResetPasswordFailedError } from "@domain/errors/reset.password.error";
 import { UserNotFoundError } from "@domain/errors/user.not-found.error";
-import { ResponseMessage } from "@shared/constants";
+import { DOMAIN_ERRORS, ResponseMessage } from "@shared/constants";
 import { HttpStatus } from "@shared/constants/http.constants";
 import { AppError } from "@shared/util/app.error";
 
@@ -59,6 +59,18 @@ export function mapErrorToHttp(error: unknown): HttpErrorResult {
 			statusCode: error.statusCode,
 			code: error?.error ?? "HTTP_ERROR",
 			message: error.message,
+		};
+	}
+
+	if (
+		error instanceof SyntaxError &&
+		"status" in error &&
+		(error as { status: number }).status === HttpStatus.BAD_REQUEST
+	) {
+		return {
+			statusCode: HttpStatus.BAD_REQUEST,
+			code: DOMAIN_ERRORS.CODES.MALFORMED_JSON,
+			message: DOMAIN_ERRORS.MESSAGES.MALFORMED_JSON,
 		};
 	}
 
