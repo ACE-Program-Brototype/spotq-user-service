@@ -25,10 +25,36 @@ export class PrismaDeviceRepository
 	}
 
 	public async save(device: DeviceEntity): Promise<void> {
-		await prisma.device.upsert({
-			where: { id: device.id },
-			create: DeviceMapper.toCreateInput(device),
-			update: DeviceMapper.toUpdateInput(device),
+		await prisma.$transaction(async (tx) => {
+			const exclusionConditions: Array<{ deviceId: string } | { fid: string }> =
+				[];
+
+			if (device.deviceId) {
+				exclusionConditions.push({ deviceId: device.deviceId });
+			}
+			if (device.fid) {
+				exclusionConditions.push({ fid: device.fid });
+			}
+
+			if (exclusionConditions.length > 0) {
+				await tx.device.updateMany({
+					where: {
+						id: { not: device.id },
+						isActive: true,
+						OR: exclusionConditions,
+					},
+					data: {
+						isActive: false,
+						updatedAt: new Date(),
+					},
+				});
+			}
+
+			await tx.device.upsert({
+				where: { id: device.id },
+				create: DeviceMapper.toCreateInput(device),
+				update: DeviceMapper.toUpdateInput(device),
+			});
 		});
 	}
 

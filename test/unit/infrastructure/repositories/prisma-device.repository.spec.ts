@@ -4,6 +4,7 @@ import { PrismaDeviceRepository } from "@infrastructure/database/repositories/pr
 
 jest.mock("@infrastructure/database/prisma/prisma.ts", () => ({
 	prisma: {
+		$transaction: jest.fn(),
 		device: {
 			upsert: jest.fn(),
 			findFirst: jest.fn(),
@@ -22,7 +23,7 @@ describe("PrismaDeviceRepository", () => {
 		repository = new PrismaDeviceRepository();
 	});
 
-	it("should call prisma.device.upsert with mapped create and update objects in save", async () => {
+	it("should deactivate other records matching deviceId or fid and upsert within transaction in save", async () => {
 		const device = DeviceEntity.reconstitute({
 			id: "device-uuid-1",
 			userId: "user-uuid-1",
@@ -37,11 +38,32 @@ describe("PrismaDeviceRepository", () => {
 			updatedAt: mockDate,
 		});
 
-		(prisma.device.upsert as jest.Mock).mockResolvedValue({});
+		const mockTx = {
+			device: {
+				upsert: jest.fn().mockResolvedValue({}),
+				updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+			},
+		};
+
+		(prisma.$transaction as jest.Mock).mockImplementation(async (callback) => {
+			return callback(mockTx);
+		});
 
 		await repository.save(device);
 
-		expect(prisma.device.upsert).toHaveBeenCalledWith({
+		expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+		expect(mockTx.device.updateMany).toHaveBeenCalledWith({
+			where: {
+				id: { not: "device-uuid-1" },
+				isActive: true,
+				OR: [{ deviceId: "client_device_1" }, { fid: "fid_token_1" }],
+			},
+			data: expect.objectContaining({
+				isActive: false,
+			}),
+		});
+
+		expect(mockTx.device.upsert).toHaveBeenCalledWith({
 			where: { id: "device-uuid-1" },
 			create: {
 				id: "device-uuid-1",
@@ -66,6 +88,44 @@ describe("PrismaDeviceRepository", () => {
 				lastLogin: mockDate,
 				updatedAt: mockDate,
 			},
+		});
+	});
+
+	it("should skip deactivating other records if deviceId and fid are absent in save", async () => {
+		const device = DeviceEntity.reconstitute({
+			id: "device-uuid-2",
+			userId: "user-uuid-2",
+			deviceName: "Browser",
+			platform: "WEB",
+			isActive: true,
+			lastLogin: mockDate,
+			createdAt: mockDate,
+			updatedAt: mockDate,
+		});
+
+		const mockTx = {
+			device: {
+				upsert: jest.fn().mockResolvedValue({}),
+				updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+			},
+		};
+
+		(prisma.$transaction as jest.Mock).mockImplementation(async (callback) => {
+			return callback(mockTx);
+		});
+
+		await repository.save(device);
+
+		expect(mockTx.device.updateMany).not.toHaveBeenCalled();
+		expect(mockTx.device.upsert).toHaveBeenCalledWith({
+			where: { id: "device-uuid-2" },
+			create: expect.objectContaining({
+				id: "device-uuid-2",
+				userId: "user-uuid-2",
+			}),
+			update: expect.objectContaining({
+				isActive: true,
+			}),
 		});
 	});
 

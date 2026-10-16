@@ -49,7 +49,16 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 		});
 
 		it("should register/update device and return Jira specified format on POST /me/devices", async () => {
+			jest
+				.spyOn(prisma, "$transaction")
+				.mockImplementation(async (callback: unknown) => {
+					if (typeof callback === "function") {
+						return (callback as (tx: unknown) => Promise<unknown>)(prisma);
+					}
+					return Promise.resolve(callback);
+				});
 			jest.spyOn(prisma.device, "findFirst").mockResolvedValue(null);
+			jest.spyOn(prisma.device, "updateMany").mockResolvedValue({ count: 0 });
 			jest.spyOn(prisma.device, "upsert").mockResolvedValue({
 				id: "99999999-9999-9999-9999-999999999999",
 				userId: customerId,

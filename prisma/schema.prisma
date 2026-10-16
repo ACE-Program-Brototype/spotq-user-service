@@ -97,6 +97,8 @@ model Device {
 
   @@unique([userId, deviceId])
   @@index([userId])
+  @@index([deviceId])
+  @@index([fid])
   @@map("devices")
 }
 
