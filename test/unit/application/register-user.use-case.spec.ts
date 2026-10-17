@@ -90,11 +90,6 @@ describe("RegisterUserUseCase", () => {
 				email: "john.doe@example.com",
 				phoneNumber: "+919876543210",
 				password: "Password@123",
-				device: {
-					deviceName: "iPhone 15",
-					platform: "IOS",
-					fcmToken: "fcm_token_xyz",
-				},
 			}),
 		).resolves.toBeUndefined();
 

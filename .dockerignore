@@ -1,7 +1,15 @@
 node_modules
 dist
+coverage
 .git
 .gitignore
+.husky
 .vscode
-.env
-coverage
+.agents
+.env*
+test
+*.spec.ts
+*.test.ts
+README.md
+Dockerfile*
+docker-compose*

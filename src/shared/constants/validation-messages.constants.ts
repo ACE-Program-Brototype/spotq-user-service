@@ -67,4 +67,8 @@ export const VALIDATION_MESSAGES = {
 		STATUS_REQUIRED: "Status is required.",
 		INVALID_USER_ID: "Invalid user ID.",
 	},
+	DEVICE: {
+		DEVICE_ID_REQUIRED: "Device ID is required",
+		PLATFORM_INVALID: "Platform must be ANDROID, IOS, or WEB",
+	},
 } as const;

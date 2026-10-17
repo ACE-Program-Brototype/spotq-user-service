@@ -12,14 +12,6 @@ export const loginSchema = z.object({
 	password: z
 		.string({ message: VALIDATION_MESSAGES.PASSWORD.REQUIRED })
 		.min(1, { message: VALIDATION_MESSAGES.PASSWORD.REQUIRED }),
-
-	device: z
-		.object({
-			deviceName: z.string().max(100).optional(),
-			platform: z.enum(["ANDROID", "IOS", "WEB"]).optional(),
-			fcmToken: z.string().max(500).optional(),
-		})
-		.optional(),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

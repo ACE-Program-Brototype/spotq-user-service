@@ -1,4 +1,8 @@
 import type {
+	RefreshTokenDto,
+	RefreshTokenResultDto,
+} from "@application/dtos/refresh-token.dto.ts";
+import type {
 	IIdGenerator,
 	ILogger,
 } from "@application/ports/services/index.ts";
@@ -13,10 +17,6 @@ import type {
 } from "@domain/repositories/index.ts";
 import type { IRefreshTokenUseCase } from "@ports/use-cases/index.ts";
 import { inject, injectable } from "inversify";
-import type {
-	RefreshTokenDto,
-	RefreshTokenResultDto,
-} from "../dtos/refresh-token.dto.ts";
 
 @injectable()
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {

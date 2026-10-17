@@ -2,13 +2,13 @@ import type { IGetCustomerProfileUseCase } from "@application/ports/use-cases/ge
 import type { IUpdateCustomerProfileUseCase } from "@application/ports/use-cases/update-customer-profile.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { ForbiddenError, UnauthorizedError } from "@domain/errors/index.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import { USER_ROLES } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { Response } from "express";
 import { inject, injectable } from "inversify";
-import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
 import type { ICustomerProfileController } from "./customer-profile.controller.interface.ts";
 
 @injectable()

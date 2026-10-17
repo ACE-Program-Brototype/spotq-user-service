@@ -27,6 +27,12 @@ export const USER_TYPES = {
 	// Presentation
 	UserAuthController: Symbol.for("UserAuthController"),
 	CustomerProfileController: Symbol.for("CustomerProfileController"),
+	CustomerDeviceController: Symbol.for("CustomerDeviceController"),
 	CustomerAdminController: Symbol.for("CustomerAdminController"),
 	UserRouter: Symbol.for("UserRouter"),
+
+	// Device Use Cases
+	RegisterDeviceUseCase: Symbol.for("RegisterDeviceUseCase"),
+	GetCustomerDevicesUseCase: Symbol.for("GetCustomerDevicesUseCase"),
+	DeactivateDeviceUseCase: Symbol.for("DeactivateDeviceUseCase"),
 };

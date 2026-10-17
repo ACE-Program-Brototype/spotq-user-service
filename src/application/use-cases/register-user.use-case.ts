@@ -1,3 +1,4 @@
+import type { RegisterUserDto } from "@application/dtos/register-user.dto.ts";
 import type {
 	IEmailQueueProducer,
 	IIdGenerator,
@@ -15,7 +16,6 @@ import type { IUserRepository } from "@domain/repositories/user.repository.inter
 import { PlainPassword } from "@domain/value-objects/index.ts";
 import type { IRegisterUserUseCase } from "@ports/use-cases/index.ts";
 import { inject, injectable } from "inversify";
-import type { RegisterUserDto } from "../dtos/register-user.dto.ts";
 
 @injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {

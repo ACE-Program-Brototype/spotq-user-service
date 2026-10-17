@@ -2,14 +2,12 @@ import type {
 	IGoogleAuthService,
 	IIdGenerator,
 	ILogger,
-	ITokenService,
 } from "@application/ports/services/index.ts";
+import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
 import { GoogleAuthUseCase } from "@application/use-cases/google-auth.use-case.ts";
-import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
 import { UserBlockedError } from "@domain/errors/index.ts";
 import type {
-	IDeviceRepository,
 	IRefreshTokenRepository,
 	IUserRepository,
 } from "@domain/repositories/index.ts";
@@ -20,7 +18,6 @@ describe("GoogleAuthUseCase", () => {
 	let mockUserRepository: jest.Mocked<IUserRepository>;
 	let mockTokenService: jest.Mocked<ITokenService>;
 	let mockGoogleAuthService: jest.Mocked<IGoogleAuthService>;
-	let mockDeviceRepository: jest.Mocked<IDeviceRepository>;
 	let mockRefreshTokenRepository: jest.Mocked<IRefreshTokenRepository>;
 	let mockLogger: jest.Mocked<ILogger>;
 	let mockIdGenerator: jest.Mocked<IIdGenerator>;
@@ -43,15 +40,10 @@ describe("GoogleAuthUseCase", () => {
 			}),
 			hashToken: jest.fn().mockReturnValue("hashed-token-xyz"),
 			verifyAccessToken: jest.fn(),
-		};
+		} as unknown as jest.Mocked<ITokenService>;
 		mockGoogleAuthService = {
 			verifyIdToken: jest.fn(),
-		};
-		mockDeviceRepository = {
-			save: jest.fn(),
-			findByUserIdAndPlatform: jest.fn(),
-			findById: jest.fn(),
-		} as unknown as jest.Mocked<IDeviceRepository>;
+		} as unknown as jest.Mocked<IGoogleAuthService>;
 		mockRefreshTokenRepository = {
 			save: jest.fn(),
 			findByTokenHash: jest.fn(),
@@ -71,7 +63,6 @@ describe("GoogleAuthUseCase", () => {
 			mockUserRepository,
 			mockTokenService,
 			mockGoogleAuthService,
-			mockDeviceRepository,
 			mockRefreshTokenRepository,
 			mockIdGenerator,
 			mockLogger,
@@ -189,6 +180,7 @@ describe("GoogleAuthUseCase", () => {
 			passwordHash: null,
 			googleId: "google-sub-123",
 			status: UserStatus.BLOCKED,
+			isEmailVerified: true,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
@@ -197,45 +189,6 @@ describe("GoogleAuthUseCase", () => {
 
 		await expect(useCase.execute({ idToken: "valid-token" })).rejects.toThrow(
 			UserBlockedError,
-		);
-	});
-
-	it("should associate device info when supplied", async () => {
-		const payload = {
-			sub: "google-sub-123",
-			email: "john@gmail.com",
-			emailVerified: true,
-			name: "John Doe",
-		};
-
-		mockGoogleAuthService.verifyIdToken.mockResolvedValue(payload);
-		mockUserRepository.findByGoogleId.mockResolvedValue(null);
-		mockUserRepository.findByEmail.mockResolvedValue(null);
-
-		const createdUser = UserEntity.create({
-			id: "user-uuid",
-			fullName: FullName.create("John Doe"),
-			phone: null,
-			email: Email.create("john@gmail.com"),
-			passwordHash: null,
-			googleId: "google-sub-123",
-		});
-
-		mockUserRepository.createWithSession.mockResolvedValue(createdUser);
-
-		await useCase.execute({
-			idToken: "valid-token",
-			device: {
-				deviceName: "My iPhone",
-				platform: "IOS",
-				fcmToken: "fcm-token-123",
-			},
-		});
-
-		expect(mockUserRepository.createWithSession).toHaveBeenCalledWith(
-			expect.objectContaining({
-				device: expect.any(DeviceEntity),
-			}),
 		);
 	});
 });
