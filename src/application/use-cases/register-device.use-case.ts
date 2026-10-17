@@ -1,4 +1,9 @@
 import type {
+	RegisterCustomerDeviceDto,
+	RegisterDeviceResultDto,
+} from "@application/dtos/device.dto.ts";
+import { DeviceDtoMapper } from "@application/mappers/device-dto.mapper.ts";
+import type {
 	IIdGenerator,
 	ILogger,
 } from "@application/ports/services/index.ts";
@@ -7,11 +12,6 @@ import { DeviceEntity } from "@domain/entities/device.entity.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
 import type { IRegisterDeviceUseCase } from "@ports/use-cases/index.ts";
 import { inject, injectable } from "inversify";
-import type {
-	RegisterCustomerDeviceDto,
-	RegisterDeviceResultDto,
-} from "../dtos/device.dto.ts";
-import { DeviceDtoMapper } from "../mappers/device-dto.mapper.ts";
 
 @injectable()
 export class RegisterDeviceUseCase implements IRegisterDeviceUseCase {

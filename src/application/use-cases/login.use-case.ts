@@ -1,3 +1,5 @@
+import type { LoginDto, LoginResultDto } from "@application/dtos/login.dto.ts";
+import { UserDtoMapper } from "@application/mappers/user-dto.mapper.ts";
 import type {
 	IIdGenerator,
 	ILogger,
@@ -19,8 +21,6 @@ import type {
 } from "@domain/repositories/index.ts";
 import type { ILoginUseCase } from "@ports/use-cases/index.ts";
 import { inject, injectable } from "inversify";
-import type { LoginDto, LoginResultDto } from "../dtos/login.dto.ts";
-import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 
 @injectable()
 export class LoginUseCase implements ILoginUseCase {

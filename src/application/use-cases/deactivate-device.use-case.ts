@@ -1,9 +1,9 @@
+import type { DeactivateDeviceDto } from "@application/dtos/device.dto.ts";
 import type { ILogger } from "@application/ports/services/index.ts";
 import { TYPES } from "@config/di/types.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
 import type { IDeactivateDeviceUseCase } from "@ports/use-cases/index.ts";
 import { inject, injectable } from "inversify";
-import type { DeactivateDeviceDto } from "../dtos/device.dto.ts";
 
 @injectable()
 export class DeactivateDeviceUseCase implements IDeactivateDeviceUseCase {

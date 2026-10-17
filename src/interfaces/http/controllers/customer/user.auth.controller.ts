@@ -10,6 +10,7 @@ import type { ICustomerResetPasswordUseCase } from "@application/ports/use-cases
 import type { ICustomerVerifyForgotPasswordUseCase } from "@application/ports/use-cases/ICustomer.verify.forgot-password.ts";
 import { TYPES } from "@config/di/types.ts";
 import { config } from "@config/env.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import type {
 	IGoogleAuthUseCase,
 	ILoginUseCase,
@@ -27,7 +28,6 @@ import { sendSuccessResponse } from "@shared/response/index.ts";
 import { AppError } from "@shared/util/app.error.ts";
 import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
 import type { IUserAuthController } from "./user.auth.controller.interface.ts";
 
 @injectable()

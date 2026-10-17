@@ -1,4 +1,9 @@
 import type {
+	VerifyEmailOtpDto,
+	VerifyEmailOtpResultDto,
+} from "@application/dtos/verify-email-otp.dto.ts";
+import { UserDtoMapper } from "@application/mappers/user-dto.mapper.ts";
+import type {
 	IIdGenerator,
 	ILogger,
 	IOtpService,
@@ -18,11 +23,6 @@ import { Email } from "@domain/value-objects/email.vo.ts";
 import type { IVerifyEmailOtpUseCase } from "@ports/use-cases/index.ts";
 import { REGEX } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
-import type {
-	VerifyEmailOtpDto,
-	VerifyEmailOtpResultDto,
-} from "../dtos/verify-email-otp.dto.ts";
-import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 
 @injectable()
 export class VerifyEmailOtpUseCase implements IVerifyEmailOtpUseCase {

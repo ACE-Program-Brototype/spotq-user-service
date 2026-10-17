@@ -1,7 +1,7 @@
 import type {
 	RegisterCustomerDeviceDto,
 	RegisterDeviceResultDto,
-} from "../../dtos/device.dto.ts";
+} from "@application/dtos/device.dto.ts";
 import type { IUseCase } from "./base.use-case.interface.ts";
 
 export interface IRegisterDeviceUseCase

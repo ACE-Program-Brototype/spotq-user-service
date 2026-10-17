@@ -3,11 +3,11 @@ import type { IGetCustomerDevicesUseCase } from "@application/ports/use-cases/ge
 import type { IRegisterDeviceUseCase } from "@application/ports/use-cases/register-device.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
 import { UnauthorizedError } from "@domain/errors/index.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import { HttpStatus, ResponseMessage } from "@shared/constants/index.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { Response } from "express";
 import { inject, injectable } from "inversify";
-import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
 import type { ICustomerDeviceController } from "./customer-device.controller.interface.ts";
 
 @injectable()

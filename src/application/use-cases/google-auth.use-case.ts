@@ -1,4 +1,9 @@
 import type {
+	GoogleAuthDto,
+	GoogleAuthResultDto,
+} from "@application/dtos/google-auth.dto.ts";
+import { UserDtoMapper } from "@application/mappers/user-dto.mapper.ts";
+import type {
 	IGoogleAuthService,
 	IIdGenerator,
 	ILogger,
@@ -17,11 +22,6 @@ import { Email, FullName } from "@domain/value-objects/index.ts";
 import type { IGoogleAuthUseCase } from "@ports/use-cases/index.ts";
 import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
 import { inject, injectable } from "inversify";
-import type {
-	GoogleAuthDto,
-	GoogleAuthResultDto,
-} from "../dtos/google-auth.dto.ts";
-import { UserDtoMapper } from "../mappers/user-dto.mapper.ts";
 
 @injectable()
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {

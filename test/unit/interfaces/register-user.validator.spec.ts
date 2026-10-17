@@ -7,11 +7,6 @@ describe("registerUserSchema", () => {
 			email: "john.doe@example.com",
 			phoneNumber: "+919876543210",
 			password: "Password@123",
-			device: {
-				deviceName: "iPhone 15",
-				platform: "IOS",
-				fid: "sample-fid-token",
-			},
 		};
 
 		const result = registerUserSchema.safeParse(validPayload);

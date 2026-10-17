@@ -61,14 +61,6 @@ export const registerUserSchema = z.object({
 		.refine((val) => /[^A-Za-z0-9]/.test(val), {
 			message: VALIDATION_MESSAGES.PASSWORD.SPECIAL_CHAR,
 		}),
-
-	device: z
-		.object({
-			deviceName: z.string().max(100).optional(),
-			platform: z.enum(["ANDROID", "IOS", "WEB"]).optional(),
-			fid: z.string().max(500).optional(),
-		})
-		.optional(),
 });
 
 export type RegisterUserInput = z.infer<typeof registerUserSchema>;

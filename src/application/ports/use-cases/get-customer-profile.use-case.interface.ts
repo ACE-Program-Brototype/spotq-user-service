@@ -1,4 +1,4 @@
-import type { CustomerProfileResponseDto } from "../../dtos/customer-profile-response.dto.ts";
+import type { CustomerProfileResponseDto } from "@application/dtos/customer-profile-response.dto.ts";
 import type { IUseCase } from "./base.use-case.interface.ts";
 
 /**

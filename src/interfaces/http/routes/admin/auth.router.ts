@@ -6,15 +6,15 @@ import {
 	forgotPasswordResendRateLimit,
 	forgotPasswordVerifyRateLimit,
 } from "@interfaces/http/middlewares/rate.limit.middleware";
+import { validate } from "@interfaces/http/middlewares/validate.middleware";
 import {
 	forgotPasswordValidate,
 	forgotPasswordVerifyValidate,
 } from "@interfaces/http/validators/forgot-password.validate";
+import { loginValidator } from "@interfaces/http/validators/login.validate";
 import { adminPasswordValidate } from "@interfaces/http/validators/reset.password.validate";
 import { ADMIN_AUTH_ROUTES } from "@shared/constants/routes.constants.ts";
 import { Router } from "express";
-import { validate } from "../../middlewares/validate.middleware";
-import { loginValidator } from "../../validators/login.validate";
 
 const router = Router();
 

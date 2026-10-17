@@ -1,4 +1,8 @@
 import type {
+	ResendEmailOtpDto,
+	ResendEmailOtpResultDto,
+} from "@application/dtos/resend-email-otp.dto.ts";
+import type {
 	IEmailQueueProducer,
 	ILogger,
 	IOtpService,
@@ -11,10 +15,6 @@ import { Email } from "@domain/value-objects/email.vo.ts";
 import type { IResendEmailOtpUseCase } from "@ports/use-cases/index.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
-import type {
-	ResendEmailOtpDto,
-	ResendEmailOtpResultDto,
-} from "../dtos/resend-email-otp.dto.ts";
 
 @injectable()
 export class ResendEmailOtpUseCase implements IResendEmailOtpUseCase {
