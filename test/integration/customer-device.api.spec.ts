@@ -125,8 +125,8 @@ describe("Customer Device Token Management API (SCRUM-1657)", () => {
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 			expect(res.body.data).toHaveLength(1);
-			expect(res.body.data[0].deviceId).toBe("device_1");
-			expect(res.body.data[0].deviceRegistrationId).toBe(
+			expect(res.body.data[0].device_id).toBe("device_1");
+			expect(res.body.data[0].device_registration_id).toBe(
 				"99999999-9999-9999-9999-999999999999",
 			);
 		});

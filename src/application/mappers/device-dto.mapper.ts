@@ -7,15 +7,15 @@ import type { DeviceEntity } from "@domain/entities/device.entity.ts";
 export const DeviceDtoMapper = {
 	toResponse(device: DeviceEntity): CustomerDeviceResponseDto {
 		return {
-			deviceRegistrationId: device.id,
-			deviceId: device.deviceId ?? null,
+			device_registration_id: device.id,
+			device_id: device.deviceId ?? null,
 			platform: device.platform,
-			deviceName: device.deviceName ?? null,
-			appVersion: device.appVersion ?? null,
-			isActive: device.isActive,
-			lastLogin: device.lastLogin,
-			createdAt: device.createdAt,
-			updatedAt: device.updatedAt,
+			device_name: device.deviceName ?? null,
+			app_version: device.appVersion ?? null,
+			is_active: device.isActive,
+			last_login: device.lastLogin,
+			created_at: device.createdAt,
+			updated_at: device.updatedAt,
 		};
 	},
 

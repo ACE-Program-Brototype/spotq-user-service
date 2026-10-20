@@ -18,15 +18,15 @@ export interface RegisterDeviceResultDto {
 }
 
 export interface CustomerDeviceResponseDto {
-	deviceRegistrationId: string;
-	deviceId: string | null;
+	device_registration_id: string;
+	device_id: string | null;
 	platform: PlatformType;
-	deviceName: string | null;
-	appVersion: string | null;
-	isActive: boolean;
-	lastLogin: Date;
-	createdAt: Date;
-	updatedAt: Date;
+	device_name: string | null;
+	app_version: string | null;
+	is_active: boolean;
+	last_login: Date;
+	created_at: Date;
+	updated_at: Date;
 }
 
 export interface DeactivateDeviceDto {

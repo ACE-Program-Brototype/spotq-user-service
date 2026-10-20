@@ -96,15 +96,15 @@ describe("CustomerDeviceController", () => {
 
 		mockGetCustomerDevicesUseCase.execute.mockResolvedValue([
 			{
-				deviceRegistrationId: "id-1",
-				deviceId: "device_abc123",
+				device_registration_id: "id-1",
+				device_id: "device_abc123",
 				platform: "ANDROID",
-				deviceName: "Pixel 7",
-				appVersion: "1.0.0",
-				isActive: true,
-				lastLogin: new Date(),
-				createdAt: new Date(),
-				updatedAt: new Date(),
+				device_name: "Pixel 7",
+				app_version: "1.0.0",
+				is_active: true,
+				last_login: new Date(),
+				created_at: new Date(),
+				updated_at: new Date(),
 			},
 		]);
 

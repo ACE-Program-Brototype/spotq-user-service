@@ -50,11 +50,24 @@ export class PrismaDeviceRepository
 				});
 			}
 
-			await tx.device.upsert({
-				where: { id: device.id },
-				create: DeviceMapper.toCreateInput(device),
-				update: DeviceMapper.toUpdateInput(device),
-			});
+			if (device.deviceId) {
+				await tx.device.upsert({
+					where: {
+						userId_deviceId: {
+							userId: device.userId,
+							deviceId: device.deviceId,
+						},
+					},
+					create: DeviceMapper.toCreateInput(device),
+					update: DeviceMapper.toUpdateInput(device),
+				});
+			} else {
+				await tx.device.upsert({
+					where: { id: device.id },
+					create: DeviceMapper.toCreateInput(device),
+					update: DeviceMapper.toUpdateInput(device),
+				});
+			}
 		});
 	}
 

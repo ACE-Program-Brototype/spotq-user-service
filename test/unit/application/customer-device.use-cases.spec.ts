@@ -53,9 +53,9 @@ describe("GetCustomerDevicesUseCase & DeactivateDeviceUseCase", () => {
 			const result = await useCase.execute("usr-1");
 
 			expect(result).toHaveLength(2);
-			expect(result[0]?.deviceId).toBe("device_1");
+			expect(result[0]?.device_id).toBe("device_1");
 			expect(result[0]?.platform).toBe("ANDROID");
-			expect(result[1]?.deviceId).toBe("device_2");
+			expect(result[1]?.device_id).toBe("device_2");
 			expect(result[1]?.platform).toBe("IOS");
 			expect(mockDeviceRepository.findActiveByUserId).toHaveBeenCalledWith(
 				"usr-1",

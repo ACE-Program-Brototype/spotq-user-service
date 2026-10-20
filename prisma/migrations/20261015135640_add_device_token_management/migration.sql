@@ -13,9 +13,12 @@ ADD COLUMN     "device_id" TEXT,
 ADD COLUMN     "is_active" BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN     "updated_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
--- AlterTable
-ALTER TABLE "users" ALTER COLUMN "created_at" SET DATA TYPE TIMESTAMP(3),
-ALTER COLUMN "updated_at" SET DATA TYPE TIMESTAMP(3);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "devices_user_id_device_id_key" ON "devices"("user_id", "device_id");
+
+-- CreateIndex
+CREATE INDEX "devices_device_id_idx" ON "devices"("device_id");
+
+-- CreateIndex
+CREATE INDEX "devices_fid_idx" ON "devices"("fid");

@@ -22,15 +22,15 @@ describe("DeviceDtoMapper", () => {
 		const result = DeviceDtoMapper.toResponse(device);
 
 		expect(result).toEqual({
-			deviceRegistrationId: "device-uuid-1",
-			deviceId: "client_device_123",
+			device_registration_id: "device-uuid-1",
+			device_id: "client_device_123",
 			platform: "ANDROID",
-			deviceName: "Pixel 8",
-			appVersion: "1.0.0",
-			isActive: true,
-			lastLogin: mockDate,
-			createdAt: mockDate,
-			updatedAt: mockDate,
+			device_name: "Pixel 8",
+			app_version: "1.0.0",
+			is_active: true,
+			last_login: mockDate,
+			created_at: mockDate,
+			updated_at: mockDate,
 		});
 	});
 
@@ -66,8 +66,8 @@ describe("DeviceDtoMapper", () => {
 		const results = DeviceDtoMapper.toResponseList([device1, device2]);
 
 		expect(results).toHaveLength(2);
-		expect(results[0]?.deviceId).toBe("client_device_1");
-		expect(results[1]?.deviceId).toBe("client_device_2");
+		expect(results[0]?.device_id).toBe("client_device_1");
+		expect(results[1]?.device_id).toBe("client_device_2");
 	});
 
 	it("should map DeviceEntity to RegisterDeviceResultDto", () => {

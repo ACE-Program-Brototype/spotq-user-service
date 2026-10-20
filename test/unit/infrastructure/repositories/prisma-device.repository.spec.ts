@@ -64,7 +64,12 @@ describe("PrismaDeviceRepository", () => {
 		});
 
 		expect(mockTx.device.upsert).toHaveBeenCalledWith({
-			where: { id: "device-uuid-1" },
+			where: {
+				userId_deviceId: {
+					userId: "user-uuid-1",
+					deviceId: "client_device_1",
+				},
+			},
 			create: {
 				id: "device-uuid-1",
 				userId: "user-uuid-1",
