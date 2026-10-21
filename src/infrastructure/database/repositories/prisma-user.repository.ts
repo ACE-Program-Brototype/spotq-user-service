@@ -122,7 +122,7 @@ export class PrismaUserRepository
 						data: {
 							id: params.device.id,
 							userId: createdUser.id,
-							fcmToken: params.device.fcmToken,
+							fid: params.device.fid,
 							deviceName: params.device.deviceName,
 							platform: params.device.platform,
 							lastLogin: params.device.lastLogin,

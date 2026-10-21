@@ -2,17 +2,22 @@ import {
 	DeviceEntity,
 	type PlatformType,
 } from "@domain/entities/device.entity.ts";
-import type { Device as PrismaDeviceModel } from "@prisma/client";
+import type { Prisma, Device as PrismaDeviceModel } from "@prisma/client";
 
 export const DeviceMapper = {
 	toDomain(raw: PrismaDeviceModel): DeviceEntity {
 		return DeviceEntity.reconstitute({
 			id: raw.id,
 			userId: raw.userId,
-			fcmToken: raw.fcmToken,
+			deviceId: raw.deviceId,
+			fid: raw.fid,
 			deviceName: raw.deviceName,
 			platform: raw.platform as PlatformType,
+			appVersion: raw.appVersion,
+			isActive: raw.isActive,
 			lastLogin: raw.lastLogin,
+			createdAt: raw.createdAt,
+			updatedAt: raw.updatedAt,
 		});
 	},
 
@@ -20,10 +25,32 @@ export const DeviceMapper = {
 		return {
 			id: entity.id,
 			userId: entity.userId,
-			fcmToken: entity.fcmToken ?? null,
+			deviceId: entity.deviceId ?? null,
+			fid: entity.fid ?? null,
 			deviceName: entity.deviceName ?? null,
 			platform: entity.platform,
+			appVersion: entity.appVersion ?? null,
+			isActive: entity.isActive,
 			lastLogin: entity.lastLogin,
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
+		};
+	},
+
+	toCreateInput(entity: DeviceEntity): Prisma.DeviceUncheckedCreateInput {
+		return DeviceMapper.toPersistence(entity);
+	},
+
+	toUpdateInput(entity: DeviceEntity): Prisma.DeviceUncheckedUpdateInput {
+		return {
+			deviceId: entity.deviceId ?? null,
+			fid: entity.fid ?? null,
+			deviceName: entity.deviceName ?? null,
+			platform: entity.platform,
+			appVersion: entity.appVersion ?? null,
+			isActive: entity.isActive,
+			lastLogin: entity.lastLogin,
+			updatedAt: entity.updatedAt,
 		};
 	},
 };

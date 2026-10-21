@@ -1,12 +1,5 @@
-import type { PlatformType } from "@domain/entities/device.entity.ts";
-
 export interface GoogleAuthDto {
 	idToken: string;
-	device?: {
-		deviceName?: string | null;
-		platform?: PlatformType | null;
-		fcmToken?: string | null;
-	} | null;
 }
 
 export interface GoogleAuthResultDto {

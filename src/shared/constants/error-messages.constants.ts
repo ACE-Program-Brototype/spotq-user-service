@@ -47,6 +47,7 @@ export const DOMAIN_ERRORS = {
 		EMAIL_ALREADY_VERIFIED: "EMAIL_ALREADY_VERIFIED",
 		CUSTOMER_NOT_FOUND: "CUSTOMER_NOT_FOUND",
 		WEAK_PASSWORD: "WEAK_PASSWORD",
+		MALFORMED_JSON: "MALFORMED_JSON",
 	},
 	MESSAGES: {
 		CUSTOMER_NOT_FOUND: "Customer not found.",
@@ -75,6 +76,7 @@ export const DOMAIN_ERRORS = {
 		GOOGLE_AUTH_ACCOUNT_INACTIVE:
 			"Google authentication failed. Account is not active.",
 		WEAK_PASSWORD: "Password is too weak. Please choose a stronger password.",
+		MALFORMED_JSON: "Malformed JSON in request body",
 	},
 };
 

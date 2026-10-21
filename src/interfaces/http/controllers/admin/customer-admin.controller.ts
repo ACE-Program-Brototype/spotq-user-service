@@ -3,13 +3,13 @@ import type { IUpdateCustomerStatusUseCase } from "@application/ports/use-cases/
 import { TYPES } from "@config/di/types.ts";
 import type { UserStatus } from "@domain/entities/user.entity.ts";
 import { ForbiddenError, UnauthorizedError } from "@domain/errors/index.ts";
+import type { AuthenticatedRequest } from "@interfaces/http/middlewares/auth.middleware.ts";
 import { authConstants, USER_ROLES } from "@shared/constants/auth.constants.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
 import type { Response } from "express";
 import { inject, injectable } from "inversify";
-import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.ts";
 import type { ICustomerAdminController } from "./customer-admin.controller.interface.ts";
 
 @injectable()
@@ -72,7 +72,7 @@ export class CustomerAdminController implements ICustomerAdminController {
 			throw new ForbiddenError(authConstants.ADMIN_FORBIDDEN);
 		}
 
-		const targetUserId = req.params.userId;
+		const targetUserId = req.params.userId as string;
 		const status = req.body.status as UserStatus;
 
 		const result = await this.updateCustomerStatusUseCase.execute({

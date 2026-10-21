@@ -5,20 +5,6 @@ describe("loginSchema", () => {
 		const result = loginSchema.safeParse({
 			email: "jane.doe@example.com",
 			password: "Password@123",
-			device: {
-				deviceName: "My Mobile Device",
-				platform: "ANDROID",
-				fcmToken: "fcm-12345",
-			},
-		});
-
-		expect(result.success).toBe(true);
-	});
-
-	it("should pass without optional device object", () => {
-		const result = loginSchema.safeParse({
-			email: "jane.doe@example.com",
-			password: "Password@123",
 		});
 
 		expect(result.success).toBe(true);
@@ -45,18 +31,6 @@ describe("loginSchema", () => {
 		const result = loginSchema.safeParse({
 			email: "jane.doe@example.com",
 			password: "",
-		});
-
-		expect(result.success).toBe(false);
-	});
-
-	it("should fail when device platform is invalid", () => {
-		const result = loginSchema.safeParse({
-			email: "jane.doe@example.com",
-			password: "Password@123",
-			device: {
-				platform: "WINDOWS",
-			},
 		});
 
 		expect(result.success).toBe(false);

@@ -1,5 +1,5 @@
+import { config } from "@config/env.ts";
 import pino from "pino";
-import { config } from "../../config/env.ts";
 import { loggerLocalStorage } from "./logger-context.ts";
 
 export const logger = pino({

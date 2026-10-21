@@ -1,4 +1,8 @@
 import type {
+	LogoutDto,
+	LogoutResultDto,
+} from "@application/dtos/logout.dto.ts";
+import type {
 	ILogger,
 	ITokenService,
 } from "@application/ports/services/index.ts";
@@ -7,7 +11,6 @@ import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token
 import type { ILogoutUseCase } from "@ports/use-cases/index.ts";
 import { ResponseMessage } from "@shared/constants/index.ts";
 import { inject, injectable } from "inversify";
-import type { LogoutDto, LogoutResultDto } from "../dtos/logout.dto.ts";
 
 @injectable()
 export class LogoutUseCase implements ILogoutUseCase {
