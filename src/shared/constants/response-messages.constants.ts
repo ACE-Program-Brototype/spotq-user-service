@@ -23,4 +23,6 @@ export const ResponseMessage = {
 	DEVICE_REGISTERED_SUCCESS: "Device registered successfully",
 	CUSTOMER_DEVICES_FETCH_SUCCESS: "Customer devices retrieved successfully",
 	DEVICE_DEACTIVATED_SUCCESS: "Device deactivated successfully",
+	USER_ANALYTICS_SUMMARY_FETCH_SUCCESS:
+		"User analytics summary fetched successfully",
 } as const;

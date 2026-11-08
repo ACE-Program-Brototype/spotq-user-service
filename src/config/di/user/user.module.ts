@@ -1,3 +1,4 @@
+import type { IGetUserAnalyticsSummaryUseCase } from "@application/ports/use-cases/internal/get-user-analytics-summary.use-case.interface.ts";
 import { CustomerForgotPasswordUseCase } from "@application/use-cases/customer.forgot-password.ts";
 import { CustomerResetPasswordUseCase } from "@application/use-cases/customer.reset.password.ts";
 import { CustomerVerifyForgotPasswordUseCase } from "@application/use-cases/customer.verify.forgot-password.ts";
@@ -17,6 +18,7 @@ import {
 	UpdateCustomerStatusUseCase,
 	VerifyEmailOtpUseCase,
 } from "@application/use-cases/index.ts";
+import { GetUserAnalyticsSummaryUseCase } from "@application/use-cases/internal/get-user-analytics-summary.use-case.ts";
 import type { IDeviceRepository } from "@domain/repositories/device.repository.interface.ts";
 import type { IRefreshTokenRepository } from "@domain/repositories/refresh-token.repository.interface.ts";
 import type { IUserRepository } from "@domain/repositories/user.repository.interface.ts";
@@ -29,6 +31,8 @@ import { CustomerAdminController } from "@interfaces/http/controllers/admin/cust
 import { CustomerDeviceController } from "@interfaces/http/controllers/customer/customer-device.controller.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
+import { InternalUserAnalyticsController } from "@interfaces/http/controllers/internal/internal-user-analytics.controller.ts";
+import { InternalUserAnalyticsRouter } from "@interfaces/http/routes/internal/internal-user-analytics.router.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
 import type {
 	IDeactivateDeviceUseCase,
@@ -119,4 +123,14 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<CustomerResetPasswordUseCase>(
 		USER_TYPES.CustomerResetPasswordUseCase,
 	).to(CustomerResetPasswordUseCase);
+
+	bind<IGetUserAnalyticsSummaryUseCase>(
+		USER_TYPES.GetUserAnalyticsSummaryUseCase,
+	).to(GetUserAnalyticsSummaryUseCase);
+	bind<InternalUserAnalyticsController>(
+		USER_TYPES.InternalUserAnalyticsController,
+	).to(InternalUserAnalyticsController);
+	bind<InternalUserAnalyticsRouter>(USER_TYPES.InternalUserAnalyticsRouter).to(
+		InternalUserAnalyticsRouter,
+	);
 });

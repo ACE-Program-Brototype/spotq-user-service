@@ -2,8 +2,10 @@ import { container, TYPES } from "@config/di/index.ts";
 import adminRoutes from "@interfaces/http/routes/admin.routes.ts";
 import type { HealthRouter } from "@modules/health/health.routes.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
+import { INTERNAL_ROUTES } from "@shared/constants/routes.constants.ts";
 import { getJwks } from "@shared/util/jwks.util.ts";
 import { Router } from "express";
+import type { InternalUserAnalyticsRouter } from "./internal/internal-user-analytics.router.ts";
 import { metricsRouter } from "./metrics.routes.ts";
 import type { UserRouter } from "./user.routes.ts";
 
@@ -11,6 +13,9 @@ export const router = Router();
 
 const healthRouter = container.get<HealthRouter>(TYPES.HealthRouter);
 const userRouter = container.get<UserRouter>(TYPES.UserRouter);
+const internalRouter = container.get<InternalUserAnalyticsRouter>(
+	TYPES.InternalUserAnalyticsRouter,
+);
 
 // Standard JWKS endpoint for API Gateway / Envoy JWT verification
 router.get("/.well-known/jwks.json", (_req, res) => {
@@ -20,4 +25,5 @@ router.get("/.well-known/jwks.json", (_req, res) => {
 router.use("/", healthRouter.router);
 router.use("/", metricsRouter);
 router.use("/admin", adminRoutes);
+router.use(INTERNAL_ROUTES.BASE, internalRouter.router);
 router.use("/", userRouter.router);

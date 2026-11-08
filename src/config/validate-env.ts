@@ -151,6 +151,15 @@ const envSchema = z.object({
 	USERS_DEFAULT_SORT_ORDER: z
 		.enum(["ASC", "DESC", "asc", "desc"])
 		.default("DESC"),
+
+	// S2S Service Authentication Configuration
+	S2S_AUDIENCE: z.string().trim().default("user-service"),
+	RESTAURANT_S2S_PUBLIC_KEY: isTest
+		? z.string().default(() => getTestKeyPair().publicKey)
+		: z.string().min(1, "RESTAURANT_S2S_PUBLIC_KEY is required"),
+	ORDER_S2S_PUBLIC_KEY: isTest
+		? z.string().default(() => getTestKeyPair().publicKey)
+		: z.string().optional(),
 });
 
 export const validateEnv = () => {
