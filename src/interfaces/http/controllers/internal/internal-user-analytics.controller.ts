@@ -4,6 +4,7 @@ import type {
 } from "@application/dtos/internal/user-analytics-summary.dto.ts";
 import type { IGetUserAnalyticsSummaryUseCase } from "@application/ports/use-cases/internal/get-user-analytics-summary.use-case.interface.ts";
 import { TYPES } from "@config/di/types.ts";
+import type { IInternalUserAnalyticsController } from "@interfaces/http/controllers/internal/internal-user-analytics.controller.interface.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
 import { ResponseMessage } from "@shared/constants/response-messages.constants.ts";
 import { sendSuccessResponse } from "@shared/response/index.ts";
@@ -11,7 +12,9 @@ import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 
 @injectable()
-export class InternalUserAnalyticsController {
+export class InternalUserAnalyticsController
+	implements IInternalUserAnalyticsController
+{
 	constructor(
 		@inject(TYPES.GetUserAnalyticsSummaryUseCase)
 		private readonly getUserAnalyticsSummaryUseCase: IGetUserAnalyticsSummaryUseCase,
@@ -38,8 +41,7 @@ export class InternalUserAnalyticsController {
 				...(year !== undefined && !Number.isNaN(year) && { year }),
 			};
 
-			const summary =
-				await this.getUserAnalyticsSummaryUseCase.execute(query);
+			const summary = await this.getUserAnalyticsSummaryUseCase.execute(query);
 			sendSuccessResponse(
 				res,
 				summary,

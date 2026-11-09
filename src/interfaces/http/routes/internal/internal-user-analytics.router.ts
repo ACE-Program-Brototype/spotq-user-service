@@ -1,5 +1,5 @@
 import { TYPES } from "@config/di/types.ts";
-import type { InternalUserAnalyticsController } from "@interfaces/http/controllers/internal/internal-user-analytics.controller.ts";
+import type { IInternalUserAnalyticsController } from "@interfaces/http/controllers/internal/internal-user-analytics.controller.interface.ts";
 import {
 	internalS2SAuthMiddleware,
 	requireCallerService,
@@ -15,7 +15,7 @@ export class InternalUserAnalyticsRouter {
 
 	constructor(
 		@inject(TYPES.InternalUserAnalyticsController)
-		private readonly controller: InternalUserAnalyticsController,
+		private readonly controller: IInternalUserAnalyticsController,
 	) {
 		this.router = Router();
 		this.registerRoutes();

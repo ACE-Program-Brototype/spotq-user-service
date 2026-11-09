@@ -22,16 +22,15 @@ export class GetUserAnalyticsSummaryUseCase
 	): Promise<UserAnalyticsSummaryResponseDto> {
 		const { startDate, endDate } = this.resolveDateRange(query);
 
-		const [totalRegisteredCustomers, newCustomersInPeriod] =
-			await Promise.all([
-				this.userRepository.countCustomers({}),
-				this.userRepository.countCustomers({
-					createdAt: {
-						gte: startDate,
-						lte: endDate,
-					},
-				}),
-			]);
+		const [totalRegisteredCustomers, newCustomersInPeriod] = await Promise.all([
+			this.userRepository.countCustomers({}),
+			this.userRepository.countCustomers({
+				createdAt: {
+					gte: startDate,
+					lte: endDate,
+				},
+			}),
+		]);
 
 		return {
 			totalRegisteredCustomers,

@@ -31,6 +31,7 @@ import { CustomerAdminController } from "@interfaces/http/controllers/admin/cust
 import { CustomerDeviceController } from "@interfaces/http/controllers/customer/customer-device.controller.ts";
 import { CustomerProfileController } from "@interfaces/http/controllers/customer/customer-profile.controller.ts";
 import { UserAuthController } from "@interfaces/http/controllers/customer/user.auth.controller.ts";
+import type { IInternalUserAnalyticsController } from "@interfaces/http/controllers/internal/internal-user-analytics.controller.interface.ts";
 import { InternalUserAnalyticsController } from "@interfaces/http/controllers/internal/internal-user-analytics.controller.ts";
 import { InternalUserAnalyticsRouter } from "@interfaces/http/routes/internal/internal-user-analytics.router.ts";
 import { UserRouter } from "@interfaces/http/routes/user.routes.ts";
@@ -127,7 +128,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind<IGetUserAnalyticsSummaryUseCase>(
 		USER_TYPES.GetUserAnalyticsSummaryUseCase,
 	).to(GetUserAnalyticsSummaryUseCase);
-	bind<InternalUserAnalyticsController>(
+	bind<IInternalUserAnalyticsController>(
 		USER_TYPES.InternalUserAnalyticsController,
 	).to(InternalUserAnalyticsController);
 	bind<InternalUserAnalyticsRouter>(USER_TYPES.InternalUserAnalyticsRouter).to(

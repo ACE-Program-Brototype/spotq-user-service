@@ -33,8 +33,10 @@ describe("Internal S2S Auth Middleware & Caller Authorization", () => {
 	let rsaPrivateKey: string;
 	let rsaPublicKey: string;
 	let nextFn: jest.MockedFunction<NextFunction>;
+	let originalConfigS2S: typeof config.s2s;
 
 	beforeAll(() => {
+		originalConfigS2S = { ...config.s2s };
 		const keyPair = crypto.generateKeyPairSync("rsa", {
 			modulusLength: 2048,
 			publicKeyEncoding: { type: "spki", format: "pem" },
@@ -49,6 +51,10 @@ describe("Internal S2S Auth Middleware & Caller Authorization", () => {
 		(
 			config.s2s as { audience: string; restaurantPublicKey: string }
 		).restaurantPublicKey = rsaPublicKey;
+	});
+
+	afterAll(() => {
+		(config as { s2s: typeof originalConfigS2S }).s2s = originalConfigS2S;
 	});
 
 	beforeEach(() => {
@@ -227,6 +233,44 @@ describe("Internal S2S Auth Middleware & Caller Authorization", () => {
 			guard(req, res as unknown as Response, nextFn);
 
 			expect(nextFn).toHaveBeenCalledTimes(1);
+		});
+
+		it("should support multiple allowed services and allow any matching service", () => {
+			const req = {
+				callerService: S2S_CALLER_SERVICES.ORDER_SERVICE,
+			} as unknown as Request;
+			const res = createMockResponse();
+
+			const guard = requireCallerService([
+				S2S_CALLER_SERVICES.RESTAURANT_SERVICE,
+				S2S_CALLER_SERVICES.ORDER_SERVICE,
+			]);
+			guard(req, res as unknown as Response, nextFn);
+
+			expect(nextFn).toHaveBeenCalledTimes(1);
+		});
+
+		it("should support multiple allowed services and reject non-matching service", () => {
+			const req = {
+				callerService: "payment-service",
+			} as unknown as Request;
+			const res = createMockResponse();
+
+			const guard = requireCallerService([
+				S2S_CALLER_SERVICES.RESTAURANT_SERVICE,
+				S2S_CALLER_SERVICES.ORDER_SERVICE,
+			]);
+			guard(req, res as unknown as Response, nextFn);
+
+			expect(res.statusCode).toBe(HttpStatus.FORBIDDEN);
+			expect(res.body).toEqual(
+				expect.objectContaining({
+					success: false,
+					statusCode: 403,
+					code: "FORBIDDEN",
+				}),
+			);
+			expect(nextFn).not.toHaveBeenCalled();
 		});
 	});
 });

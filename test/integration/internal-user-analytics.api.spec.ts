@@ -9,9 +9,11 @@ import { S2S_CALLER_SERVICES } from "../../src/shared/constants/auth.constants.t
 describe("Internal User Analytics Summary API (SCRUM-1274)", () => {
 	let rsaPrivateKey: string;
 	let rsaPublicKey: string;
+	let originalConfigS2S: typeof config.s2s;
 	const ENDPOINT = "/api/internal/v1/analytics/users/summary";
 
 	beforeAll(() => {
+		originalConfigS2S = { ...config.s2s };
 		const keyPair = crypto.generateKeyPairSync("rsa", {
 			modulusLength: 2048,
 			publicKeyEncoding: { type: "spki", format: "pem" },
@@ -41,6 +43,10 @@ describe("Internal User Analytics Summary API (SCRUM-1274)", () => {
 				orderPublicKey?: string;
 			}
 		).orderPublicKey = rsaPublicKey;
+	});
+
+	afterAll(() => {
+		(config as { s2s: typeof originalConfigS2S }).s2s = originalConfigS2S;
 	});
 
 	beforeEach(() => {
