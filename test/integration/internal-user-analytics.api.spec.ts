@@ -149,8 +149,11 @@ describe("Internal User Analytics Summary API (SCRUM-1274)", () => {
 		expect(res.body.message).toBe("An unexpected error occurred");
 	});
 
-	it("should return 200 OK with totalRegisteredCustomers on valid S2S call", async () => {
-		jest.spyOn(prisma.user, "count").mockResolvedValue(12500);
+	it("should return 200 OK with totalRegisteredCustomers and newCustomersInPeriod on valid S2S call", async () => {
+		jest
+			.spyOn(prisma.user, "count")
+			.mockResolvedValueOnce(12500)
+			.mockResolvedValueOnce(48);
 
 		const tokenConfig: TokenIssuerConfig = {
 			serviceName: S2S_CALLER_SERVICES.RESTAURANT_SERVICE,
@@ -170,8 +173,38 @@ describe("Internal User Analytics Summary API (SCRUM-1274)", () => {
 			message: "User analytics summary fetched successfully",
 			data: {
 				totalRegisteredCustomers: 12500,
+				newCustomersInPeriod: 48,
 			},
 		});
-		expect(prisma.user.count).toHaveBeenCalledWith({ where: {} });
+		expect(prisma.user.count).toHaveBeenCalledTimes(2);
+		expect(prisma.user.count).toHaveBeenNthCalledWith(1, { where: {} });
+	});
+
+	it("should filter by period query parameter correctly", async () => {
+		jest
+			.spyOn(prisma.user, "count")
+			.mockResolvedValueOnce(12500)
+			.mockResolvedValueOnce(180);
+
+		const tokenConfig: TokenIssuerConfig = {
+			serviceName: S2S_CALLER_SERVICES.RESTAURANT_SERVICE,
+			privateKey: rsaPrivateKey,
+		};
+		const token = generateToken("user-service", tokenConfig);
+
+		const res = await request(app)
+			.get(`${ENDPOINT}?period=MONTH&month=11&year=2026`)
+			.set("Authorization", `Bearer ${token}`)
+			.set("x-caller-service", S2S_CALLER_SERVICES.RESTAURANT_SERVICE);
+
+		expect(res.status).toBe(200);
+		expect(res.body.data).toEqual({
+			totalRegisteredCustomers: 12500,
+			newCustomersInPeriod: 180,
+		});
+		expect(prisma.user.count).toHaveBeenCalledTimes(2);
+		const secondCallWhere = (prisma.user.count as jest.Mock).mock.calls[1][0]
+			.where;
+		expect(secondCallWhere.createdAt).toBeDefined();
 	});
 });

@@ -286,6 +286,13 @@ export class PrismaUserRepository
 			}
 		}
 
+		if (params.createdAt) {
+			where.createdAt = {
+				...(params.createdAt.gte && { gte: params.createdAt.gte }),
+				...(params.createdAt.lte && { lte: params.createdAt.lte }),
+			};
+		}
+
 		return prisma.user.count({ where });
 	}
 

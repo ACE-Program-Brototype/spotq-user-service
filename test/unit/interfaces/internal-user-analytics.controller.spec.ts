@@ -20,7 +20,9 @@ describe("InternalUserAnalyticsController", () => {
 		};
 
 		controller = new InternalUserAnalyticsController(mockUseCase);
-		mockReq = {};
+		mockReq = {
+			query: {},
+		};
 		mockRes = {
 			status: jest.fn().mockReturnThis(),
 			json: jest.fn().mockReturnThis(),
@@ -28,9 +30,16 @@ describe("InternalUserAnalyticsController", () => {
 		mockNext = jest.fn();
 	});
 
-	it("should call use case and send success response with totalRegisteredCustomers", async () => {
+	it("should call use case with parsed query and send success response", async () => {
+		mockReq.query = {
+			period: "month",
+			month: "11",
+			year: "2026",
+		};
+
 		mockUseCase.execute.mockResolvedValue({
 			totalRegisteredCustomers: 12500,
+			newCustomersInPeriod: 180,
 		});
 
 		await controller.getUserSummary(
@@ -40,14 +49,48 @@ describe("InternalUserAnalyticsController", () => {
 		);
 
 		expect(mockUseCase.execute).toHaveBeenCalledTimes(1);
+		expect(mockUseCase.execute).toHaveBeenCalledWith({
+			period: "MONTH",
+			month: 11,
+			year: 2026,
+		});
 		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
 		expect(mockRes.json).toHaveBeenCalledWith({
 			success: true,
 			statusCode: HttpStatus.OK,
 			message: ResponseMessage.USER_ANALYTICS_SUMMARY_FETCH_SUCCESS,
-			data: { totalRegisteredCustomers: 12500 },
+			data: {
+				totalRegisteredCustomers: 12500,
+				newCustomersInPeriod: 180,
+			},
 		});
 		expect(mockNext).not.toHaveBeenCalled();
+	});
+
+	it("should call use case with empty query when no query params supplied", async () => {
+		mockReq.query = {};
+		mockUseCase.execute.mockResolvedValue({
+			totalRegisteredCustomers: 12500,
+			newCustomersInPeriod: 48,
+		});
+
+		await controller.getUserSummary(
+			mockReq as Request,
+			mockRes as unknown as Response,
+			mockNext,
+		);
+
+		expect(mockUseCase.execute).toHaveBeenCalledWith({});
+		expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
+		expect(mockRes.json).toHaveBeenCalledWith({
+			success: true,
+			statusCode: HttpStatus.OK,
+			message: ResponseMessage.USER_ANALYTICS_SUMMARY_FETCH_SUCCESS,
+			data: {
+				totalRegisteredCustomers: 12500,
+				newCustomersInPeriod: 48,
+			},
+		});
 	});
 
 	it("should catch database/use-case failure and forward to next middleware", async () => {
