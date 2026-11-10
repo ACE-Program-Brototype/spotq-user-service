@@ -110,4 +110,10 @@ export const config = {
 				| "DESC",
 		},
 	},
+
+	s2s: {
+		audience: env.S2S_AUDIENCE,
+		restaurantPublicKey: env.RESTAURANT_S2S_PUBLIC_KEY.replace(/\\n/g, "\n"),
+		orderPublicKey: env.ORDER_S2S_PUBLIC_KEY?.replace(/\\n/g, "\n"),
+	},
 } as const;

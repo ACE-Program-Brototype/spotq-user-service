@@ -46,3 +46,8 @@ export const AUTH_ROUTES = {
 export const USER_ROUTES = {
 	USERS: "/users",
 } as const;
+
+export const INTERNAL_ROUTES = {
+	BASE: "/api/internal/v1",
+	ANALYTICS_USERS_SUMMARY: "/analytics/users/summary",
+} as const;

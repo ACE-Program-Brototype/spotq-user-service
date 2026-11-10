@@ -1,7 +1,9 @@
 import { container, TYPES } from "@config/di/index.ts";
 import adminRoutes from "@interfaces/http/routes/admin.routes.ts";
+import internalRoutes from "@interfaces/http/routes/internal.routes.ts";
 import type { HealthRouter } from "@modules/health/health.routes.ts";
 import { HttpStatus } from "@shared/constants/http.constants.ts";
+import { INTERNAL_ROUTES } from "@shared/constants/routes.constants.ts";
 import { getJwks } from "@shared/util/jwks.util.ts";
 import { Router } from "express";
 import { metricsRouter } from "./metrics.routes.ts";
@@ -20,4 +22,5 @@ router.get("/.well-known/jwks.json", (_req, res) => {
 router.use("/", healthRouter.router);
 router.use("/", metricsRouter);
 router.use("/admin", adminRoutes);
+router.use(INTERNAL_ROUTES.BASE, internalRoutes);
 router.use("/", userRouter.router);

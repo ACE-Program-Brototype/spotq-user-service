@@ -35,4 +35,11 @@ export const USER_TYPES = {
 	RegisterDeviceUseCase: Symbol.for("RegisterDeviceUseCase"),
 	GetCustomerDevicesUseCase: Symbol.for("GetCustomerDevicesUseCase"),
 	DeactivateDeviceUseCase: Symbol.for("DeactivateDeviceUseCase"),
+
+	// Internal Analytics
+	GetUserAnalyticsSummaryUseCase: Symbol.for("GetUserAnalyticsSummaryUseCase"),
+	InternalUserAnalyticsController: Symbol.for(
+		"InternalUserAnalyticsController",
+	),
+	InternalUserAnalyticsRouter: Symbol.for("InternalUserAnalyticsRouter"),
 };

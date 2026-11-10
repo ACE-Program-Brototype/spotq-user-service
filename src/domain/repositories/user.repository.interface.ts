@@ -31,6 +31,10 @@ export interface FindCustomersParams {
 export interface CountCustomersParams {
 	status?: UserStatus;
 	search?: string;
+	createdAt?: {
+		gte?: Date;
+		lte?: Date;
+	};
 }
 
 export interface IUserRepository extends IBaseRepository<UserEntity> {
