@@ -13,6 +13,7 @@ export const config = {
 
 	service: {
 		name: env.SERVICE_NAME,
+		version: env.SERVICE_VERSION,
 		logLevel: env.LOG_LEVEL,
 	},
 
