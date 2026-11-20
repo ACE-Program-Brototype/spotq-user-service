@@ -1,0 +1,119 @@
+import "dotenv/config";
+import type { Algorithm } from "jsonwebtoken";
+
+import { validateEnv } from "./validate-env.ts";
+
+const env = validateEnv();
+
+export const config = {
+	server: {
+		port: env.PORT,
+		nodeEnv: env.NODE_ENV,
+	},
+
+	service: {
+		name: env.SERVICE_NAME,
+		logLevel: env.LOG_LEVEL,
+	},
+
+	database: {
+		url: env.DATABASE_URL,
+		sslEnabled: env.DATABASE_SSL_ENABLED,
+		caCert: env.DATABASE_CA_CERT,
+	},
+
+	redis: {
+		url: env.REDIS_URL,
+	},
+
+	admin: {
+		name: env.ADMIN_NAME,
+		email: env.ADMIN_EMAIL,
+		password: env.ADMIN_PASSWORD,
+	},
+
+	jwt: {
+		access: {
+			privateKey: env.JWT_PRIVATE_KEY.replace(/\\n/g, "\n"),
+			publicKey: env.JWT_PUBLIC_KEY.replace(/\\n/g, "\n"),
+			keyId: env.JWT_KEY_ID,
+			keyType: env.JWT_KEY_TYPE,
+			keyUse: env.JWT_KEY_USE,
+			algorithm: env.JWT_ALGORITHM as Algorithm,
+			secret: env.JWT_ACCESS_SECRET,
+			expiresIn: env.JWT_ACCESS_EXPIRES_IN,
+		},
+		refresh: {
+			secret: env.JWT_REFRESH_SECRET,
+			expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+		},
+		temp: {
+			secret: env.JWT_TEMP_SECRET,
+			expiresIn: env.JWT_TEMP_EXPIRES_IN,
+		},
+	},
+
+	cookie: {
+		httpOnly: env.COOKIE_HTTPONLY,
+		secure: env.COOKIE_SECURE,
+		sameSite: env.COOKIE_SAME_SITE,
+		refreshMaxAge: env.COOKIE_REFRESH_MAX_AGE,
+		tempMaxAge: env.COOKIE_TEMP_MAX_AGE,
+	},
+
+	auth: {
+		bcryptSaltRounds: env.BCRYPT_SALT_ROUNDS,
+	},
+
+	brevo: {
+		apiKey: env.BREVO_API_KEY,
+		senderName: env.BREVO_SENDER_NAME,
+		senderEmail: env.BREVO_SENDER_EMAIL,
+	},
+
+	google: {
+		clientId: env.GOOGLE_CLIENT_ID,
+	},
+
+	otp: {
+		ttlSeconds: env.OTP_TTL_SECONDS,
+		maxAttempts: env.OTP_MAX_ATTEMPTS,
+	},
+
+	rateLimit: {
+		forgotPassword: {
+			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_WINDOW_MS,
+			max: env.RATE_LIMIT_FORGOT_PASSWORD_MAX,
+		},
+		forgotPasswordResend: {
+			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_RESEND_WINDOW_MS,
+			max: env.RATE_LIMIT_FORGOT_PASSWORD_RESEND_MAX,
+		},
+		forgotPasswordVerify: {
+			windowMs: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_WINDOW_MS,
+			max: env.RATE_LIMIT_FORGOT_PASSWORD_VERIFY_MAX,
+		},
+		resendEmailOtp: {
+			windowMs: env.RATE_LIMIT_RESEND_EMAIL_OTP_WINDOW_MS,
+			max: env.RATE_LIMIT_RESEND_EMAIL_OTP_MAX,
+		},
+	},
+
+	pagination: {
+		users: {
+			defaultPage: env.USERS_DEFAULT_PAGE,
+			defaultLimit: env.USERS_DEFAULT_LIMIT,
+			maxLimit: env.USERS_MAX_LIMIT,
+			defaultSortBy: env.USERS_DEFAULT_SORT_BY,
+			defaultSortOrder: env.USERS_DEFAULT_SORT_ORDER.toUpperCase() as
+				| "ASC"
+				| "DESC",
+		},
+	},
+
+	s2s: {
+		audience: env.S2S_AUDIENCE,
+		restaurantPublicKey: env.RESTAURANT_S2S_PUBLIC_KEY.replace(/\\n/g, "\n"),
+		orderPublicKey: env.ORDER_S2S_PUBLIC_KEY?.replace(/\\n/g, "\n"),
+	},
+} as const;

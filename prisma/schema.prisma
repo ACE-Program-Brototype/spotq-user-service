@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum Platform {
+  ANDROID
+  IOS
+  WEB
+}
+
+model PlatformAdmin {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("platform_admins")
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  fullname     String        @map("fullname")
+  phone        String?       @unique @map("phone")
+  email        String        @unique @map("email")
+  passwordHash String?       @map("password_hash")
+  googleId     String?       @map("google_id")
+  status          UserStatus    @default(ACTIVE) @map("status")
+  isEmailVerified Boolean       @default(false) @map("is_email_verified")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  refreshTokens RefreshToken[]
+  devices       Device[]
+  profile       UserProfile?
+
+  @@map("users")
+}
+
+model UserProfile {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @unique @map("user_id") @db.Uuid
+  dob        DateTime? @map("dob") @db.Date
+  gender     String?  @map("gender")
+  location   String?  @map("location")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  deviceId   String?   @map("device_id") @db.Uuid
+  tokenHash  String    @map("token_hash")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([tokenHash])
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Device {
+  id          String         @id @default(uuid()) @db.Uuid
+  userId      String         @map("user_id") @db.Uuid
+  deviceId    String?        @map("device_id")
+  fid         String?        @map("fid")
+  deviceName  String?        @map("device_name")
+  platform    Platform       @map("platform")
+  appVersion  String?        @map("app_version")
+  isActive    Boolean        @default(true) @map("is_active")
+  lastLogin   DateTime       @default(now()) @map("last_login") @db.Timestamptz(3)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@unique([userId, deviceId])
+  @@index([userId])
+  @@index([deviceId])
+  @@index([fid])
+  @@map("devices")
+}
+

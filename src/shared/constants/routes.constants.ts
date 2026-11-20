@@ -1,0 +1,53 @@
+export const Routes = {
+	HEALTH: "/health",
+	METRICS: "/metrics",
+} as const;
+
+export const CUSTOMER_ROUTES = {
+	PROFILE: "/profile",
+	ME: "/me",
+	DEVICES: "/me/devices",
+	DEVICE_BY_ID: "/me/devices/:deviceId",
+} as const;
+
+export const ADMIN_AUTH_ROUTES = {
+	LOGIN: "/login",
+	REFRESH_TOKEN: "/refresh-token",
+	LOGOUT: "/logout",
+	FORGOT_PASSWORD: "/forgot-password",
+	FORGOT_PASSWORD_VERIFY: "/forgot-password/verify",
+	FORGOT_PASSWORD_RESEND_OTP: "/forgot-password/resend-otp",
+	RESET_PASSWORD: "/reset-password",
+};
+
+export const ADMIN_ROUTES = {
+	ROOT: "/",
+	USERS: "/users",
+	CUSTOMERS: "/customers",
+	USER_STATUS: "/:userId/status",
+	USERS_USER_STATUS: "/users/:userId/status",
+} as const;
+
+export const AUTH_ROUTES = {
+	REGISTER: "/register",
+	VERIFY_EMAIL: "/verify-email",
+	RESEND_EMAIL_OTP: "/resend-email-otp",
+	EMAIL_VERIFICATION_RESEND: "/email-verification/resend",
+	LOGOUT: "/logout",
+	GOOGLE_OAUTH: "/oauth/google",
+	LOGIN: "/login",
+	REFRESH_TOKEN: "/refresh-token",
+	FORGOT_PASSWORD: "/forgot-password",
+	FORGOT_PASSWORD_VERIFY: "/forgot-password/verify",
+	FORGOT_PASSWORD_RESEND_OTP: "/forgot-password/resend-otp",
+	RESET_PASSWORD: "/reset-password",
+} as const;
+
+export const USER_ROUTES = {
+	USERS: "/users",
+} as const;
+
+export const INTERNAL_ROUTES = {
+	BASE: "/api/internal/v1",
+	ANALYTICS_USERS_SUMMARY: "/analytics/users/summary",
+} as const;

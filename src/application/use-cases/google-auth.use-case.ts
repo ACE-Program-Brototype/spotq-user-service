@@ -1,0 +1,180 @@
+import type {
+	GoogleAuthDto,
+	GoogleAuthResultDto,
+} from "@application/dtos/google-auth.dto.ts";
+import { UserDtoMapper } from "@application/mappers/user-dto.mapper.ts";
+import type {
+	IGoogleAuthService,
+	IIdGenerator,
+	ILogger,
+} from "@application/ports/services/index.ts";
+import type { ITokenService } from "@application/ports/services/token-service.interface.ts";
+import { TYPES } from "@config/di/types.ts";
+import { RefreshTokenEntity } from "@domain/entities/refresh-token.entity.ts";
+import { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
+import { UserProfileEntity } from "@domain/entities/user-profile.entity.ts";
+import { UserBlockedError } from "@domain/errors/domain.error.ts";
+import type {
+	IRefreshTokenRepository,
+	IUserRepository,
+} from "@domain/repositories/index.ts";
+import { Email, FullName } from "@domain/value-objects/index.ts";
+import type { IGoogleAuthUseCase } from "@ports/use-cases/index.ts";
+import { DOMAIN_ERRORS } from "@shared/constants/error-messages.constants.ts";
+import { inject, injectable } from "inversify";
+
+@injectable()
+export class GoogleAuthUseCase implements IGoogleAuthUseCase {
+	constructor(
+		@inject(TYPES.UserRepository)
+		private readonly userRepository: IUserRepository,
+		@inject(TYPES.TokenService)
+		private readonly tokenService: ITokenService,
+		@inject(TYPES.GoogleAuthService)
+		private readonly googleAuthService: IGoogleAuthService,
+		@inject(TYPES.RefreshTokenRepository)
+		private readonly refreshTokenRepository: IRefreshTokenRepository,
+		@inject(TYPES.IdGenerator)
+		private readonly idGenerator: IIdGenerator,
+		@inject(TYPES.Logger)
+		private readonly logger: ILogger,
+	) {}
+
+	public async execute(dto: GoogleAuthDto): Promise<GoogleAuthResultDto> {
+		// 1. Verify Google ID token
+		const googlePayload = await this.googleAuthService.verifyIdToken(
+			dto.idToken,
+		);
+
+		const normalizedEmailString = googlePayload.email.trim().toLowerCase();
+		const emailObj = Email.create(normalizedEmailString);
+
+		const existingUserByGoogleId = await this.userRepository.findByGoogleId(
+			googlePayload.sub,
+		);
+		let isNewUser = false;
+		let finalUser!: UserEntity;
+
+		if (existingUserByGoogleId) {
+			finalUser = existingUserByGoogleId;
+			if (finalUser.status !== UserStatus.ACTIVE) {
+				this.logger.warn(
+					{
+						userId: finalUser.id,
+						status: finalUser.status,
+						event: "GOOGLE_AUTH_FAILURE",
+					},
+					"Google authentication rejected due to inactive/blocked user status",
+				);
+				throw new UserBlockedError(
+					DOMAIN_ERRORS.MESSAGES.GOOGLE_AUTH_ACCOUNT_INACTIVE,
+				);
+			}
+		} else {
+			const existingUserByEmail =
+				await this.userRepository.findByEmail(emailObj);
+
+			if (existingUserByEmail) {
+				if (existingUserByEmail.passwordHash !== null) {
+					this.logger.info(
+						{
+							email: normalizedEmailString,
+							userId: existingUserByEmail.id,
+							event: "GOOGLE_ACCOUNT_LINK_START",
+						},
+						"Linking Google ID to existing password-based account",
+					);
+					existingUserByEmail.linkGoogleAccount(googlePayload.sub);
+					await this.userRepository.update(
+						existingUserByEmail.id,
+						existingUserByEmail,
+					);
+					this.logger.info(
+						{
+							email: normalizedEmailString,
+							userId: existingUserByEmail.id,
+							event: "GOOGLE_ACCOUNT_LINK_SUCCESS",
+						},
+						"Google account linked successfully to existing password-based account",
+					);
+				}
+				finalUser = existingUserByEmail;
+			} else {
+				isNewUser = true;
+			}
+		}
+
+		const refreshTokenData = this.tokenService.generateRefreshToken();
+
+		if (isNewUser) {
+			const userId = this.idGenerator.generateUuid();
+			const fullName = FullName.create(googlePayload.name);
+
+			const profileEntity = UserProfileEntity.create({
+				id: this.idGenerator.generateUuid(),
+				userId,
+			});
+
+			const userEntity = UserEntity.create({
+				id: userId,
+				fullName,
+				phone: null,
+				email: emailObj,
+				passwordHash: null,
+				googleId: googlePayload.sub,
+				isEmailVerified: true,
+				profile: profileEntity,
+			});
+
+			const refreshTokenEntity = RefreshTokenEntity.create({
+				id: this.idGenerator.generateUuid(),
+				userId,
+				tokenHash: refreshTokenData.tokenHash,
+				expiresAt: refreshTokenData.expiresAt,
+			});
+
+			// Atomically create User + Profile + RefreshToken Session
+			finalUser = await this.userRepository.createWithSession({
+				user: userEntity,
+				device: null,
+				refreshToken: refreshTokenEntity,
+			});
+
+			this.logger.info(
+				{ userId: finalUser.id, event: "GOOGLE_REGISTRATION_SUCCESS" },
+				"Google user registered successfully",
+			);
+		} else {
+			const refreshTokenEntity = RefreshTokenEntity.create({
+				id: this.idGenerator.generateUuid(),
+				userId: finalUser.id,
+				tokenHash: refreshTokenData.tokenHash,
+				expiresAt: refreshTokenData.expiresAt,
+			});
+
+			await this.refreshTokenRepository.save(refreshTokenEntity);
+
+			this.logger.info(
+				{ userId: finalUser.id, event: "GOOGLE_AUTH_SUCCESS" },
+				"Google user authenticated successfully",
+			);
+		}
+
+		this.logger.info(
+			{ userId: finalUser.id, event: "REFRESH_TOKEN_CREATED" },
+			"Google auth session created",
+		);
+
+		// Generate access token
+		const accessToken = this.tokenService.generateAccessToken({
+			userId: finalUser.id,
+			email: finalUser.email.getValue(),
+		});
+
+		return {
+			user: UserDtoMapper.toGoogleAuthUserResponse(finalUser),
+			accessToken,
+			refreshToken: refreshTokenData.token,
+		};
+	}
+}

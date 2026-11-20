@@ -1,0 +1,333 @@
+import type { UserEntity, UserStatus } from "@domain/entities/user.entity.ts";
+import {
+	EmailAlreadyExistsError,
+	PhoneAlreadyExistsError,
+	UserNotFoundError,
+} from "@domain/errors/domain.error.ts";
+import type {
+	CountCustomersParams,
+	CreateUserWithSessionParams,
+	FindCustomersParams,
+	IUserRepository,
+	UpdateUserProfileParams,
+} from "@domain/repositories/user.repository.interface.ts";
+import type { Email } from "@domain/value-objects/email.vo.ts";
+import type { PhoneNumber } from "@domain/value-objects/phone-number.vo.ts";
+import { prisma } from "@infrastructure/database/prisma/prisma.ts";
+import {
+	Prisma,
+	type User as PrismaUserModel,
+	type UserStatus as PrismaUserStatus,
+} from "@prisma/client";
+import { injectable } from "inversify";
+import { UserMapper } from "../mappers/user.mapper.ts";
+import {
+	type IPrismaModelDelegate,
+	PrismaBaseRepository,
+} from "./prisma-base.repository.ts";
+
+@injectable()
+export class PrismaUserRepository
+	extends PrismaBaseRepository<
+		UserEntity,
+		PrismaUserModel,
+		Prisma.UserCreateInput,
+		Prisma.UserUpdateInput
+	>
+	implements IUserRepository
+{
+	constructor() {
+		super(
+			prisma.user as unknown as IPrismaModelDelegate<PrismaUserModel>,
+			UserMapper,
+		);
+	}
+
+	public async findByEmail(email: Email | string): Promise<UserEntity | null> {
+		const emailStr = typeof email === "string" ? email : email.getValue();
+		const record = await prisma.user.findUnique({
+			where: { email: emailStr },
+			include: { profile: true },
+		});
+
+		return record ? UserMapper.toDomain(record) : null;
+	}
+
+	public async findByPhone(
+		phone: PhoneNumber | string,
+	): Promise<UserEntity | null> {
+		const phoneStr = typeof phone === "string" ? phone : phone.getValue();
+		const record = await prisma.user.findUnique({
+			where: { phone: phoneStr },
+			include: { profile: true },
+		});
+
+		return record ? UserMapper.toDomain(record) : null;
+	}
+
+	public async findById(id: string): Promise<UserEntity | null> {
+		const record = await prisma.user.findUnique({
+			where: { id },
+			include: { profile: true },
+		});
+
+		return record ? UserMapper.toDomain(record) : null;
+	}
+
+	public async findByGoogleId(googleId: string): Promise<UserEntity | null> {
+		const record = await prisma.user.findFirst({
+			where: { googleId },
+			include: { profile: true },
+		});
+
+		return record ? UserMapper.toDomain(record) : null;
+	}
+
+	public async createWithSession(
+		params: CreateUserWithSessionParams,
+	): Promise<UserEntity> {
+		try {
+			const result = await prisma.$transaction(async (tx) => {
+				// 1. Create User record
+				const createdUser = await tx.user.create({
+					data: {
+						id: params.user.id,
+						fullname: params.user.fullName.getValue(),
+						phone: params.user.phone?.getValue() ?? null,
+						email: params.user.email.getValue(),
+						passwordHash: params.user.passwordHash,
+						googleId: params.user.googleId,
+						status: params.user.status as PrismaUserStatus,
+						isEmailVerified: params.user.isEmailVerified,
+					},
+				});
+
+				// 2. Create UserProfile if present on the UserEntity
+				if (params.user.profile) {
+					await tx.userProfile.create({
+						data: {
+							id: params.user.profile.id,
+							userId: createdUser.id,
+							dob: params.user.profile.dob,
+							gender: params.user.profile.gender,
+							location: params.user.profile.location,
+						},
+					});
+				}
+
+				// 3. Create Device record if provided
+				let deviceId: string | null = null;
+				if (params.device) {
+					const createdDevice = await tx.device.create({
+						data: {
+							id: params.device.id,
+							userId: createdUser.id,
+							fid: params.device.fid,
+							deviceName: params.device.deviceName,
+							platform: params.device.platform,
+							lastLogin: params.device.lastLogin,
+						},
+					});
+					deviceId = createdDevice.id;
+				}
+
+				// 4. Create initial RefreshToken record
+				await tx.refreshToken.create({
+					data: {
+						id: params.refreshToken.id,
+						userId: createdUser.id,
+						deviceId,
+						tokenHash: params.refreshToken.tokenHash,
+						expiresAt: params.refreshToken.expiresAt,
+						revokedAt: null,
+					},
+				});
+
+				// Re-fetch created user with its profile to return fully populated object
+				return tx.user.findUnique({
+					where: { id: createdUser.id },
+					include: { profile: true },
+				});
+			});
+
+			if (!result) {
+				throw new Error(
+					"Failed to retrieve created user record from transaction",
+				);
+			}
+
+			return UserMapper.toDomain(result);
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError &&
+				error.code === "P2002"
+			) {
+				const target = Array.isArray(error.meta?.target)
+					? error.meta.target.join(",")
+					: String(error.meta?.target ?? "");
+
+				if (target.includes("email")) {
+					throw new EmailAlreadyExistsError();
+				}
+				if (target.includes("phone")) {
+					throw new PhoneAlreadyExistsError();
+				}
+				throw new EmailAlreadyExistsError(
+					"An account with this email or phone number already exists.",
+				);
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * Updates personal and profile details for a given user.
+	 *
+	 * @param params User ID and fields to update
+	 * @returns Updated user domain entity
+	 */
+	public async updateProfile(
+		params: UpdateUserProfileParams,
+	): Promise<UserEntity> {
+		const result = await prisma.$transaction(async (tx) => {
+			if (params.fullName !== undefined) {
+				await tx.user.update({
+					where: { id: params.userId },
+					data: { fullname: params.fullName },
+				});
+			}
+
+			const profileUpdateData: Prisma.UserProfileUpdateInput = {};
+			if (params.dob !== undefined) {
+				profileUpdateData.dob = params.dob;
+			}
+			if (params.gender !== undefined) {
+				profileUpdateData.gender = params.gender;
+			}
+			if (params.location !== undefined) {
+				profileUpdateData.location = params.location;
+			}
+
+			await tx.userProfile.upsert({
+				where: { userId: params.userId },
+				create: {
+					userId: params.userId,
+					dob: params.dob ?? null,
+					gender: params.gender ?? null,
+					location: params.location ?? null,
+				},
+				update: profileUpdateData,
+			});
+
+			return tx.user.findUnique({
+				where: { id: params.userId },
+				include: { profile: true },
+			});
+		});
+
+		if (!result) {
+			throw new UserNotFoundError();
+		}
+
+		return UserMapper.toDomain(result);
+	}
+
+	public async findCustomers(
+		params: FindCustomersParams,
+	): Promise<UserEntity[]> {
+		const where: Prisma.UserWhereInput = {};
+
+		if (params.status) {
+			where.status = params.status as PrismaUserStatus;
+		}
+
+		if (params.search) {
+			const searchTrimmed = params.search.trim();
+			if (searchTrimmed.length > 0) {
+				where.OR = [
+					{ fullname: { contains: searchTrimmed, mode: "insensitive" } },
+					{ email: { contains: searchTrimmed, mode: "insensitive" } },
+				];
+			}
+		}
+
+		const sortDirection =
+			params.sortOrder.toUpperCase() === "ASC" ? "asc" : "desc";
+		const orderBy: Prisma.UserOrderByWithRelationInput[] = [
+			{ createdAt: sortDirection },
+			{ id: "desc" },
+		];
+
+		const records = await prisma.user.findMany({
+			where,
+			skip: params.skip,
+			take: params.take,
+			orderBy,
+			include: { profile: true },
+		});
+
+		return records.map((record) => UserMapper.toDomain(record));
+	}
+
+	public async countCustomers(params: CountCustomersParams): Promise<number> {
+		const where: Prisma.UserWhereInput = {};
+
+		if (params.status) {
+			where.status = params.status as PrismaUserStatus;
+		}
+
+		if (params.search) {
+			const searchTrimmed = params.search.trim();
+			if (searchTrimmed.length > 0) {
+				where.OR = [
+					{ fullname: { contains: searchTrimmed, mode: "insensitive" } },
+					{ email: { contains: searchTrimmed, mode: "insensitive" } },
+				];
+			}
+		}
+
+		if (params.createdAt) {
+			where.createdAt = {
+				...(params.createdAt.gte && { gte: params.createdAt.gte }),
+				...(params.createdAt.lte && { lte: params.createdAt.lte }),
+			};
+		}
+
+		return prisma.user.count({ where });
+	}
+
+	public async updateStatus(
+		userId: string,
+		status: UserStatus,
+		revokeTokens = false,
+	): Promise<UserEntity> {
+		try {
+			const updated = await prisma.$transaction(async (tx) => {
+				const user = await tx.user.update({
+					where: { id: userId },
+					data: { status: status as PrismaUserStatus },
+					include: { profile: true },
+				});
+
+				if (revokeTokens) {
+					await tx.refreshToken.updateMany({
+						where: { userId },
+						data: { revokedAt: new Date() },
+					});
+				}
+
+				return user;
+			});
+
+			return UserMapper.toDomain(updated);
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError &&
+				error.code === "P2025"
+			) {
+				throw new UserNotFoundError();
+			}
+			throw error;
+		}
+	}
+}

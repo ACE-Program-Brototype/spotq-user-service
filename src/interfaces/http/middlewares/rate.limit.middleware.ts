@@ -1,0 +1,158 @@
+import { config } from "@config/env.ts";
+import { redisClient } from "@infrastructure/redis";
+import { RATE_LIMIT_ERRORS } from "@shared/constants";
+import type { Request, RequestHandler } from "express";
+import { rateLimit } from "express-rate-limit";
+import { RedisStore, type SendCommandFn } from "rate-limit-redis";
+
+const redisSendCommand: SendCommandFn = async (...args) => {
+	return redisClient.sendCommand(args);
+};
+
+const isTestEnvironment =
+	process.env.NODE_ENV === "test" || process.env.NODE_ENV === "testing";
+
+const createDeferredRateLimiter = (
+	factory: () => RequestHandler,
+): RequestHandler => {
+	let limiter: RequestHandler | undefined;
+
+	return (req, res, next) => {
+		limiter ??= factory();
+		return limiter(req, res, next);
+	};
+};
+
+const createEmailRateLimiter = ({
+	prefix,
+	windowMs,
+	limit,
+	message,
+}: {
+	prefix: string;
+	windowMs: number;
+	limit: number;
+	message: string;
+}) => {
+	return rateLimit({
+		windowMs,
+		limit,
+
+		standardHeaders: "draft-7",
+		legacyHeaders: false,
+
+		keyGenerator: (req: Request) => {
+			const email =
+				typeof req.body?.email === "string"
+					? req.body.email.toLowerCase().trim()
+					: null;
+			return email
+				? `${prefix}:${email}`
+				: `${prefix}:ip:${req.ip || "unknown"}`;
+		},
+
+		...(isTestEnvironment
+			? {}
+			: {
+					store: new RedisStore({ sendCommand: redisSendCommand }),
+				}),
+
+		message: {
+			success: false,
+			message,
+		},
+	});
+};
+
+const createIpRateLimiter = ({
+	prefix,
+	windowMs,
+	limit,
+	message,
+}: {
+	prefix: string;
+	windowMs: number;
+	limit: number;
+	message: string;
+}) => {
+	return rateLimit({
+		windowMs,
+		limit,
+
+		standardHeaders: "draft-7",
+		legacyHeaders: false,
+
+		keyGenerator: (req: Request) => `${prefix}:ip:${req.ip || "unknown"}`,
+
+		...(isTestEnvironment
+			? {}
+			: {
+					store: new RedisStore({ sendCommand: redisSendCommand }),
+				}),
+
+		message: {
+			success: false,
+			message,
+		},
+	});
+};
+
+export const createForgotPasswordRateLimit = () =>
+	createEmailRateLimiter({
+		prefix: "admin:forgot-password",
+		windowMs: config.rateLimit.forgotPassword.windowMs,
+		limit: config.rateLimit.forgotPassword.max,
+		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD,
+	});
+
+export const createForgotPasswordResendRateLimit = () =>
+	createEmailRateLimiter({
+		prefix: "admin:forgot-password:resend",
+		windowMs: config.rateLimit.forgotPasswordResend.windowMs,
+		limit: config.rateLimit.forgotPasswordResend.max,
+		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD_RESEND,
+	});
+
+export const createForgotPasswordVerifyRateLimit = () =>
+	createEmailRateLimiter({
+		prefix: "admin:forgot-password:verify",
+		windowMs: config.rateLimit.forgotPasswordVerify.windowMs,
+		limit: config.rateLimit.forgotPasswordVerify.max,
+		message: RATE_LIMIT_ERRORS.FORGOT_PASSWORD_VERIFY,
+	});
+
+export const createResendEmailOtpRateLimit = () =>
+	createEmailRateLimiter({
+		prefix: "customer:resend-email-otp",
+		windowMs: config.rateLimit.resendEmailOtp.windowMs,
+		limit: config.rateLimit.resendEmailOtp.max,
+		message: RATE_LIMIT_ERRORS.RESEND_EMAIL_OTP,
+	});
+
+export const createResendEmailOtpIpRateLimit = () =>
+	createIpRateLimiter({
+		prefix: "customer:resend-email-otp",
+		windowMs: config.rateLimit.resendEmailOtp.windowMs,
+		limit: config.rateLimit.resendEmailOtp.max * 5,
+		message: RATE_LIMIT_ERRORS.RESEND_EMAIL_OTP,
+	});
+
+export const forgotPasswordRateLimit = createDeferredRateLimiter(
+	createForgotPasswordRateLimit,
+);
+
+export const forgotPasswordResendRateLimit = createDeferredRateLimiter(
+	createForgotPasswordResendRateLimit,
+);
+
+export const forgotPasswordVerifyRateLimit = createDeferredRateLimiter(
+	createForgotPasswordVerifyRateLimit,
+);
+
+export const resendEmailOtpRateLimit = createDeferredRateLimiter(
+	createResendEmailOtpRateLimit,
+);
+
+export const resendEmailOtpIpRateLimit = createDeferredRateLimiter(
+	createResendEmailOtpIpRateLimit,
+);

@@ -1,0 +1,74 @@
+export const VALIDATION_MESSAGES = {
+	FULL_NAME: {
+		REQUIRED: "Full name is required.",
+		MIN: "Full name must be at least 2 characters.",
+		MAX: "Full name must not exceed 100 characters.",
+		CONTROL_CHARS: "Full name must not contain control characters.",
+		FORMAT:
+			"Full name can only contain letters, spaces, hyphens, and apostrophes.",
+	},
+	EMAIL: {
+		REQUIRED: "Email is required.",
+		FORMAT: "Invalid email address format.",
+		MAX: "Email must not exceed 254 characters.",
+	},
+	PHONE: {
+		REQUIRED: "Phone number is required.",
+		REGION: "Phone number must start with +91 (Indian numbers only).",
+		FORMAT:
+			"Invalid Indian mobile number format. Expected +91 followed by 10 digits.",
+	},
+	PASSWORD: {
+		REQUIRED: "Password is required.",
+		MIN: "Password must be at least 8 characters.",
+		MAX: "Password must not exceed 128 characters.",
+		WHITESPACE: "Password must not contain leading or trailing whitespace.",
+		UPPERCASE: "Password must contain at least one uppercase letter.",
+		LOWERCASE: "Password must contain at least one lowercase letter.",
+		NUMBER: "Password must contain at least one number.",
+		SPECIAL_CHAR: "Password must contain at least one special character.",
+	},
+	OTP: {
+		REQUIRED: "OTP is required.",
+		LENGTH: "OTP must be exactly 6 characters.",
+		FORMAT: "OTP must contain only digits.",
+	},
+	REFRESH_TOKEN: {
+		REQUIRED: "Refresh token is required.",
+		EMPTY: "Refresh token cannot be empty.",
+	},
+	GOOGLE: {
+		ID_TOKEN_REQUIRED: "Google ID token is required.",
+	},
+	PROFILE: {
+		FULL_NAME_REQUIRED: "Full name cannot be empty.",
+		FULL_NAME_INVALID:
+			"Full name can only contain letters, spaces, hyphens, and apostrophes.",
+		GENDER_INVALID: "Gender must be MALE, FEMALE, or OTHER.",
+		DOB_INVALID_FORMAT: "Invalid date of birth format. Expected YYYY-MM-DD.",
+		DOB_FUTURE: "Date of birth cannot be in the future.",
+		LOCATION_TOO_LONG: "Location must not exceed 100 characters.",
+	},
+	PARAMS: {
+		INVALID: "Invalid request parameters.",
+	},
+	CUSTOMER: {
+		INVALID_ID_FORMAT: "Invalid customer ID format.",
+	},
+	PAGINATION: {
+		INVALID_PAGE: "Invalid pagination page.",
+		INVALID_LIMIT: "Invalid pagination limit.",
+		INVALID_STATUS: "Invalid customer status.",
+		INVALID_SORT_FIELD: "Invalid sort field.",
+		INVALID_SORT_ORDER: "Invalid sort order.",
+	},
+	STATUS: {
+		INVALID_STATUS: "Invalid customer status.",
+		STATUS_REQUIRED: "Status is required.",
+		INVALID_USER_ID: "Invalid user ID.",
+	},
+	DEVICE: {
+		DEVICE_ID_REQUIRED: "Device ID is required",
+		PLATFORM_INVALID: "Platform must be ANDROID, IOS, or WEB",
+	},
+} as const;
