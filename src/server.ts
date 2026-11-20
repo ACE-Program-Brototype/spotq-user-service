@@ -15,18 +15,27 @@ async function bootstrap() {
 	const { default: app } = await import("./app.ts");
 
 	const server = app.listen(PORT, () => {
-		logger.info(`${config.service.name} running on port ${PORT}`);
+		logger.info(
+			{ context: { port: PORT, service: config.service.name } },
+			"Server started successfully",
+		);
 	});
 
 	let isShuttingDown = false;
 
 	const shutdown = async (signal: string) => {
 		if (isShuttingDown) {
-			logger.warn(`Received ${signal} but shutdown is already in progress...`);
+			logger.warn(
+				{ context: { signal } },
+				"Received shutdown signal but shutdown is already in progress",
+			);
 			return;
 		}
 		isShuttingDown = true;
-		logger.info(`Received ${signal}. Gracefully shutting down...`);
+		logger.info(
+			{ context: { signal } },
+			"Received shutdown signal. Gracefully shutting down...",
+		);
 
 		// Set a safety timeout of 10 seconds to force-exit if connections hang
 		const forceExitTimeout = setTimeout(() => {

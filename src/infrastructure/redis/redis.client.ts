@@ -32,5 +32,5 @@ redisClient.on(RedisEvent.RECONNECTING, () => {
 });
 
 redisClient.on(RedisEvent.ERROR, (error) => {
-	logger.error("Redis Error:", error);
+	logger.error({ err: error }, "Redis connection error");
 });

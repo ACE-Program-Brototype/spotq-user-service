@@ -45,4 +45,32 @@ export class PinoLoggerService implements ILogger {
 			logger.warn(msgOrObj, message, ...(args as never[]));
 		}
 	}
+
+	public debug(mergObj: object, message?: string, ...args: unknown[]): void;
+	public debug(message: string, ...args: unknown[]): void;
+	public debug(
+		msgOrObj: string | object,
+		message?: string,
+		...args: unknown[]
+	): void {
+		if (typeof msgOrObj === "string") {
+			logger.debug(msgOrObj, ...(args as never[]));
+		} else {
+			logger.debug(msgOrObj, message, ...(args as never[]));
+		}
+	}
+
+	public fatal(mergObj: object, message?: string, ...args: unknown[]): void;
+	public fatal(message: string, ...args: unknown[]): void;
+	public fatal(
+		msgOrObj: string | object,
+		message?: string,
+		...args: unknown[]
+	): void {
+		if (typeof msgOrObj === "string") {
+			logger.fatal(msgOrObj, ...(args as never[]));
+		} else {
+			logger.fatal(msgOrObj, message, ...(args as never[]));
+		}
+	}
 }
