@@ -26,6 +26,7 @@ const envSchema = z.object({
 	PORT: z.coerce.number().positive().default(3000),
 
 	SERVICE_NAME: z.string().min(1).default("spotq-user-service"),
+	SERVICE_VERSION: z.string().default("1.0.0"),
 
 	LOG_LEVEL: z
 		.enum(["trace", "debug", "info", "warn", "error", "fatal"])
@@ -42,6 +43,18 @@ const envSchema = z.object({
 		.transform((val) => val === "true")
 		.default(false),
 	DATABASE_CA_CERT: z.string().optional(),
+	DATABASE_POOL_MAX: z.preprocess(
+		(val) => val ?? process.env.DB_POOL_MAX,
+		z.coerce.number().positive().default(3),
+	),
+	DATABASE_POOL_IDLE_TIMEOUT_MS: z.preprocess(
+		(val) => val ?? process.env.DB_POOL_IDLE_TIMEOUT_MS,
+		z.coerce.number().positive().default(30000),
+	),
+	DATABASE_POOL_CONNECTION_TIMEOUT_MS: z.preprocess(
+		(val) => val ?? process.env.DB_POOL_CONNECTION_TIMEOUT_MS,
+		z.coerce.number().positive().default(5000),
+	),
 
 	REDIS_URL: isTest
 		? z.string().default("redis://localhost:6379")

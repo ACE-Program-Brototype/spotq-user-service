@@ -34,8 +34,8 @@ if (config.database.sslEnabled) {
 				caContent = fs.readFileSync(envCaCert, "utf8");
 			} catch (error) {
 				logger.fatal(
-					{ err: error },
-					`Failed to read database CA certificate from env path: ${envCaCert}`,
+					{ err: error, context: { path: envCaCert } },
+					"Failed to read database CA certificate from env path",
 				);
 				throw error;
 			}
@@ -48,7 +48,8 @@ if (config.database.sslEnabled) {
 			}
 		} catch (_error) {
 			logger.warn(
-				`Could not read default CA cert at ${defaultCertPath}, continuing without custom CA.`,
+				{ context: { path: defaultCertPath } },
+				"Could not read default CA cert, continuing without custom CA",
 			);
 		}
 	}
@@ -67,11 +68,44 @@ poolUrl.searchParams.delete("sslmode");
 const pool = new pg.Pool({
 	connectionString: poolUrl.toString(),
 	ssl,
+	max: config.database.poolMax,
+	idleTimeoutMillis: config.database.poolIdleTimeoutMs,
+	connectionTimeoutMillis: config.database.poolConnectionTimeoutMs,
 });
 
 const adapter = new PrismaPg(pool);
 
 export const prisma = new PrismaClient({
 	adapter,
-	log: ["warn", "error"],
+	log: [
+		{ emit: "event", level: "error" },
+		{ emit: "event", level: "warn" },
+	],
+});
+
+prisma.$on("error" as never, (e: { message: string; target?: string }) => {
+	logger.error(
+		{
+			error: {
+				name: "PrismaClientError",
+				message: e.message,
+			},
+			context: {
+				target: e.target,
+			},
+		},
+		"Prisma database error",
+	);
+});
+
+prisma.$on("warn" as never, (e: { message: string }) => {
+	logger.warn(
+		{
+			error: {
+				name: "PrismaClientWarning",
+				message: e.message,
+			},
+		},
+		"Prisma database warning",
+	);
 });

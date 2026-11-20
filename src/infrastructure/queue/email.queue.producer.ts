@@ -1,9 +1,10 @@
+import { randomUUID } from "node:crypto";
 import { config } from "@config/env.ts";
 import type {
 	IEmailQueueProducer,
 	QueueVerificationEmailParams,
 } from "@domain/repository/shared/IEmail.queue.producer";
-import { logger } from "@infrastructure/logger/logger.ts";
+import { logger, loggerLocalStorage } from "@infrastructure/logger/index.ts";
 import { Queue } from "bullmq";
 import { injectable } from "inversify";
 import { Redis } from "ioredis";
@@ -43,16 +44,20 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 	public async queueVerificationEmail(
 		params: QueueVerificationEmailParams,
 	): Promise<void> {
+		const store = loggerLocalStorage.getStore();
+		const correlationId = store?.correlationId || randomUUID();
+
 		try {
 			await this.getQueue().add("send-verification-email", {
 				email: params.email,
 				otp: params.otp,
+				correlationId,
 			});
 
 			logger.info(
 				{
-					email: params.email,
-					event: "EMAIL_OTP_QUEUED",
+					event: { action: "EMAIL_OTP_QUEUED" },
+					context: { email: params.email },
 				},
 				"Verification email job successfully queued in BullMQ",
 			);
@@ -60,8 +65,8 @@ export class EmailQueueProducer implements IEmailQueueProducer {
 			logger.error(
 				{
 					err: error,
-					email: params.email,
-					event: "EMAIL_OTP_QUEUE_FAILED",
+					event: { action: "EMAIL_OTP_QUEUE_FAILED" },
+					context: { email: params.email },
 				},
 				"Failed to queue verification email in BullMQ",
 			);

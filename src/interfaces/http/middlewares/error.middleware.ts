@@ -46,26 +46,26 @@ export function errorMiddleware(
 	res: Response,
 	_next: NextFunction,
 ): void {
-	// --------------------------------------------------
-	// 1. Always log the original error
-	// --------------------------------------------------
-
-	logger.error(
-		{
-			err,
-			method: req.method,
-			url: req.url,
-		},
-		"Unhandled error occurred",
-	);
-
+	const path = req.originalUrl || req.url;
 	const isProduction = config.server.nodeEnv === "production";
 
 	// --------------------------------------------------
-	// 2. Zod validation error
+	// 1. Zod validation error
 	// --------------------------------------------------
 
 	if (err instanceof ZodError) {
+		logger.warn(
+			{
+				err,
+				http: {
+					method: req.method,
+					path,
+					status_code: HttpStatus.BAD_REQUEST,
+				},
+			},
+			"Validation error occurred",
+		);
+
 		res.status(HttpStatus.BAD_REQUEST).json({
 			success: false,
 			message: "Validation failed",
@@ -75,18 +75,22 @@ export function errorMiddleware(
 		return;
 	}
 
+	// --------------------------------------------------
+	// 2. Domain business error
+	// --------------------------------------------------
+
 	if (err instanceof DomainError) {
 		const statusCode =
 			DOMAIN_ERROR_STATUS_MAP[err.code] || HttpStatus.INTERNAL_SERVER_ERROR;
 
 		logger.warn(
 			{
-				errName: err.name,
-				errCode: err.code,
-				message: err.message,
-				statusCode,
-				method: req.method,
-				url: req.url,
+				err,
+				http: {
+					method: req.method,
+					path,
+					status_code: statusCode,
+				},
 			},
 			"Domain error occurred",
 		);
@@ -97,13 +101,39 @@ export function errorMiddleware(
 	}
 
 	// --------------------------------------------------
-	// 3. Domain / Application / Unknown error
+	// 3. Application / Unknown / Server error
 	// --------------------------------------------------
 
 	const mappedError = mapErrorToHttp(err);
 
 	const isServerError =
 		mappedError.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR;
+
+	if (isServerError) {
+		logger.error(
+			{
+				err,
+				http: {
+					method: req.method,
+					path,
+					status_code: mappedError.statusCode,
+				},
+			},
+			"Unhandled server error occurred",
+		);
+	} else {
+		logger.warn(
+			{
+				err,
+				http: {
+					method: req.method,
+					path,
+					status_code: mappedError.statusCode,
+				},
+			},
+			"Client error occurred",
+		);
+	}
 
 	// Never expose internal 5xx error details in production.
 	const message =
