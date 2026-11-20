@@ -32,21 +32,9 @@ export interface LogEventInfo {
 
 const CONTEXT_FIELD_MAP: Record<string, string> = {
 	userId: "user_id",
-	user_id: "user_id",
-	customerId: "customer_id",
-	customer_id: "customer_id",
-	orderId: "order_id",
-	order_id: "order_id",
-	restaurantId: "restaurant_id",
-	restaurant_id: "restaurant_id",
-	email: "email",
-	phone: "phone",
 	phoneNumber: "phone_number",
-	phone_number: "phone_number",
 	deviceId: "device_id",
-	device_id: "device_id",
 	jobId: "job_id",
-	job_id: "job_id",
 };
 
 function formatErrorObject(err: unknown): LogErrorInfo | undefined {
@@ -127,6 +115,10 @@ export const loggerOptions: LoggerOptions = {
 				if (key in rest && rest[key] !== undefined) {
 					context[target] = rest[key];
 					delete rest[key];
+				}
+				if (target in rest && rest[target] !== undefined) {
+					context[target] = rest[target];
+					delete rest[target];
 				}
 			}
 

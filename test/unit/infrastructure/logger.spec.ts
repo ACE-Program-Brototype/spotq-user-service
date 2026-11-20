@@ -240,8 +240,8 @@ describe("Universal Structured JSON Logger", () => {
 		testLogger.info(
 			{
 				userId: "usr_12345",
-				customerId: "cust_67890",
-				orderId: "ord_555",
+				deviceId: "dev_67890",
+				jobId: "job_555",
 			},
 			"User checked out",
 		);
@@ -251,8 +251,8 @@ describe("Universal Structured JSON Logger", () => {
 
 		expect(log.context).toEqual({
 			user_id: "usr_12345",
-			customer_id: "cust_67890",
-			order_id: "ord_555",
+			device_id: "dev_67890",
+			job_id: "job_555",
 		});
 	});
 
