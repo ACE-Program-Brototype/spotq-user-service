@@ -21,6 +21,9 @@ export const config = {
 		url: env.DATABASE_URL,
 		sslEnabled: env.DATABASE_SSL_ENABLED,
 		caCert: env.DATABASE_CA_CERT,
+		poolMax: env.DATABASE_POOL_MAX,
+		poolIdleTimeoutMs: env.DATABASE_POOL_IDLE_TIMEOUT_MS,
+		poolConnectionTimeoutMs: env.DATABASE_POOL_CONNECTION_TIMEOUT_MS,
 	},
 
 	redis: {
