@@ -108,7 +108,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 
 		if (isNewUser) {
 			const userId = this.idGenerator.generateUuid();
-			const fullName = FullName.create(googlePayload.name);
+			const fullName = FullName.create(googlePayload.name, true);
 
 			const profileEntity = UserProfileEntity.create({
 				id: this.idGenerator.generateUuid(),
