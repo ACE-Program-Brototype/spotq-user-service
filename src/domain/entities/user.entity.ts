@@ -39,7 +39,7 @@ export class UserEntity {
 		profile?: UserProfileEntity | null;
 	}): UserEntity {
 		const now = new Date();
-		const isGoogleCreated = typeof params.googleId === 'string' 
+		const isGoogleCreated = typeof params.googleId === "string";
 		const fullNameVo =
 			typeof params.fullName === "string"
 				? FullName.create(params.fullName, isGoogleCreated)
