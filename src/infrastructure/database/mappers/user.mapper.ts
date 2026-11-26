@@ -27,7 +27,7 @@ export const UserMapper = {
 
 		return UserEntity.reconstitute({
 			id: raw.id,
-			fullName: FullName.create(raw.fullname, !!raw.googleId ),
+			fullName: FullName.create(raw.fullname, !!raw.googleId),
 			phone: raw.phone ? PhoneNumber.create(raw.phone) : null,
 			email: Email.create(raw.email),
 			passwordHash: raw.passwordHash ?? "",
