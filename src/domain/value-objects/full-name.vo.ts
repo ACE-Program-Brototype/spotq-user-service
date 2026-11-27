@@ -22,12 +22,16 @@ export class FullName {
 		return false;
 	}
 
-	public static create(rawName: unknown): FullName {
+	public static create(rawName: unknown, isGoogleCreated = false): FullName {
 		if (typeof rawName !== "string") {
 			throw new InvalidNameError(VALUE_OBJECT_ERRORS.FULL_NAME.TYPE);
 		}
 
 		const trimmed = rawName.trim();
+
+		if (isGoogleCreated) {
+			return new FullName(trimmed);
+		}
 
 		if (
 			!trimmed ||
